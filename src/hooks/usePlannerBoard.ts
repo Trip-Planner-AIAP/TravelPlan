@@ -286,16 +286,72 @@ export const usePlannerBoard = (tripId: string) => {
         return { success: true, data: cachedData.response_data };
       }
 
-      // Simulate API call
+      // Calculate coverage based on policy type and destination risk
+      const getCoverageDetails = (coverageType: string, destination: string, duration: number) => {
+        const baseMultiplier = destination.toLowerCase().includes('japan') ? 1.2 : 
+                              destination.toLowerCase().includes('europe') ? 1.1 : 
+                              destination.toLowerCase().includes('asia') ? 0.9 : 1.0;
+        
+        const durationMultiplier = Math.max(1, duration / 7); // Longer trips cost more
+        
+        switch (coverageType.toLowerCase()) {
+          case 'basic':
+            return {
+              coverage: 25000 * baseMultiplier,
+              premium: (45 + (duration * 8)) * baseMultiplier
+            };
+          case 'premium':
+            return {
+              coverage: 75000 * baseMultiplier,
+              premium: (85 + (duration * 12)) * baseMultiplier
+            };
+          case 'comprehensive':
+            return {
+              coverage: 150000 * baseMultiplier,
+              premium: (125 + (duration * 18)) * baseMultiplier
+            };
+          default:
+            return {
+              coverage: 50000 * baseMultiplier,
+              premium: (65 + (duration * 10)) * baseMultiplier
+            };
+        }
+      };
+
+      const coverageDetails = getCoverageDetails(params.coverage, params.destination, params.duration);
+      
+      // Generate multiple insurance options
       const mockInsurance: Insurance[] = [
         {
           id: crypto.randomUUID(),
           trip_id: tripId,
           policy_type: params.coverage,
-          coverage_amount: 50000,
-          premium_cost: 85,
+          coverage_amount: coverageDetails.coverage,
+          premium_cost: Math.round(coverageDetails.premium),
           provider: 'TravelGuard',
           policy_pdf_url: 'https://example.com/policy.pdf',
+          api_response: {},
+          created_at: new Date().toISOString()
+        },
+        {
+          id: crypto.randomUUID(),
+          trip_id: tripId,
+          policy_type: params.coverage,
+          coverage_amount: coverageDetails.coverage * 0.8,
+          premium_cost: Math.round(coverageDetails.premium * 0.85),
+          provider: 'WorldNomads',
+          policy_pdf_url: 'https://example.com/policy2.pdf',
+          api_response: {},
+          created_at: new Date().toISOString()
+        },
+        {
+          id: crypto.randomUUID(),
+          trip_id: tripId,
+          policy_type: params.coverage,
+          coverage_amount: coverageDetails.coverage * 1.2,
+          premium_cost: Math.round(coverageDetails.premium * 1.15),
+          provider: 'Allianz Travel',
+          policy_pdf_url: 'https://example.com/policy3.pdf',
           api_response: {},
           created_at: new Date().toISOString()
         }

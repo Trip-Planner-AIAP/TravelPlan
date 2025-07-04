@@ -221,10 +221,14 @@ export const PlannerBoard: React.FC = () => {
   const handleInsuranceQuote = async () => {
     if (!trip) return;
     
+    // Get selected coverage type from the form
+    const coverageSelect = document.getElementById('coverage-type') as HTMLSelectElement;
+    const selectedCoverage = coverageSelect?.value || 'basic';
+    
     const result = await getInsuranceQuote({
       destination: trip.destination,
       duration: trip.duration_days,
-      coverage: 'basic'
+      coverage: selectedCoverage
     });
     
     if (result.success) {
@@ -395,14 +399,19 @@ export const PlannerBoard: React.FC = () => {
               <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
                 <h3 className="text-lg font-semibold text-gray-900 mb-4">Insurance Quote</h3>
                 <div className="space-y-3">
-                  {insurance.slice(0, 1).map((policy) => (
+                  {insurance.slice(0, 3).map((policy) => (
                     <div key={policy.id} className="border border-gray-200 rounded-lg p-3">
                       <div className="flex items-center justify-between mb-2">
-                        <p className="font-medium capitalize">{policy.policy_type} Coverage</p>
+                        <div>
+                          <p className="font-medium">{policy.provider}</p>
+                          <p className="text-xs text-gray-600 capitalize">{policy.policy_type} Coverage</p>
+                        </div>
                         <p className="font-semibold text-orange-600">${policy.premium_cost}</p>
                       </div>
-                      <p className="text-sm text-gray-600">Coverage: ${policy.coverage_amount}</p>
-                      <p className="text-sm text-gray-600">Provider: {policy.provider}</p>
+                      <p className="text-sm text-gray-600">Coverage: ${policy.coverage_amount?.toLocaleString()}</p>
+                      <button className="mt-2 w-full bg-green-600 text-white py-1 px-3 rounded text-xs hover:bg-green-700 transition-colors">
+                        Select This Plan
+                      </button>
                     </div>
                   ))}
                 </div>
