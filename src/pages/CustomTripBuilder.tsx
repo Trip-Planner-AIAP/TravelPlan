@@ -119,24 +119,35 @@ const DayColumn: React.FC<DayColumnProps> = ({ dayNumber, activities }) => {
   return (
     <div 
       ref={setNodeRef}
-      className={`rounded-xl p-4 min-h-96 transition-colors ${
-        isOver ? 'bg-orange-100 border-2 border-orange-300' : 'bg-gray-50 border-2 border-transparent'
+      className={`rounded-xl p-4 min-h-80 transition-all duration-200 ${
+        isOver 
+          ? 'bg-orange-100 border-2 border-orange-400 shadow-lg transform scale-105' 
+          : 'bg-white border-2 border-gray-200 shadow-sm hover:shadow-md'
       }`}
     >
       <div className="flex items-center justify-between mb-4">
-        <h3 className="font-semibold text-gray-900">Day {dayNumber}</h3>
-        <div className="text-sm text-gray-500">
-          {activities.length} activities
+        <h3 className="font-semibold text-gray-900 flex items-center">
+          <span className="w-6 h-6 bg-orange-100 text-orange-700 rounded-full text-xs flex items-center justify-center mr-2">
+            {dayNumber}
+          </span>
+          Day {dayNumber}
+        </h3>
+        <div className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
+          {activities.length}
         </div>
       </div>
       
       <SortableContext items={activities.map(a => a.tempId)} strategy={verticalListSortingStrategy}>
         <div className="space-y-3">
           {activities.length === 0 ? (
-            <div className={`text-center py-8 text-gray-500 border-2 border-dashed rounded-lg transition-colors ${
-              isOver ? 'border-orange-400 bg-orange-50' : 'border-gray-300'
+            <div className={`text-center py-12 text-gray-500 border-2 border-dashed rounded-lg transition-all ${
+              isOver 
+                ? 'border-orange-400 bg-orange-50 border-solid' 
+                : 'border-gray-300 hover:border-gray-400'
             }`}>
-              <p className="text-sm">Drag activities here</p>
+              <div className="mb-2">📅</div>
+              <p className="text-sm font-medium">Drop activities here</p>
+              <p className="text-xs text-gray-400 mt-1">Plan your day {dayNumber}</p>
             </div>
           ) : (
             activities.map((activity) => (
@@ -162,7 +173,9 @@ const SelectedActivitiesArea: React.FC<{ children: React.ReactNode }> = ({ child
   return (
     <div 
       ref={setNodeRef}
-      className={`transition-colors ${isOver ? 'bg-blue-50' : ''}`}
+      className={`transition-all duration-200 ${
+        isOver ? 'bg-blue-50 transform scale-105' : ''
+      }`}
     >
       {children}
     </div>
@@ -473,8 +486,8 @@ export const CustomTripBuilder: React.FC = () => {
       </header>
 
       <div className="max-w-7xl mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-          {/* Activity Library */}
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
+          {/* Activity Library - Left Column */}
           <div className="lg:col-span-1">
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Activity Library</h3>
@@ -529,41 +542,66 @@ export const CustomTripBuilder: React.FC = () => {
                 ))}
               </div>
             </div>
-
-            {/* Selected Activities */}
-            {selectedActivities.length > 0 && (
-              <SelectedActivitiesArea>
-                <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mt-6">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                    Selected Activities ({selectedActivities.length})
-                  </h3>
-                  <SortableContext items={selectedActivities.map(a => a.tempId)} strategy={verticalListSortingStrategy}>
-                    <div className="space-y-2 max-h-64 overflow-y-auto">
-                      {selectedActivities.map((activity) => (
-                        <SortableActivity
-                          key={activity.tempId}
-                          activity={activity}
-                          onRemove={removeActivityFromSelection}
-                        />
-                      ))}
-                    </div>
-                  </SortableContext>
-                  <p className="text-xs text-gray-500 mt-3">
-                    Drag these activities to specific days →
-                  </p>
-                </div>
-              </SelectedActivitiesArea>
-            )}
           </div>
 
-          {/* Kanban Board */}
+          {/* Selected Activities - Center Column */}
+          <div className="lg:col-span-1">
+            <SelectedActivitiesArea>
+              <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 h-full">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                  Selected Activities
+                  <span className="ml-2 text-sm font-normal text-gray-500">
+                    ({selectedActivities.length})
+                  </span>
+                </h3>
+                
+                {selectedActivities.length === 0 ? (
+                  <div className="text-center py-12 text-gray-500 border-2 border-dashed border-gray-300 rounded-lg">
+                    <div className="mb-3">
+                      <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-2">
+                        📋
+                      </div>
+                    </div>
+                    <p className="text-sm font-medium text-gray-700">No activities selected</p>
+                    <p className="text-xs text-gray-500 mt-1">← Choose from the library</p>
+                    <p className="text-xs text-gray-400 mt-1">Then drag to days →</p>
+                  </div>
+                ) : (
+                  <>
+                    <SortableContext items={selectedActivities.map(a => a.tempId)} strategy={verticalListSortingStrategy}>
+                      <div className="space-y-3 max-h-96 overflow-y-auto">
+                        {selectedActivities.map((activity) => (
+                          <SortableActivity
+                            key={activity.tempId}
+                            activity={activity}
+                            onRemove={removeActivityFromSelection}
+                          />
+                        ))}
+                      </div>
+                    </SortableContext>
+                    <div className="mt-4 p-3 bg-orange-50 rounded-lg">
+                      <p className="text-xs text-orange-700 flex items-center">
+                        <span className="mr-2">💡</span>
+                        Drag activities to the right to organize your days
+                      </p>
+                      <div className="mt-2 text-xs text-orange-600">
+                        Total: ${selectedActivities.reduce((sum, a) => sum + a.estimated_cost, 0)}
+                      </div>
+                    </div>
+                  </>
+                )}
+              </div>
+            </SelectedActivitiesArea>
+          </div>
+
+          {/* Kanban Board - Right Columns */}
           <div className="lg:col-span-3">
             <div className="mb-6">
               <h2 className="text-xl font-semibold text-gray-900 mb-2">
-                Plan Your {tripDetails.title} 🗓️
+                Your Itinerary 🗓️
               </h2>
               <p className="text-gray-600">
-                Drag activities from the library to organize your perfect itinerary
+                Organize your perfect {tripDetails.destination} adventure
               </p>
             </div>
 
@@ -574,7 +612,7 @@ export const CustomTripBuilder: React.FC = () => {
               onDragOver={handleDragOver}
               onDragEnd={handleDragEnd}
             >
-              <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
                 {Array.from({ length: Math.min(tripDuration, 5) }, (_, i) => i + 1).map((dayNum) => (
                   <DayColumn
                     key={dayNum}
