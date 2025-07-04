@@ -672,29 +672,3 @@ export const CustomTripBuilder: React.FC = () => {
     </div>
   );
 };
-                      </div>
-                    ) : (
-                      <div className="bg-white rounded-lg border border-gray-200 p-4 shadow-lg opacity-90">
-                        <div className="font-medium text-gray-900">Moving activity...</div>
-                      </div>
-                    );
-                  })()
-                ) : null}
-              </DragOverlay>
-            </DndContext>
-
-            {tripDuration > 5 && (
-              <div className="mt-6 p-4 bg-blue-50 rounded-lg">
-                <p className="text-sm text-blue-700">
-                  <Clock className="w-4 h-4 inline mr-1" />
-                  Your trip is {tripDuration} days long. The first 5 days are shown here. 
-                  You can organize the remaining days after saving.
-                </p>
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
