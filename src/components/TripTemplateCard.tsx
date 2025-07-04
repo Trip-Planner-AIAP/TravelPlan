@@ -1,5 +1,6 @@
 import React from 'react';
 import { MapPin, Clock, DollarSign, Sparkles } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { useTrips } from '../hooks/useTrips';
 import type { TripTemplate } from '../types';
 import { useState } from 'react';
@@ -10,6 +11,7 @@ interface TripTemplateCardProps {
 
 export const TripTemplateCard: React.FC<TripTemplateCardProps> = ({ template }) => {
   const { createTripFromTemplate } = useTrips();
+  const navigate = useNavigate();
   const [isCreating, setIsCreating] = useState(false);
 
   const handleUseTemplate = async () => {
@@ -18,6 +20,9 @@ export const TripTemplateCard: React.FC<TripTemplateCardProps> = ({ template }) 
       const result = await createTripFromTemplate(template);
       if (result.error) {
         console.error('Error creating trip:', result.error);
+      } else if (result.data) {
+        // Navigate to the newly created trip
+        navigate(`/planner/${result.data.id}`);
       }
     } catch (error) {
       console.error('Error creating trip:', error);

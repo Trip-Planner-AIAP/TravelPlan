@@ -152,7 +152,7 @@ export const useTrips = () => {
       
       // Fallback: Add to local state if database fails
       const newTrip: Trip = {
-        id: `local-${Date.now()}`,
+        id: crypto.randomUUID(),
         title: template.title,
         destination: template.destination,
         start_date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
@@ -217,7 +217,7 @@ export const useTrips = () => {
       
       // Fallback: Add to local state if database fails
       const newTrip: Trip = {
-        id: `local-${Date.now()}`,
+        id: crypto.randomUUID(),
         title,
         destination,
         start_date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
