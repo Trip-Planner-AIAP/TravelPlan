@@ -22,6 +22,7 @@ import { CSS } from '@dnd-kit/utilities';
 import { usePlannerBoard } from '../hooks/usePlannerBoard';
 import { FlightSearchCard } from '../components/FlightSearchCard';
 import { InsuranceCard } from '../components/InsuranceCard';
+import { AddActivityModal } from '../components/AddActivityModal';
 import { BudgetTracker } from '../components/BudgetTracker';
 import type { Activity } from '../types';
 
@@ -223,9 +224,16 @@ export const PlannerBoard: React.FC = () => {
   };
 
   const handleCreateActivity = async (title: string, type: string) => {
+  const handleCreateActivity = async (
+    title: string, 
+    type: string, 
+    estimatedCost: number = 0, 
+    durationMinutes: number = 60, 
+    description: string = ''
+  ) => {
     if (!selectedDayId || !title.trim()) return;
     
-    await addActivity(selectedDayId, title.trim(), type);
+    await addActivity(selectedDayId, title.trim(), type, estimatedCost, durationMinutes, description);
     setShowAddActivityModal(false);
     setSelectedDayId('');
   };
@@ -384,73 +392,14 @@ export const PlannerBoard: React.FC = () => {
         </div>
 
         {/* Add Activity Modal */}
-        {showAddActivityModal && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-            <div className="bg-white rounded-2xl p-6 max-w-md w-full">
-              <h3 className="text-xl font-semibold text-gray-900 mb-4">Add New Activity</h3>
-              
-              <form onSubmit={(e) => {
-                e.preventDefault();
-                const formData = new FormData(e.currentTarget);
-                const title = formData.get('title') as string;
-                const type = formData.get('type') as string;
-                handleCreateActivity(title, type);
-              }}>
-                <div className="space-y-4">
-                  <div>
-                    <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-2">
-                      Activity Title
-                    </label>
-                    <input
-                      type="text"
-                      id="title"
-                      name="title"
-                      required
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
-                      placeholder="e.g., Visit Tokyo Tower"
-                      autoFocus
-                    />
-                  </div>
-
-                  <div>
-                    <label htmlFor="type" className="block text-sm font-medium text-gray-700 mb-2">
-                      Activity Type
-                    </label>
-                    <select
-                      id="type"
-                      name="type"
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
-                    >
-                      <option value="attraction">🏛️ Attraction</option>
-                      <option value="meal">🍽️ Meal</option>
-                      <option value="hotel">🏨 Hotel</option>
-                      <option value="transport">🚗 Transport</option>
-                      <option value="flight">✈️ Flight</option>
-                    </select>
-                  </div>
-                </div>
-                <div className="flex space-x-3 mt-6">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setShowAddActivityModal(false);
-                      setSelectedDayId('');
-                    }}
-                    className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    className="flex-1 px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors"
-                  >
-                    Add Activity
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>
-        )}
+        <AddActivityModal
+          isOpen={showAddActivityModal}
+          onClose={() => {
+            setShowAddActivityModal(false);
+            setSelectedDayId('');
+          }}
+          onCreateActivity={handleCreateActivity}
+        />
       </div>
     </div>
   );
