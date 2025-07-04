@@ -1,5 +1,6 @@
 import React from 'react';
 import { Plus, Calendar, MapPin, Clock, DollarSign } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { useTrips } from '../hooks/useTrips';
 import { TripTemplateCard } from './TripTemplateCard';
 import { CreateTripModal } from './CreateTripModal';
@@ -8,6 +9,7 @@ import { useState } from 'react';
 export const TripGrid: React.FC = () => {
   const { trips, loading, templates } = useTrips();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const navigate = useNavigate();
 
   if (loading) {
     return (
@@ -70,7 +72,11 @@ export const TripGrid: React.FC = () => {
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {trips.map((trip) => (
-                  <div key={trip.id} className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow">
+                  <div 
+                    key={trip.id} 
+                    className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow cursor-pointer"
+                    onClick={() => navigate(`/planner/${trip.id}`)}
+                  >
                     <div className="aspect-video bg-gray-200 relative">
                       <img 
                         src={trip.image_url} 

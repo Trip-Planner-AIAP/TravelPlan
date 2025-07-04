@@ -54,3 +54,38 @@ export interface TripTemplate {
     activities: Omit<Activity, 'id' | 'day_id' | 'created_at'>[];
   }[];
 }
+
+export interface Flight {
+  id: string;
+  trip_id: string;
+  origin: string;
+  destination: string;
+  departure_date?: string;
+  return_date?: string;
+  price?: number;
+  airline?: string;
+  flight_number?: string;
+  api_response?: any;
+  created_at: string;
+}
+
+export interface Insurance {
+  id: string;
+  trip_id: string;
+  policy_type: string;
+  coverage_amount?: number;
+  premium_cost?: number;
+  provider?: string;
+  policy_pdf_url?: string;
+  api_response?: any;
+  created_at: string;
+}
+
+export interface ApiCache {
+  id: string;
+  api_type: string;
+  query_hash: string;
+  response_data: any;
+  expires_at: string;
+  created_at: string;
+}
