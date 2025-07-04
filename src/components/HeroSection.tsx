@@ -75,16 +75,6 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onStartPlanning, onExp
     }
   };
 
-  const filteredDestinations = popularDestinations.filter(dest =>
-    dest.name.toLowerCase().includes(searchValue.toLowerCase()) ||
-    dest.category.toLowerCase().includes(searchValue.toLowerCase())
-  );
-
-  // Show trending destinations when no search input
-  const displayDestinations = searchValue.trim() === '' 
-    ? popularDestinations.filter(dest => dest.trending).slice(0, 6)
-    : filteredDestinations.slice(0, 8);
-
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchValue(e.target.value);
     setShowSuggestions(true);
