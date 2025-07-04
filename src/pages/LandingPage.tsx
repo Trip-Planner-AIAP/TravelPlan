@@ -3,9 +3,12 @@ import { HeroSection } from '../components/HeroSection';
 import { Footer } from '../components/Footer';
 import { Search } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useTrips } from '../hooks/useTrips';
+import type { TripTemplate } from '../types';
 
 export const LandingPage: React.FC = () => {
   const navigate = useNavigate();
+  const { createTripFromTemplate } = useTrips();
 
   const handleStartPlanning = () => {
     navigate('/dashboard');
@@ -15,11 +18,23 @@ export const LandingPage: React.FC = () => {
     navigate('/dashboard');
   };
 
+  const handleSelectTemplate = async (template: TripTemplate) => {
+    const result = await createTripFromTemplate(template);
+    if (result.error) {
+      console.error('Error creating trip:', result.error);
+      // Fallback to dashboard
+      navigate('/dashboard');
+    } else if (result.data) {
+      // Navigate to the newly created trip
+      navigate(`/planner/${result.data.id}`);
+    }
+  };
   return (
     <div className="min-h-screen">
       <HeroSection 
         onStartPlanning={handleStartPlanning} 
         onExploreTemplates={handleExploreTemplates}
+        onSelectTemplate={handleSelectTemplate}
       />
       
       {/* Sample Templates Section */}

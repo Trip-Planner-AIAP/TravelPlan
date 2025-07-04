@@ -1,6 +1,8 @@
 import React from 'react';
 import { Search, MapPin, TrendingUp, Plane } from 'lucide-react';
 import { useState } from 'react';
+import { tripTemplates } from '../data/tripTemplates';
+import type { TripTemplate } from '../types';
 
 // Popular destinations with additional metadata
 const popularDestinations = [
@@ -29,14 +31,50 @@ const popularDestinations = [
 interface HeroSectionProps {
   onStartPlanning: () => void;
   onExploreTemplates?: () => void;
+  onSelectTemplate?: (template: TripTemplate) => void;
 }
 
-export const HeroSection: React.FC<HeroSectionProps> = ({ onStartPlanning, onExploreTemplates }) => {
+export const HeroSection: React.FC<HeroSectionProps> = ({ onStartPlanning, onExploreTemplates, onSelectTemplate }) => {
   const [searchValue, setSearchValue] = useState('');
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [focusedIndex, setFocusedIndex] = useState(-1);
 
-  // Filter destinations based on search input
+  // Filter templates based on search input
+  const getDestinationSpecificTemplates = (searchTerm: string) => {
+    if (!searchTerm.trim()) return [];
+    
+    return tripTemplates.filter(template =>
+      template.destination.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      template.title.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  };
+
+  // Filter popular destinations based on search input
+  const getFilteredDestinations = (searchTerm: string) => {
+    return popularDestinations.filter(dest =>
+      dest.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      dest.category.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  };
+
+  const destinationTemplates = getDestinationSpecificTemplates(searchValue);
+  const filteredDestinations = getFilteredDestinations(searchValue);
+
+  // Show trending destinations when no search input, otherwise show filtered results
+  const displayDestinations = searchValue.trim() === '' 
+    ? popularDestinations.filter(dest => dest.trending).slice(0, 6)
+    : filteredDestinations.slice(0, 6);
+
+  const hasSearchResults = searchValue.trim() !== '' && (destinationTemplates.length > 0 || filteredDestinations.length > 0);
+
+  const handleTemplateSelect = (template: TripTemplate) => {
+    setSearchValue(template.destination);
+    setShowSuggestions(false);
+    if (onSelectTemplate) {
+      onSelectTemplate(template);
+    }
+  };
+
   const filteredDestinations = popularDestinations.filter(dest =>
     dest.name.toLowerCase().includes(searchValue.toLowerCase()) ||
     dest.category.toLowerCase().includes(searchValue.toLowerCase())
@@ -169,7 +207,58 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onStartPlanning, onExp
               {/* Suggestions Dropdown */}
               {showSuggestions && (
                 <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-gray-200 rounded-xl shadow-xl z-50 max-h-80 overflow-y-auto">
-                  {searchValue.trim() === '' && (
+                  
+                  {/* Destination-Specific Templates */}
+                  {destinationTemplates.length > 0 && (
+                    <>
+                      <div className="px-4 py-3 border-b border-gray-100">
+                        <div className="flex items-center space-x-2 text-sm font-medium text-gray-700">
+                          <span className="text-orange-500">✨</span>
+                          <span>Ready-made plans for "{searchValue}"</span>
+                        </div>
+                      </div>
+                      {destinationTemplates.map((template) => (
+                        <button
+                          key={template.id}
+                          onClick={() => handleTemplateSelect(template)}
+                          className="w-full px-4 py-4 text-left hover:bg-orange-50 transition-colors border-b border-gray-50"
+                        >
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center space-x-3">
+                              <div className="w-12 h-12 rounded-lg overflow-hidden flex-shrink-0">
+                                <img 
+                                  src={template.image_url} 
+                                  alt={template.destination}
+                                  className="w-full h-full object-cover"
+                                />
+                              </div>
+                              <div>
+                                <div className="font-medium text-gray-900">{template.title}</div>
+                                <div className="text-sm text-gray-600">{template.destination}</div>
+                                <div className="text-xs text-gray-500 mt-1">
+                                  {template.duration_days} days • ${template.estimated_budget}
+                                </div>
+                              </div>
+                            </div>
+                            <div className="flex items-center space-x-1 bg-orange-100 text-orange-700 px-2 py-1 rounded-full text-xs font-medium">
+                              <span>✨</span>
+                              <span>Template</span>
+                            </div>
+                          </div>
+                        </button>
+                      ))}
+                      
+                      {/* Separator if we have both templates and destinations */}
+                      {displayDestinations.length > 0 && (
+                        <div className="px-4 py-2 border-b border-gray-100">
+                          <div className="text-xs font-medium text-gray-500">Other destinations</div>
+                        </div>
+                      )}
+                    </>
+                  )}
+                  
+                  {/* Trending/Popular Destinations Header */}
+                  {searchValue.trim() === '' && destinationTemplates.length === 0 && (
                     <div className="px-4 py-3 border-b border-gray-100">
                       <div className="flex items-center space-x-2 text-sm font-medium text-gray-700">
                         <TrendingUp className="w-4 h-4 text-orange-500" />
@@ -178,7 +267,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onStartPlanning, onExp
                     </div>
                   )}
                   
-                  {displayDestinations.length === 0 ? (
+                  {!hasSearchResults && searchValue.trim() !== '' ? (
                     <div className="px-4 py-6 text-center text-gray-500">
                       <div className="mb-2">🌍</div>
                       <p className="text-sm">No destinations found</p>
@@ -212,10 +301,10 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onStartPlanning, onExp
                     ))
                   )}
                   
-                  {searchValue.trim() !== '' && filteredDestinations.length > 8 && (
+                  {searchValue.trim() !== '' && filteredDestinations.length > 6 && (
                     <div className="px-4 py-3 text-center border-t border-gray-100">
                       <p className="text-xs text-gray-500">
-                        +{filteredDestinations.length - 8} more destinations
+                        +{filteredDestinations.length - 6} more destinations
                       </p>
                     </div>
                   )}
