@@ -1,12 +1,17 @@
 import React from 'react';
 import { Plane, User, LogOut } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
+import { useNavigate } from 'react-router-dom';
 
 export const Header: React.FC = () => {
   const { user, isGuest, signOut } = useAuth();
+  const navigate = useNavigate();
 
   const handleSignOut = async () => {
-    await signOut();
+    const { error } = await signOut();
+    if (!error) {
+      navigate('/');
+    }
   };
 
   return (
