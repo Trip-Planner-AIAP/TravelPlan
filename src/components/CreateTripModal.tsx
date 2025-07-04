@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { X, MapPin, Loader2, Calendar, ChevronDown } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { useTrips } from '../hooks/useTrips';
 import type { TripTemplate } from '../types';
 
@@ -9,6 +10,7 @@ interface CreateTripModalProps {
 }
 
 export const CreateTripModal: React.FC<CreateTripModalProps> = ({ isOpen, onClose }) => {
+  const navigate = useNavigate();
   const [title, setTitle] = useState('');
   const [destination, setDestination] = useState('');
   const [selectedTemplate, setSelectedTemplate] = useState<TripTemplate | null>(null);
@@ -44,13 +46,17 @@ export const CreateTripModal: React.FC<CreateTripModalProps> = ({ isOpen, onClos
     if (result.error) {
       setMessage('Error creating trip. Please try again.');
     } else {
-      setMessage('Trip created successfully!');
-      setTitle('');
-      setDestination('');
-      setTimeout(() => {
-        onClose();
-        setMessage('');
-      }, 1500);
+      if (result.data) {
+        setMessage('Trip created successfully! Redirecting...');
+        setTitle('');
+        setDestination('');
+        setSelectedTemplate(null);
+        setTimeout(() => {
+          onClose();
+          setMessage('');
+          navigate(`/planner/${result.data.id}`);
+        }, 1000);
+      }
     }
 
     setIsSubmitting(false);
