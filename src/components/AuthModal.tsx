@@ -9,22 +9,31 @@ interface AuthModalProps {
 
 export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
   const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [isSignUp, setIsSignUp] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [message, setMessage] = useState('');
-  const { signInWithEmail } = useAuth();
+  const { signInWithEmail, signUpWithEmail } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
     setMessage('');
 
-    const { error } = await signInWithEmail(email);
+    const { error } = isSignUp 
+      ? await signUpWithEmail(email, password)
+      : await signInWithEmail(email, password);
 
     if (error) {
-      setMessage('Error sending magic link. Please try again.');
+      setMessage(error.message || 'Authentication failed. Please try again.');
     } else {
-      setMessage('Check your email for the magic link!');
+      setMessage(isSignUp ? 'Account created successfully!' : 'Signed in successfully!');
       setEmail('');
+      setPassword('');
+      setTimeout(() => {
+        onClose();
+        setMessage('');
+      }, 1000);
     }
 
     setIsSubmitting(false);
@@ -46,8 +55,12 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
           <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
             <Mail className="w-8 h-8 text-orange-600" />
           </div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Welcome to TripPlanner</h2>
-          <p className="text-gray-600">Sign in with your email to start planning your perfect trip</p>
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">
+            {isSignUp ? 'Create Account' : 'Welcome Back'}
+          </h2>
+          <p className="text-gray-600">
+            {isSignUp ? 'Create your account to start planning' : 'Sign in to continue planning your trips'}
+          </p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -66,6 +79,21 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
             />
           </div>
 
+          <div>
+            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+              Password
+            </label>
+            <input
+              type="password"
+              id="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              minLength={6}
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors"
+              placeholder="Enter your password"
+            />
+          </div>
           <button
             type="submit"
             disabled={isSubmitting}
@@ -74,10 +102,22 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
             {isSubmitting ? (
               <Loader2 className="w-5 h-5 animate-spin" />
             ) : (
-              'Send Magic Link'
+              isSignUp ? 'Create Account' : 'Sign In'
             )}
           </button>
 
+          <div className="text-center">
+            <button
+              type="button"
+              onClick={() => {
+                setIsSignUp(!isSignUp);
+                setMessage('');
+              }}
+              className="text-orange-600 hover:text-orange-700 font-medium"
+            >
+              {isSignUp ? 'Already have an account? Sign in' : "Don't have an account? Sign up"}
+            </button>
+          </div>
           {message && (
             <div className={`text-center p-3 rounded-lg ${
               message.includes('Error') ? 'bg-red-50 text-red-700' : 'bg-green-50 text-green-700'
