@@ -10,9 +10,16 @@ export const LandingPage: React.FC = () => {
     navigate('/dashboard');
   };
 
+  const handleExploreTemplates = () => {
+    navigate('/dashboard');
+  };
+
   return (
     <div className="min-h-screen">
-      <HeroSection onStartPlanning={handleStartPlanning} />
+      <HeroSection 
+        onStartPlanning={handleStartPlanning} 
+        onExploreTemplates={handleExploreTemplates}
+      />
       <Footer />
     </div>
   );
