@@ -10,6 +10,7 @@ import {
   useSensor,
   useSensors,
   closestCenter,
+  useDroppable,
 } from '@dnd-kit/core';
 import {
   SortableContext,
@@ -102,12 +103,20 @@ const SortableActivity: React.FC<SortableActivityProps> = ({ activity, onRemove 
 interface DayColumnProps {
   dayNumber: number;
   activities: CustomActivity[];
-  onDrop: (dayNumber: number) => void;
 }
 
 const DayColumn: React.FC<DayColumnProps> = ({ dayNumber, activities }) => {
+  const { isOver, setNodeRef } = useDroppable({
+    id: `day-${dayNumber}`,
+  });
+
   return (
-    <div className="bg-gray-50 rounded-xl p-4 min-h-96">
+    <div 
+      ref={setNodeRef}
+      className={`rounded-xl p-4 min-h-96 transition-colors ${
+        isOver ? 'bg-orange-100 border-2 border-orange-300' : 'bg-gray-50 border-2 border-transparent'
+      }`}
+    >
       <div className="flex items-center justify-between mb-4">
         <h3 className="font-semibold text-gray-900">Day {dayNumber}</h3>
         <div className="text-sm text-gray-500">
@@ -118,7 +127,9 @@ const DayColumn: React.FC<DayColumnProps> = ({ dayNumber, activities }) => {
       <SortableContext items={activities.map(a => a.tempId)} strategy={verticalListSortingStrategy}>
         <div className="space-y-3">
           {activities.length === 0 ? (
-            <div className="text-center py-8 text-gray-500 border-2 border-dashed border-gray-300 rounded-lg">
+            <div className={`text-center py-8 text-gray-500 border-2 border-dashed rounded-lg transition-colors ${
+              isOver ? 'border-orange-400 bg-orange-50' : 'border-gray-300'
+            }`}>
               <p className="text-sm">Drag activities here</p>
             </div>
           ) : (
@@ -132,6 +143,22 @@ const DayColumn: React.FC<DayColumnProps> = ({ dayNumber, activities }) => {
           )}
         </div>
       </SortableContext>
+    </div>
+  );
+};
+
+// Droppable wrapper for selected activities area
+const SelectedActivitiesArea: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { isOver, setNodeRef } = useDroppable({
+    id: 'selected-activities',
+  });
+
+  return (
+    <div 
+      ref={setNodeRef}
+      className={`transition-colors ${isOver ? 'bg-blue-50' : ''}`}
+    >
+      {children}
     </div>
   );
 };
@@ -207,34 +234,60 @@ export const CustomTripBuilder: React.FC = () => {
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
     
-    if (!over) return;
+    if (!over) {
+      setActiveId(null);
+      return;
+    }
 
     const activeId = active.id as string;
     const overId = over.id as string;
+    
+    // Find the activity being dragged
+    const draggedActivity = selectedActivities.find(a => a.tempId === activeId) ||
+                           Object.values(dayActivities).flat().find(a => a.tempId === activeId);
+    
+    if (!draggedActivity) {
+      setActiveId(null);
+      return;
+    }
 
-    // Check if dropping on a day column
-    const dayMatch = overId.match(/day-(\d+)/);
-    if (dayMatch) {
-      const dayNumber = parseInt(dayMatch[1]);
-      const activity = selectedActivities.find(a => a.tempId === activeId) ||
-                     Object.values(dayActivities).flat().find(a => a.tempId === activeId);
-      
-      if (activity) {
-        // Remove from current location
-        setSelectedActivities(prev => prev.filter(a => a.tempId !== activeId));
-        setDayActivities(prev => {
-          const updated = { ...prev };
-          Object.keys(updated).forEach(day => {
-            updated[parseInt(day)] = updated[parseInt(day)].filter(a => a.tempId !== activeId);
-          });
-          return updated;
-        });
+    // Remove from current location first
+    setSelectedActivities(prev => prev.filter(a => a.tempId !== activeId));
+    setDayActivities(prev => {
+      const updated = { ...prev };
+      Object.keys(updated).forEach(day => {
+        updated[parseInt(day)] = updated[parseInt(day)].filter(a => a.tempId !== activeId);
+      });
+      return updated;
+    });
 
-        // Add to target day
-        setDayActivities(prev => ({
-          ...prev,
-          [dayNumber]: [...prev[dayNumber], activity]
-        }));
+    // Handle different drop targets
+    if (overId === 'selected-activities') {
+      // Dropping back to selected activities
+      setSelectedActivities(prev => [...prev, draggedActivity]);
+    } else if (overId.startsWith('day-')) {
+      // Dropping on a day column
+      const dayNumber = parseInt(overId.replace('day-', ''));
+      setDayActivities(prev => ({
+        ...prev,
+        [dayNumber]: [...(prev[dayNumber] || []), draggedActivity]
+      }));
+    } else {
+      // Invalid drop target, return to original location
+      const wasInSelected = selectedActivities.some(a => a.tempId === activeId);
+      if (wasInSelected) {
+        setSelectedActivities(prev => [...prev, draggedActivity]);
+      } else {
+        // Find which day it came from and return it there
+        for (const [dayNum, activities] of Object.entries(dayActivities)) {
+          if (activities.some(a => a.tempId === activeId)) {
+            setDayActivities(prev => ({
+              ...prev,
+              [parseInt(dayNum)]: [...prev[parseInt(dayNum)], draggedActivity]
+            }));
+            break;
+          }
+        }
       }
     }
 
@@ -456,23 +509,99 @@ export const CustomTripBuilder: React.FC = () => {
 
             {/* Selected Activities */}
             {selectedActivities.length > 0 && (
-              <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mt-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                  Selected Activities ({selectedActivities.length})
-                </h3>
-                <div className="space-y-2 max-h-64 overflow-y-auto">
-                  {selectedActivities.map((activity) => (
-                    <div
-                      key={activity.tempId}
-                      className="p-2 bg-gray-50 rounded-lg flex items-center justify-between"
-                    >
-                      <div className="flex-1">
-                        <p className="text-sm font-medium text-gray-900">{activity.title}</p>
-                        <p className="text-xs text-gray-600">${activity.estimated_cost}</p>
+              <SelectedActivitiesArea>
+                <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mt-6">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                    Selected Activities ({selectedActivities.length})
+                  </h3>
+                  <SortableContext items={selectedActivities.map(a => a.tempId)} strategy={verticalListSortingStrategy}>
+                    <div className="space-y-2 max-h-64 overflow-y-auto">
+                      {selectedActivities.map((activity) => (
+                        <SortableActivity
+                          key={activity.tempId}
+                          activity={activity}
+                          onRemove={removeActivityFromSelection}
+                        />
+                      ))}
+                    </div>
+                  </SortableContext>
+                  <p className="text-xs text-gray-500 mt-3">
+                    Drag these activities to specific days →
+                  </p>
+                </div>
+              </SelectedActivitiesArea>
+            )}
+          </div>
+
+          {/* Kanban Board */}
+          <div className="lg:col-span-3">
+            <div className="mb-6">
+              <h2 className="text-xl font-semibold text-gray-900 mb-2">
+                Plan Your {tripDetails.title} 🗓️
+              </h2>
+              <p className="text-gray-600">
+                Drag activities from the library to organize your perfect itinerary
+              </p>
+            </div>
+
+            <DndContext
+              sensors={sensors}
+              collisionDetection={closestCenter}
+              onDragStart={handleDragStart}
+              onDragEnd={handleDragEnd}
+            >
+              <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+                {Array.from({ length: Math.min(tripDuration, 5) }, (_, i) => i + 1).map((dayNum) => (
+                  <DayColumn
+                    key={dayNum}
+                    dayNumber={dayNum}
+                    activities={dayActivities[dayNum] || []}
+                  />
+                ))}
+              </div>
+
+              <DragOverlay>
+                {activeId ? (
+                  (() => {
+                    const draggedActivity = selectedActivities.find(a => a.tempId === activeId) ||
+                                          Object.values(dayActivities).flat().find(a => a.tempId === activeId);
+                    return draggedActivity ? (
+                      <div className="bg-white rounded-lg border-2 border-orange-300 p-4 shadow-xl opacity-90 transform rotate-3">
+                        <div className="flex items-center space-x-2">
+                          <span className="text-lg">
+                            {draggedActivity.activity_type === 'flight' ? '✈️' :
+                             draggedActivity.activity_type === 'hotel' ? '🏨' :
+                             draggedActivity.activity_type === 'meal' ? '🍽️' :
+                             draggedActivity.activity_type === 'transport' ? '🚗' : '📍'}
+                          </span>
+                          <div className="font-medium text-gray-900">{draggedActivity.title}</div>
+                        </div>
                       </div>
-                      <button
-                        onClick={() => removeActivityFromSelection(activity.tempId)}
-                        className="text-red-400 hover:text-red-600 p-1"
+                    ) : (
+                      <div className="bg-white rounded-lg border border-gray-200 p-4 shadow-lg opacity-90">
+                        <div className="font-medium text-gray-900">Moving activity...</div>
+                      </div>
+                    );
+                  })()
+                ) : null}
+              </DragOverlay>
+            </DndContext>
+
+            {tripDuration > 5 && (
+              <div className="mt-6 p-4 bg-blue-50 rounded-lg">
+                <p className="text-sm text-blue-700">
+                  <Clock className="w-4 h-4 inline mr-1" />
+                  Your trip is {tripDuration} days long. The first 5 days are shown here. 
+                  You can organize the remaining days after saving.
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
                       >
                         <X className="w-4 h-4" />
                       </button>
