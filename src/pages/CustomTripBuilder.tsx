@@ -636,13 +636,6 @@ export const CustomTripBuilder: React.FC = () => {
                       <div className="text-sm text-orange-600">${draggedActivity.estimated_cost}</div>
                     </div>
                   </div>
-                ) : activeId ? (
-                  <div className="bg-white rounded-lg border-2 border-gray-300 p-4 shadow-xl opacity-90">
-                    <div className="flex items-center space-x-2">
-                      <div className="w-4 h-4 bg-gray-300 rounded animate-pulse"></div>
-                      <div className="font-medium text-gray-900">Moving activity...</div>
-                    </div>
-                  </div>
                 ) : null}
               </DragOverlay>
             </DndContext>
