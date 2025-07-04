@@ -6,7 +6,7 @@ import { CreateTripModal } from './CreateTripModal';
 import { useState } from 'react';
 
 export const TripGrid: React.FC = () => {
-  const { trips, loading, templates, isGuest } = useTrips();
+  const { trips, loading, templates } = useTrips();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
   if (loading) {
@@ -33,21 +33,8 @@ export const TripGrid: React.FC = () => {
           <div className="mb-8">
             <h2 className="text-3xl font-bold text-gray-900 mb-4">Your Trips</h2>
             <p className="text-gray-600">
-              {isGuest 
-                ? 'Explore demo trips and create your own (demo mode)'
-                : 'Create and manage your travel plans all in one place.'
-              }
+              Create and manage your travel plans all in one place.
             </p>
-            {isGuest && (
-              <div className="mt-4 p-4 bg-orange-50 border border-orange-200 rounded-lg">
-                <p className="text-orange-800 text-sm">
-                  <strong>Guest Mode:</strong> You're exploring in demo mode. 
-                  <button className="ml-1 underline hover:no-underline">
-                    Sign up to save your trips permanently
-                  </button>
-                </p>
-              </div>
-            )}
           </div>
 
           {trips.length === 0 ? (
@@ -121,15 +108,8 @@ export const TripGrid: React.FC = () => {
         {/* Sidebar */}
         <div className="lg:col-span-1">
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">
-              {isGuest ? 'Try These Templates' : 'Popular Destinations'}
-            </h3>
-            <p className="text-sm text-gray-600 mb-6">
-              {isGuest 
-                ? 'Click to add these demo trips to your collection'
-                : 'Get inspired by these curated itineraries'
-              }
-            </p>
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Popular Destinations</h3>
+            <p className="text-sm text-gray-600 mb-6">Get inspired by these curated itineraries</p>
             
             <div className="space-y-4">
               {templates.map((template) => (
