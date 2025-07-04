@@ -224,7 +224,9 @@ export const PlannerBoard: React.FC = () => {
   };
 
   const handleCreateActivity = async (title: string, type: string) => {
-  const handleCreateActivity = async (
+  };
+
+  const handleCreateActivityWithDetails = async (
     title: string, 
     type: string, 
     estimatedCost: number = 0, 
@@ -398,7 +400,7 @@ export const PlannerBoard: React.FC = () => {
             setShowAddActivityModal(false);
             setSelectedDayId('');
           }}
-          onCreateActivity={handleCreateActivity}
+          onCreateActivity={handleCreateActivityWithDetails}
         />
       </div>
     </div>

@@ -230,7 +230,7 @@ export const AddActivityModal: React.FC<AddActivityModalProps> = ({
                           </div>
                         </div>
                         <div className="text-orange-600 opacity-0 group-hover:opacity-100 transition-opacity">
-                          <Plus className="w-5 h-5" />
+                          <span className="text-sm font-medium">Add</span>
                         </div>
                       </div>
                     </div>
