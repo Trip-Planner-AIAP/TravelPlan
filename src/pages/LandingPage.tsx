@@ -8,17 +8,17 @@ import { useNavigate } from 'react-router-dom';
 
 export const LandingPage: React.FC = () => {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
-  const { user, loading, isGuest } = useAuth();
+  const { user, loading } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
-    if ((user || isGuest) && !loading) {
+    if (user && !loading) {
       navigate('/dashboard');
     }
-  }, [user, isGuest, loading, navigate]);
+  }, [user, loading, navigate]);
 
   const handleStartPlanning = () => {
-    if (user || isGuest) {
+    if (user) {
       navigate('/dashboard');
     } else {
       setIsAuthModalOpen(true);

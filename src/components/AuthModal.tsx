@@ -41,10 +41,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
 
   const handleGuestMode = () => {
     continueAsGuest();
-    // Close modal and let the navigation happen via useEffect in LandingPage
-    setTimeout(() => {
-      onClose();
-    }, 100);
+    onClose();
   };
 
   if (!isOpen) return null;
