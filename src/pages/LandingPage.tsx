@@ -17,6 +17,12 @@ export const LandingPage: React.FC = () => {
     }
   }, [user, loading, navigate]);
 
+  useEffect(() => {
+    if (user && !loading) {
+      navigate('/dashboard');
+    }
+  }, [user, loading, navigate]);
+
   const handleStartPlanning = () => {
     if (user) {
       navigate('/dashboard');
