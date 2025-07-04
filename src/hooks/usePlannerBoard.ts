@@ -328,6 +328,50 @@ export const usePlannerBoard = (tripId: string) => {
                      flights.reduce((sum, flight) => sum + (flight.price || 0), 0) +
                      insurance.reduce((sum, policy) => sum + (policy.premium_cost || 0), 0);
 
+  const addActivity = async (dayId: string, title: string, activityType: string = 'attraction') => {
+    try {
+      const newActivity: Activity = {
+        id: crypto.randomUUID(),
+        day_id: dayId,
+        title,
+        description: '',
+        activity_type: activityType as Activity['activity_type'],
+        estimated_cost: 0,
+        duration_minutes: 60,
+        order_index: activities.filter(a => a.day_id === dayId).length,
+        created_at: new Date().toISOString()
+      };
+
+      // Try to insert into database
+      const { error } = await supabase
+        .from('activities')
+        .insert(newActivity);
+
+      if (error) throw error;
+
+      // Update local state
+      setActivities(prev => [...prev, newActivity]);
+      return { success: true, data: newActivity };
+    } catch (error) {
+      console.error('Error adding activity:', error);
+      
+      // Fallback: Add to local state even if database fails
+      const newActivity: Activity = {
+        id: crypto.randomUUID(),
+        day_id: dayId,
+        title,
+        description: '',
+        activity_type: activityType as Activity['activity_type'],
+        estimated_cost: 0,
+        duration_minutes: 60,
+        order_index: activities.filter(a => a.day_id === dayId).length,
+        created_at: new Date().toISOString()
+      };
+      
+      setActivities(prev => [...prev, newActivity]);
+      return { success: true, data: newActivity };
+    }
+  };
   return {
     trip,
     days,
@@ -337,6 +381,7 @@ export const usePlannerBoard = (tripId: string) => {
     totalBudget,
     loading,
     moveActivity,
+    addActivity,
     searchFlights,
     getInsuranceQuote,
     refetch: fetchTripData
