@@ -40,7 +40,13 @@ export const CreateTripModal: React.FC<CreateTripModalProps> = ({ isOpen, onClos
         setIsSubmitting(false);
         return;
       }
-      result = await createCustomTrip(title.trim(), destination.trim());
+      // Navigate to custom trip builder instead
+      onClose();
+      navigate('/custom-trip-builder', {
+        state: { title: title.trim(), destination: destination.trim() }
+      });
+      setIsSubmitting(false);
+      return;
     }
 
     if (result.error) {
