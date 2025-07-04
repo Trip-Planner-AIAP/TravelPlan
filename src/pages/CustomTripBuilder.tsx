@@ -9,8 +9,9 @@ import {
   PointerSensor,
   useSensor,
   useSensors,
-  closestCenter,
+  closestCorners,
   useDroppable,
+  DragOverEvent,
 } from '@dnd-kit/core';
 import {
   SortableContext,
@@ -41,12 +42,14 @@ const SortableActivity: React.FC<SortableActivityProps> = ({ activity, onRemove 
     transform,
     transition,
     isDragging,
+    isSorting,
   } = useSortable({ id: activity.tempId });
 
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
-    opacity: isDragging ? 0.5 : 1,
+    opacity: isDragging ? 0.3 : 1,
+    zIndex: isDragging ? 999 : 1,
   };
 
   const getActivityIcon = (type: string) => {
@@ -63,7 +66,9 @@ const SortableActivity: React.FC<SortableActivityProps> = ({ activity, onRemove 
     <div
       ref={setNodeRef}
       style={style}
-      className="bg-white rounded-lg border border-gray-200 p-4 shadow-sm hover:shadow-md transition-shadow group"
+      className={`bg-white rounded-lg border p-4 shadow-sm hover:shadow-md transition-all group cursor-pointer ${
+        isDragging ? 'border-orange-400 shadow-lg' : 'border-gray-200'
+      } ${isSorting ? 'cursor-grabbing' : 'cursor-grab'}`}
     >
       <div className="flex items-start justify-between">
         <div className="flex-1">
@@ -82,7 +87,7 @@ const SortableActivity: React.FC<SortableActivityProps> = ({ activity, onRemove 
         <div className="flex items-center space-x-1 ml-2">
           <button
             onClick={() => onRemove(activity.tempId)}
-            className="opacity-0 group-hover:opacity-100 p-1 text-red-400 hover:text-red-600 hover:bg-red-50 rounded transition-all"
+            className="opacity-0 group-hover:opacity-100 p-1 text-red-400 hover:text-red-600 hover:bg-red-50 rounded transition-all z-10"
             title="Remove activity"
           >
             <X className="w-4 h-4" />
@@ -90,7 +95,8 @@ const SortableActivity: React.FC<SortableActivityProps> = ({ activity, onRemove 
           <div
             {...attributes}
             {...listeners}
-            className="cursor-grab active:cursor-grabbing p-1 text-gray-400 hover:text-gray-600"
+            className="cursor-grab active:cursor-grabbing p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded transition-colors"
+            style={{ touchAction: 'none' }}
           >
             <GripVertical className="w-4 h-4" />
           </div>
@@ -180,11 +186,12 @@ export const CustomTripBuilder: React.FC = () => {
   const [activeId, setActiveId] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [tripDuration, setTripDuration] = useState(3);
+  const [draggedActivity, setDraggedActivity] = useState<CustomActivity | null>(null);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
-        distance: 8,
+        distance: 3,
       },
     })
   );
@@ -229,6 +236,20 @@ export const CustomTripBuilder: React.FC = () => {
 
   const handleDragStart = (event: DragStartEvent) => {
     setActiveId(event.active.id as string);
+    
+    // Find and store the dragged activity
+    const activeId = event.active.id as string;
+    const activity = selectedActivities.find(a => a.tempId === activeId) ||
+                    Object.values(dayActivities).flat().find(a => a.tempId === activeId);
+    setDraggedActivity(activity || null);
+  };
+
+  const handleDragOver = (event: DragOverEvent) => {
+    // This helps with better drop detection
+    const { over } = event;
+    if (!over) return;
+    
+    // Add visual feedback here if needed
   };
 
   const handleDragEnd = (event: DragEndEvent) => {
@@ -236,18 +257,19 @@ export const CustomTripBuilder: React.FC = () => {
     
     if (!over) {
       setActiveId(null);
+      setDraggedActivity(null);
       return;
     }
 
     const activeId = active.id as string;
     const overId = over.id as string;
     
-    // Find the activity being dragged
-    const draggedActivity = selectedActivities.find(a => a.tempId === activeId) ||
-                           Object.values(dayActivities).flat().find(a => a.tempId === activeId);
+    // Use the stored dragged activity
+    const activityToMove = draggedActivity;
     
-    if (!draggedActivity) {
+    if (!activityToMove) {
       setActiveId(null);
+      setDraggedActivity(null);
       return;
     }
 
@@ -264,26 +286,26 @@ export const CustomTripBuilder: React.FC = () => {
     // Handle different drop targets
     if (overId === 'selected-activities') {
       // Dropping back to selected activities
-      setSelectedActivities(prev => [...prev, draggedActivity]);
+      setSelectedActivities(prev => [...prev, activityToMove]);
     } else if (overId.startsWith('day-')) {
       // Dropping on a day column
       const dayNumber = parseInt(overId.replace('day-', ''));
       setDayActivities(prev => ({
         ...prev,
-        [dayNumber]: [...(prev[dayNumber] || []), draggedActivity]
+        [dayNumber]: [...(prev[dayNumber] || []), activityToMove]
       }));
     } else {
       // Invalid drop target, return to original location
       const wasInSelected = selectedActivities.some(a => a.tempId === activeId);
       if (wasInSelected) {
-        setSelectedActivities(prev => [...prev, draggedActivity]);
+        setSelectedActivities(prev => [...prev, activityToMove]);
       } else {
         // Find which day it came from and return it there
         for (const [dayNum, activities] of Object.entries(dayActivities)) {
           if (activities.some(a => a.tempId === activeId)) {
             setDayActivities(prev => ({
               ...prev,
-              [parseInt(dayNum)]: [...prev[parseInt(dayNum)], draggedActivity]
+              [parseInt(dayNum)]: [...prev[parseInt(dayNum)], activityToMove]
             }));
             break;
           }
@@ -292,6 +314,7 @@ export const CustomTripBuilder: React.FC = () => {
     }
 
     setActiveId(null);
+    setDraggedActivity(null);
   };
 
   const calculateTotalBudget = () => {
@@ -546,8 +569,9 @@ export const CustomTripBuilder: React.FC = () => {
 
             <DndContext
               sensors={sensors}
-              collisionDetection={closestCenter}
+              collisionDetection={closestCorners}
               onDragStart={handleDragStart}
+              onDragOver={handleDragOver}
               onDragEnd={handleDragEnd}
             >
               <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
@@ -561,21 +585,55 @@ export const CustomTripBuilder: React.FC = () => {
               </div>
 
               <DragOverlay>
-                {activeId ? (
-                  (() => {
-                    const draggedActivity = selectedActivities.find(a => a.tempId === activeId) ||
-                                          Object.values(dayActivities).flat().find(a => a.tempId === activeId);
-                    return draggedActivity ? (
-                      <div className="bg-white rounded-lg border-2 border-orange-300 p-4 shadow-xl opacity-90 transform rotate-3">
-                        <div className="flex items-center space-x-2">
-                          <span className="text-lg">
-                            {draggedActivity.activity_type === 'flight' ? '✈️' :
-                             draggedActivity.activity_type === 'hotel' ? '🏨' :
-                             draggedActivity.activity_type === 'meal' ? '🍽️' :
-                             draggedActivity.activity_type === 'transport' ? '🚗' : '📍'}
-                          </span>
-                          <div className="font-medium text-gray-900">{draggedActivity.title}</div>
-                        </div>
+                {activeId && draggedActivity ? (
+                  <div className="bg-white rounded-lg border-2 border-orange-400 p-4 shadow-2xl opacity-95 transform rotate-2 scale-105">
+                    <div className="flex items-center space-x-2">
+                      <span className="text-lg">
+                        {draggedActivity.activity_type === 'flight' ? '✈️' :
+                         draggedActivity.activity_type === 'hotel' ? '🏨' :
+                         draggedActivity.activity_type === 'meal' ? '🍽️' :
+                         draggedActivity.activity_type === 'transport' ? '🚗' : '📍'}
+                      </span>
+                      <div className="font-medium text-gray-900">{draggedActivity.title}</div>
+                      <div className="text-sm text-orange-600">${draggedActivity.estimated_cost}</div>
+                    </div>
+                  </div>
+                ) : activeId ? (
+                  <div className="bg-white rounded-lg border-2 border-gray-300 p-4 shadow-xl opacity-90">
+                    <div className="flex items-center space-x-2">
+                      <div className="w-4 h-4 bg-gray-300 rounded animate-pulse"></div>
+                      <div className="font-medium text-gray-900">Moving activity...</div>
+                    </div>
+                  </div>
+                ) : null}
+              </DragOverlay>
+            </DndContext>
+
+            {/* Debug info - remove in production */}
+            {process.env.NODE_ENV === 'development' && (
+              <div className="mt-4 p-3 bg-gray-100 rounded text-xs text-gray-600">
+                <div>Active ID: {activeId || 'none'}</div>
+                <div>Dragged Activity: {draggedActivity?.title || 'none'}</div>
+                <div>Selected Activities: {selectedActivities.length}</div>
+                <div>Day Activities: {Object.values(dayActivities).flat().length}</div>
+              </div>
+            )}
+
+            {tripDuration > 5 && (
+              <div className="mt-6 p-4 bg-blue-50 rounded-lg">
+                <p className="text-sm text-blue-700">
+                  <Clock className="w-4 h-4 inline mr-1" />
+                  Your trip is {tripDuration} days long. The first 5 days are shown here. 
+                  You can organize the remaining days after saving.
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
                       </div>
                     ) : (
                       <div className="bg-white rounded-lg border border-gray-200 p-4 shadow-lg opacity-90">
