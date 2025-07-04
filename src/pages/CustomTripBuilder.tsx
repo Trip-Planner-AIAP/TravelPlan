@@ -1,24 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
-import { ArrowLeft, Plus, Save, Calendar, MapPin, DollarSign, Clock, GripVertical, X } from 'lucide-react';
-import {
-  DndContext,
-  DragEndEvent,
-  DragOverlay,
-  DragStartEvent,
-  PointerSensor,
-  useSensor,
-  useSensors,
-  closestCorners,
-  useDroppable,
-  DragOverEvent,
-} from '@dnd-kit/core';
-import {
-  SortableContext,
-  verticalListSortingStrategy,
-  useSortable,
-} from '@dnd-kit/sortable';
-import { CSS } from '@dnd-kit/utilities';
+import { ArrowLeft, Plus, Save, Calendar, MapPin, DollarSign, Clock, ArrowRight, ArrowDown, X, ChevronRight } from 'lucide-react';
 import { activitySuggestions, type ActivitySuggestion } from '../data/activitySuggestions';
 import { useTrips } from '../hooks/useTrips';
 import { supabase } from '../lib/supabase';
@@ -29,28 +11,26 @@ interface CustomActivity extends Omit<Activity, 'id' | 'day_id' | 'created_at'> 
   tempId: string;
 }
 
-interface SortableActivityProps {
+interface ActivityCardProps {
   activity: CustomActivity;
   onRemove: (tempId: string) => void;
+  onMoveToDay?: (tempId: string, dayNumber: number) => void;
+  onMoveToSelection?: (tempId: string) => void;
+  showMoveButtons?: boolean;
+  tripDuration?: number;
+  currentDay?: number;
 }
 
-const SortableActivity: React.FC<SortableActivityProps> = ({ activity, onRemove }) => {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-    isSorting,
-  } = useSortable({ id: activity.tempId });
-
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-    opacity: isDragging ? 0.3 : 1,
-    zIndex: isDragging ? 999 : 1,
-  };
+const ActivityCard: React.FC<ActivityCardProps> = ({ 
+  activity, 
+  onRemove, 
+  onMoveToDay, 
+  onMoveToSelection,
+  showMoveButtons = false,
+  tripDuration = 5,
+  currentDay
+}) => {
+  const [showDaySelector, setShowDaySelector] = useState(false);
 
   const getActivityIcon = (type: string) => {
     switch (type) {
@@ -63,13 +43,7 @@ const SortableActivity: React.FC<SortableActivityProps> = ({ activity, onRemove 
   };
 
   return (
-    <div
-      ref={setNodeRef}
-      style={style}
-      className={`bg-white rounded-lg border p-4 shadow-sm hover:shadow-md transition-all group cursor-pointer ${
-        isDragging ? 'border-orange-400 shadow-lg' : 'border-gray-200'
-      } ${isSorting ? 'cursor-grabbing' : 'cursor-grab'}`}
-    >
+    <div className="bg-white rounded-lg border border-gray-200 p-4 shadow-sm hover:shadow-md transition-all group">
       <div className="flex items-start justify-between">
         <div className="flex-1">
           <div className="flex items-center space-x-2 mb-2">
@@ -84,22 +58,66 @@ const SortableActivity: React.FC<SortableActivityProps> = ({ activity, onRemove 
             <span className="font-medium text-orange-600">${activity.estimated_cost}</span>
           </div>
         </div>
-        <div className="flex items-center space-x-1 ml-2">
+        
+        <div className="flex flex-col items-end space-y-1 ml-2">
           <button
             onClick={() => onRemove(activity.tempId)}
-            className="opacity-0 group-hover:opacity-100 p-1 text-red-400 hover:text-red-600 hover:bg-red-50 rounded transition-all z-10"
+            className="opacity-0 group-hover:opacity-100 p-1 text-red-400 hover:text-red-600 hover:bg-red-50 rounded transition-all"
             title="Remove activity"
           >
             <X className="w-4 h-4" />
           </button>
-          <div
-            {...attributes}
-            {...listeners}
-            className="cursor-grab active:cursor-grabbing p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded transition-colors"
-            style={{ touchAction: 'none' }}
-          >
-            <GripVertical className="w-4 h-4" />
-          </div>
+          
+          {showMoveButtons && (
+            <div className="relative">
+              {onMoveToDay && (
+                <button
+                  onClick={() => setShowDaySelector(!showDaySelector)}
+                  className="opacity-0 group-hover:opacity-100 bg-orange-100 text-orange-700 px-2 py-1 rounded text-xs font-medium hover:bg-orange-200 transition-all flex items-center space-x-1"
+                  title="Move to day"
+                >
+                  <span>Move to Day</span>
+                  <ChevronRight className="w-3 h-3" />
+                </button>
+              )}
+              
+              {onMoveToSelection && (
+                <button
+                  onClick={() => onMoveToSelection(activity.tempId)}
+                  className="opacity-0 group-hover:opacity-100 bg-blue-100 text-blue-700 px-2 py-1 rounded text-xs font-medium hover:bg-blue-200 transition-all flex items-center space-x-1"
+                  title="Move back to selection"
+                >
+                  <ArrowLeft className="w-3 h-3" />
+                  <span>Back</span>
+                </button>
+              )}
+              
+              {showDaySelector && onMoveToDay && (
+                <div className="absolute right-0 top-8 bg-white border border-gray-200 rounded-lg shadow-lg p-2 z-10 min-w-32">
+                  <div className="text-xs font-medium text-gray-700 mb-2">Select Day:</div>
+                  <div className="grid grid-cols-2 gap-1">
+                    {Array.from({ length: tripDuration }, (_, i) => i + 1).map((dayNum) => (
+                      <button
+                        key={dayNum}
+                        onClick={() => {
+                          onMoveToDay(activity.tempId, dayNum);
+                          setShowDaySelector(false);
+                        }}
+                        disabled={currentDay === dayNum}
+                        className={`px-2 py-1 text-xs rounded transition-colors ${
+                          currentDay === dayNum
+                            ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                            : 'bg-orange-100 text-orange-700 hover:bg-orange-200'
+                        }`}
+                      >
+                        Day {dayNum}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </div>
@@ -109,22 +127,25 @@ const SortableActivity: React.FC<SortableActivityProps> = ({ activity, onRemove 
 interface DayColumnProps {
   dayNumber: number;
   activities: CustomActivity[];
+  onMoveToSelection: (tempId: string) => void;
+  onMoveToDay: (tempId: string, dayNumber: number) => void;
+  onRemoveActivity: (tempId: string) => void;
+  tripDuration: number;
 }
 
-const DayColumn: React.FC<DayColumnProps> = ({ dayNumber, activities }) => {
-  const { isOver, setNodeRef } = useDroppable({
-    id: `day-${dayNumber}`,
-  });
+const DayColumn: React.FC<DayColumnProps> = ({ 
+  dayNumber, 
+  activities, 
+  onMoveToSelection, 
+  onMoveToDay, 
+  onRemoveActivity,
+  tripDuration 
+}) => {
+  const totalCost = activities.reduce((sum, activity) => sum + activity.estimated_cost, 0);
+  const totalDuration = activities.reduce((sum, activity) => sum + activity.duration_minutes, 0);
 
   return (
-    <div 
-      ref={setNodeRef}
-      className={`rounded-xl p-4 min-h-80 transition-all duration-200 ${
-        isOver 
-          ? 'bg-orange-100 border-2 border-orange-400 shadow-lg transform scale-105' 
-          : 'bg-white border-2 border-gray-200 shadow-sm hover:shadow-md'
-      }`}
-    >
+    <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-4 min-h-80">
       <div className="flex items-center justify-between mb-4">
         <h3 className="font-semibold text-gray-900 flex items-center">
           <span className="w-6 h-6 bg-orange-100 text-orange-700 rounded-full text-xs flex items-center justify-center mr-2">
@@ -137,47 +158,43 @@ const DayColumn: React.FC<DayColumnProps> = ({ dayNumber, activities }) => {
         </div>
       </div>
       
-      <SortableContext items={activities.map(a => a.tempId)} strategy={verticalListSortingStrategy}>
-        <div className="space-y-3">
-          {activities.length === 0 ? (
-            <div className={`text-center py-12 text-gray-500 border-2 border-dashed rounded-lg transition-all ${
-              isOver 
-                ? 'border-orange-400 bg-orange-50 border-solid' 
-                : 'border-gray-300 hover:border-gray-400'
-            }`}>
-              <div className="mb-2">📅</div>
-              <p className="text-sm font-medium">Drop activities here</p>
-              <p className="text-xs text-gray-400 mt-1">Plan your day {dayNumber}</p>
+      <div className="space-y-3 mb-4">
+        {activities.length === 0 ? (
+          <div className="text-center py-12 text-gray-500 border-2 border-dashed border-gray-300 rounded-lg">
+            <div className="mb-2">📅</div>
+            <p className="text-sm font-medium">No activities planned</p>
+            <p className="text-xs text-gray-400 mt-1">Add activities from the center</p>
+          </div>
+        ) : (
+          activities.map((activity) => (
+            <ActivityCard
+              key={activity.tempId}
+              activity={activity}
+              onRemove={onRemoveActivity}
+              onMoveToSelection={onMoveToSelection}
+              onMoveToDay={onMoveToDay}
+              showMoveButtons={true}
+              tripDuration={tripDuration}
+              currentDay={dayNumber}
+            />
+          ))
+        )}
+      </div>
+      
+      {activities.length > 0 && (
+        <div className="border-t border-gray-200 pt-3">
+          <div className="flex justify-between text-xs text-gray-600">
+            <div className="flex items-center space-x-1">
+              <DollarSign className="w-3 h-3" />
+              <span>${totalCost}</span>
             </div>
-          ) : (
-            activities.map((activity) => (
-              <SortableActivity
-                key={activity.tempId}
-                activity={activity}
-                onRemove={() => {}}
-              />
-            ))
-          )}
+            <div className="flex items-center space-x-1">
+              <Clock className="w-3 h-3" />
+              <span>{Math.round(totalDuration / 60)}h {totalDuration % 60}m</span>
+            </div>
+          </div>
         </div>
-      </SortableContext>
-    </div>
-  );
-};
-
-// Droppable wrapper for selected activities area
-const SelectedActivitiesArea: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { isOver, setNodeRef } = useDroppable({
-    id: 'selected-activities',
-  });
-
-  return (
-    <div 
-      ref={setNodeRef}
-      className={`transition-all duration-200 ${
-        isOver ? 'bg-blue-50 transform scale-105' : ''
-      }`}
-    >
-      {children}
+      )}
     </div>
   );
 };
@@ -196,18 +213,8 @@ export const CustomTripBuilder: React.FC = () => {
   const [dayActivities, setDayActivities] = useState<{ [key: number]: CustomActivity[] }>({
     1: [], 2: [], 3: [], 4: [], 5: []
   });
-  const [activeId, setActiveId] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [tripDuration, setTripDuration] = useState(3);
-  const [draggedActivity, setDraggedActivity] = useState<CustomActivity | null>(null);
-
-  const sensors = useSensors(
-    useSensor(PointerSensor, {
-      activationConstraint: {
-        distance: 3,
-      },
-    })
-  );
 
   const categories = [
     { id: 'attraction', name: 'Attractions', icon: '🏛️' },
@@ -237,7 +244,17 @@ export const CustomTripBuilder: React.FC = () => {
 
   const removeActivityFromSelection = (tempId: string) => {
     setSelectedActivities(prev => prev.filter(a => a.tempId !== tempId));
-    // Also remove from day columns
+  };
+
+  const moveActivityToDay = (tempId: string, dayNumber: number) => {
+    // Find the activity
+    const activity = selectedActivities.find(a => a.tempId === tempId) ||
+                    Object.values(dayActivities).flat().find(a => a.tempId === tempId);
+    
+    if (!activity) return;
+
+    // Remove from current location
+    setSelectedActivities(prev => prev.filter(a => a.tempId !== tempId));
     setDayActivities(prev => {
       const updated = { ...prev };
       Object.keys(updated).forEach(day => {
@@ -245,89 +262,42 @@ export const CustomTripBuilder: React.FC = () => {
       });
       return updated;
     });
+
+    // Add to target day
+    setDayActivities(prev => ({
+      ...prev,
+      [dayNumber]: [...(prev[dayNumber] || []), activity]
+    }));
   };
 
-  const handleDragStart = (event: DragStartEvent) => {
-    setActiveId(event.active.id as string);
+  const moveActivityToSelection = (tempId: string) => {
+    // Find the activity in day activities
+    const activity = Object.values(dayActivities).flat().find(a => a.tempId === tempId);
     
-    // Find and store the dragged activity
-    const activeId = event.active.id as string;
-    const activity = selectedActivities.find(a => a.tempId === activeId) ||
-                    Object.values(dayActivities).flat().find(a => a.tempId === activeId);
-    setDraggedActivity(activity || null);
-  };
+    if (!activity) return;
 
-  const handleDragOver = (event: DragOverEvent) => {
-    // This helps with better drop detection
-    const { over } = event;
-    if (!over) return;
-    
-    // Add visual feedback here if needed
-  };
-
-  const handleDragEnd = (event: DragEndEvent) => {
-    const { active, over } = event;
-    
-    if (!over) {
-      setActiveId(null);
-      setDraggedActivity(null);
-      return;
-    }
-
-    const activeId = active.id as string;
-    const overId = over.id as string;
-    
-    // Use the stored dragged activity
-    const activityToMove = draggedActivity;
-    
-    if (!activityToMove) {
-      setActiveId(null);
-      setDraggedActivity(null);
-      return;
-    }
-
-    // Remove from current location first
-    setSelectedActivities(prev => prev.filter(a => a.tempId !== activeId));
+    // Remove from day activities
     setDayActivities(prev => {
       const updated = { ...prev };
       Object.keys(updated).forEach(day => {
-        updated[parseInt(day)] = updated[parseInt(day)].filter(a => a.tempId !== activeId);
+        updated[parseInt(day)] = updated[parseInt(day)].filter(a => a.tempId !== tempId);
       });
       return updated;
     });
 
-    // Handle different drop targets
-    if (overId === 'selected-activities') {
-      // Dropping back to selected activities
-      setSelectedActivities(prev => [...prev, activityToMove]);
-    } else if (overId.startsWith('day-')) {
-      // Dropping on a day column
-      const dayNumber = parseInt(overId.replace('day-', ''));
-      setDayActivities(prev => ({
-        ...prev,
-        [dayNumber]: [...(prev[dayNumber] || []), activityToMove]
-      }));
-    } else {
-      // Invalid drop target, return to original location
-      const wasInSelected = selectedActivities.some(a => a.tempId === activeId);
-      if (wasInSelected) {
-        setSelectedActivities(prev => [...prev, activityToMove]);
-      } else {
-        // Find which day it came from and return it there
-        for (const [dayNum, activities] of Object.entries(dayActivities)) {
-          if (activities.some(a => a.tempId === activeId)) {
-            setDayActivities(prev => ({
-              ...prev,
-              [parseInt(dayNum)]: [...prev[parseInt(dayNum)], activityToMove]
-            }));
-            break;
-          }
-        }
-      }
-    }
+    // Add to selected activities
+    setSelectedActivities(prev => [...prev, activity]);
+  };
 
-    setActiveId(null);
-    setDraggedActivity(null);
+  const removeActivityCompletely = (tempId: string) => {
+    setSelectedActivities(prev => prev.filter(a => a.tempId !== tempId));
+    setDayActivities(prev => {
+      const updated = { ...prev };
+      Object.keys(updated).forEach(day => {
+        updated[parseInt(day)] = updated[parseInt(day)].filter(a => a.tempId !== tempId);
+      });
+      return updated;
+    });
   };
 
   const calculateTotalBudget = () => {
@@ -431,12 +401,12 @@ export const CustomTripBuilder: React.FC = () => {
             <div className="flex items-center space-x-4">
               <button
                 onClick={() => navigate('/dashboard')}
-                className="text-gray-600 hover:text-gray-900"
+                className="text-gray-600 hover:text-gray-900 transition-colors"
               >
                 <ArrowLeft className="w-6 h-6" />
               </button>
               <div>
-                <h1 className="text-2xl font-bold text-gray-900">Build Your Trip</h1>
+                <h1 className="text-2xl font-bold text-gray-900">{tripDetails.title}</h1>
                 <div className="flex items-center space-x-4 text-sm text-gray-600">
                   <div className="flex items-center space-x-1">
                     <MapPin className="w-4 h-4" />
@@ -489,7 +459,7 @@ export const CustomTripBuilder: React.FC = () => {
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
           {/* Activity Library - Left Column */}
           <div className="lg:col-span-1">
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 sticky top-4">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Activity Library</h3>
               
               {/* Category Tabs */}
@@ -546,52 +516,51 @@ export const CustomTripBuilder: React.FC = () => {
 
           {/* Selected Activities - Center Column */}
           <div className="lg:col-span-1">
-            <SelectedActivitiesArea>
-              <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 h-full">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                  Selected Activities
-                  <span className="ml-2 text-sm font-normal text-gray-500">
-                    ({selectedActivities.length})
-                  </span>
-                </h3>
-                
-                {selectedActivities.length === 0 ? (
-                  <div className="text-center py-12 text-gray-500 border-2 border-dashed border-gray-300 rounded-lg">
-                    <div className="mb-3">
-                      <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-2">
-                        📋
-                      </div>
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                Selected Activities
+                <span className="ml-2 text-sm font-normal text-gray-500">
+                  ({selectedActivities.length})
+                </span>
+              </h3>
+              
+              {selectedActivities.length === 0 ? (
+                <div className="text-center py-12 text-gray-500 border-2 border-dashed border-gray-300 rounded-lg">
+                  <div className="mb-3">
+                    <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-2">
+                      📋
                     </div>
-                    <p className="text-sm font-medium text-gray-700">No activities selected</p>
-                    <p className="text-xs text-gray-500 mt-1">← Choose from the library</p>
-                    <p className="text-xs text-gray-400 mt-1">Then drag to days →</p>
                   </div>
-                ) : (
-                  <>
-                    <SortableContext items={selectedActivities.map(a => a.tempId)} strategy={verticalListSortingStrategy}>
-                      <div className="space-y-3 max-h-96 overflow-y-auto">
-                        {selectedActivities.map((activity) => (
-                          <SortableActivity
-                            key={activity.tempId}
-                            activity={activity}
-                            onRemove={removeActivityFromSelection}
-                          />
-                        ))}
-                      </div>
-                    </SortableContext>
-                    <div className="mt-4 p-3 bg-orange-50 rounded-lg">
-                      <p className="text-xs text-orange-700 flex items-center">
-                        <span className="mr-2">💡</span>
-                        Drag activities to the right to organize your days
-                      </p>
-                      <div className="mt-2 text-xs text-orange-600">
-                        Total: ${selectedActivities.reduce((sum, a) => sum + a.estimated_cost, 0)}
-                      </div>
+                  <p className="text-sm font-medium text-gray-700">No activities selected</p>
+                  <p className="text-xs text-gray-500 mt-1">← Choose from the library</p>
+                  <p className="text-xs text-gray-400 mt-1">Then move to days →</p>
+                </div>
+              ) : (
+                <>
+                  <div className="space-y-3 max-h-96 overflow-y-auto">
+                    {selectedActivities.map((activity) => (
+                      <ActivityCard
+                        key={activity.tempId}
+                        activity={activity}
+                        onRemove={removeActivityFromSelection}
+                        onMoveToDay={moveActivityToDay}
+                        showMoveButtons={true}
+                        tripDuration={tripDuration}
+                      />
+                    ))}
+                  </div>
+                  <div className="mt-4 p-3 bg-orange-50 rounded-lg">
+                    <p className="text-xs text-orange-700 flex items-center">
+                      <span className="mr-2">💡</span>
+                      Use "Move to Day" buttons to organize your itinerary
+                    </p>
+                    <div className="mt-2 text-xs text-orange-600">
+                      Total: ${selectedActivities.reduce((sum, a) => sum + a.estimated_cost, 0)}
                     </div>
-                  </>
-                )}
-              </div>
-            </SelectedActivitiesArea>
+                  </div>
+                </>
+              )}
+            </div>
           </div>
 
           {/* Kanban Board - Right Columns */}
@@ -605,50 +574,19 @@ export const CustomTripBuilder: React.FC = () => {
               </p>
             </div>
 
-            <DndContext
-              sensors={sensors}
-              collisionDetection={closestCorners}
-              onDragStart={handleDragStart}
-              onDragOver={handleDragOver}
-              onDragEnd={handleDragEnd}
-            >
-              <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
-                {Array.from({ length: Math.min(tripDuration, 5) }, (_, i) => i + 1).map((dayNum) => (
-                  <DayColumn
-                    key={dayNum}
-                    dayNumber={dayNum}
-                    activities={dayActivities[dayNum] || []}
-                  />
-                ))}
-              </div>
-
-              <DragOverlay>
-                {activeId && draggedActivity ? (
-                  <div className="bg-white rounded-lg border-2 border-orange-400 p-4 shadow-2xl opacity-95 transform rotate-2 scale-105">
-                    <div className="flex items-center space-x-2">
-                      <span className="text-lg">
-                        {draggedActivity.activity_type === 'flight' ? '✈️' :
-                         draggedActivity.activity_type === 'hotel' ? '🏨' :
-                         draggedActivity.activity_type === 'meal' ? '🍽️' :
-                         draggedActivity.activity_type === 'transport' ? '🚗' : '📍'}
-                      </span>
-                      <div className="font-medium text-gray-900">{draggedActivity.title}</div>
-                      <div className="text-sm text-orange-600">${draggedActivity.estimated_cost}</div>
-                    </div>
-                  </div>
-                ) : null}
-              </DragOverlay>
-            </DndContext>
-
-            {/* Debug info - remove in production */}
-            {process.env.NODE_ENV === 'development' && (
-              <div className="mt-4 p-3 bg-gray-100 rounded text-xs text-gray-600">
-                <div>Active ID: {activeId || 'none'}</div>
-                <div>Dragged Activity: {draggedActivity?.title || 'none'}</div>
-                <div>Selected Activities: {selectedActivities.length}</div>
-                <div>Day Activities: {Object.values(dayActivities).flat().length}</div>
-              </div>
-            )}
+            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-4">
+              {Array.from({ length: Math.min(tripDuration, 5) }, (_, i) => i + 1).map((dayNum) => (
+                <DayColumn
+                  key={dayNum}
+                  dayNumber={dayNum}
+                  activities={dayActivities[dayNum] || []}
+                  onMoveToSelection={moveActivityToSelection}
+                  onMoveToDay={moveActivityToDay}
+                  onRemoveActivity={removeActivityCompletely}
+                  tripDuration={tripDuration}
+                />
+              ))}
+            </div>
 
             {tripDuration > 5 && (
               <div className="mt-6 p-4 bg-blue-50 rounded-lg">
@@ -659,6 +597,33 @@ export const CustomTripBuilder: React.FC = () => {
                 </p>
               </div>
             )}
+
+            {/* Summary */}
+            <div className="mt-6 bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Trip Summary</h3>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-orange-600">{tripDuration}</div>
+                  <div className="text-sm text-gray-600">Days</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-blue-600">
+                    {selectedActivities.length + Object.values(dayActivities).flat().length}
+                  </div>
+                  <div className="text-sm text-gray-600">Activities</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-green-600">${calculateTotalBudget()}</div>
+                  <div className="text-sm text-gray-600">Total Cost</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-purple-600">
+                    {Object.values(dayActivities).filter(day => day.length > 0).length}
+                  </div>
+                  <div className="text-sm text-gray-600">Planned Days</div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
