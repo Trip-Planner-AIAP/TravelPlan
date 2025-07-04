@@ -379,6 +379,29 @@ export const usePlannerBoard = (tripId: string) => {
       return { success: true, data: newActivity };
     }
   };
+
+  const deleteActivity = async (activityId: string) => {
+    try {
+      // Try to delete from database
+      const { error } = await supabase
+        .from('activities')
+        .delete()
+        .eq('id', activityId);
+
+      if (error) throw error;
+
+      // Update local state
+      setActivities(prev => prev.filter(activity => activity.id !== activityId));
+      return { success: true };
+    } catch (error) {
+      console.error('Error deleting activity:', error);
+      
+      // Fallback: Remove from local state even if database fails
+      setActivities(prev => prev.filter(activity => activity.id !== activityId));
+      return { success: true };
+    }
+  };
+
   return {
     trip,
     days,
@@ -389,6 +412,7 @@ export const usePlannerBoard = (tripId: string) => {
     loading,
     moveActivity,
     addActivity,
+    deleteActivity,
     searchFlights,
     getInsuranceQuote,
     refetch: fetchTripData

@@ -7,9 +7,13 @@ interface BudgetTrackerProps {
 }
 
 export const BudgetTracker: React.FC<BudgetTrackerProps> = ({ totalCost, estimatedBudget }) => {
-  const percentage = (totalCost / estimatedBudget) * 100;
-  const isOverBudget = totalCost > estimatedBudget;
-  const difference = Math.abs(totalCost - estimatedBudget);
+  // Ensure we have valid numbers
+  const safeTotalCost = isNaN(totalCost) ? 0 : totalCost;
+  const safeEstimatedBudget = isNaN(estimatedBudget) || estimatedBudget === 0 ? 1000 : estimatedBudget;
+  
+  const percentage = (safeTotalCost / safeEstimatedBudget) * 100;
+  const isOverBudget = safeTotalCost > safeEstimatedBudget;
+  const difference = Math.abs(safeTotalCost - safeEstimatedBudget);
 
   const getColorClasses = () => {
     if (isOverBudget) {
@@ -56,8 +60,8 @@ export const BudgetTracker: React.FC<BudgetTrackerProps> = ({ totalCost, estimat
 
       <div className="space-y-2">
         <div className="flex justify-between text-sm">
-          <span className="text-gray-600">Spent: ${totalCost.toFixed(2)}</span>
-          <span className="text-gray-600">Budget: ${estimatedBudget.toFixed(2)}</span>
+          <span className="text-gray-600">Spent: ${safeTotalCost.toFixed(2)}</span>
+          <span className="text-gray-600">Budget: ${safeEstimatedBudget.toFixed(2)}</span>
         </div>
         
         <div className="w-full bg-gray-200 rounded-full h-3">
@@ -70,8 +74,8 @@ export const BudgetTracker: React.FC<BudgetTrackerProps> = ({ totalCost, estimat
         <div className="text-center">
           <p className={`text-sm font-medium ${colors.text}`}>
             {isOverBudget 
-              ? `You're $${difference} over budget! 😰`
-              : `You're $${difference} under budget! 🎉`
+              ? `You're $${difference.toFixed(2)} over budget! 😰`
+              : `You're $${difference.toFixed(2)} under budget! 🎉`
             }
           </p>
         </div>

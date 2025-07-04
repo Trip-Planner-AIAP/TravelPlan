@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Plane, Shield, DollarSign, Plus, GripVertical } from 'lucide-react';
+import { ArrowLeft, Plane, Shield, DollarSign, Plus, GripVertical, X } from 'lucide-react';
 import {
   DndContext,
   DragEndEvent,
@@ -78,12 +78,24 @@ const SortableActivityCard: React.FC<SortableActivityCardProps> = ({ activity, o
             <span className="font-medium text-orange-600">${activity.estimated_cost}</span>
           </div>
         </div>
-        <div
-          {...attributes}
-          {...listeners}
-          className="cursor-grab active:cursor-grabbing p-1 text-gray-400 hover:text-gray-600"
-        >
-          <GripVertical className="w-4 h-4" />
+        <div className="flex items-center space-x-1 ml-2">
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onDelete(activity.id);
+            }}
+            className="opacity-0 group-hover:opacity-100 p-1 text-red-400 hover:text-red-600 hover:bg-red-50 rounded transition-all"
+            title="Delete activity"
+          >
+            <X className="w-4 h-4" />
+          </button>
+          <div
+            {...attributes}
+            {...listeners}
+            className="cursor-grab active:cursor-grabbing p-1 text-gray-400 hover:text-gray-600"
+          >
+            <GripVertical className="w-4 h-4" />
+          </div>
         </div>
       </div>
     </div>
@@ -95,9 +107,10 @@ interface DayColumnProps {
   dayId: string;
   activities: Activity[];
   onAddActivity: (dayId: string) => void;
+  onDeleteActivity: (activityId: string) => void;
 }
 
-const DayColumn: React.FC<DayColumnProps> = ({ dayNumber, dayId, activities, onAddActivity }) => {
+const DayColumn: React.FC<DayColumnProps> = ({ dayNumber, dayId, activities, onAddActivity, onDeleteActivity }) => {
   return (
     <div className="bg-gray-50 rounded-xl p-4 min-h-96">
       <div className="flex items-center justify-between mb-4">
@@ -123,7 +136,7 @@ const DayColumn: React.FC<DayColumnProps> = ({ dayNumber, dayId, activities, onA
                 key={activity.id}
                 activity={activity}
                 onEdit={() => {}}
-                onDelete={() => {}}
+                onDelete={onDeleteActivity}
               />
             ))
           )}
@@ -146,6 +159,7 @@ export const PlannerBoard: React.FC = () => {
     loading,
     moveActivity,
     addActivity,
+    deleteActivity,
     searchFlights,
     getInsuranceQuote
   } = usePlannerBoard(tripId!);
@@ -237,6 +251,12 @@ export const PlannerBoard: React.FC = () => {
     setSelectedDayId('');
   };
 
+  const handleDeleteActivity = async (activityId: string) => {
+    if (window.confirm('Are you sure you want to delete this activity?')) {
+      await deleteActivity(activityId);
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -317,6 +337,7 @@ export const PlannerBoard: React.FC = () => {
                       dayId={day.id}
                       activities={dayActivities}
                       onAddActivity={handleAddActivity}
+                      onDeleteActivity={handleDeleteActivity}
                     />
                   );
                 })}
