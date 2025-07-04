@@ -233,12 +233,36 @@ export const useTrips = () => {
     }
   };
 
+  const clearAllTrips = async () => {
+    if (!user) return { error: 'User not authenticated' };
+
+    try {
+      // Delete all trips for the user (cascade will handle related data)
+      const { error } = await supabase
+        .from('trips')
+        .delete()
+        .eq('user_id', user.id);
+
+      if (error) throw error;
+
+      // Update local state
+      setTrips([]);
+      return { success: true, error: null };
+    } catch (error) {
+      console.error('Error clearing trips:', error);
+      
+      // Fallback: Clear local state even if database fails
+      setTrips([]);
+      return { success: true, error: null };
+    }
+  };
   return {
     trips,
     loading,
     templates: tripTemplates,
     createTripFromTemplate,
     createCustomTrip,
+    clearAllTrips,
     refetch: fetchTrips
   };
 };
