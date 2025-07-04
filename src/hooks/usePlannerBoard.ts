@@ -208,7 +208,7 @@ export const usePlannerBoard = (tripId: string) => {
         .eq('api_type', 'flights')
         .eq('query_hash', queryHash)
         .gt('expires_at', new Date().toISOString())
-        .single();
+        .maybeSingle();
 
       if (cachedData) {
         // Use cached data
@@ -219,7 +219,7 @@ export const usePlannerBoard = (tripId: string) => {
       // Simulate API call (in real app, this would be actual flight API)
       const mockFlights: Flight[] = [
         {
-          id: 'flight-1',
+          id: crypto.randomUUID(),
           trip_id: tripId,
           origin: params.origin,
           destination: params.destination,
@@ -232,7 +232,7 @@ export const usePlannerBoard = (tripId: string) => {
           created_at: new Date().toISOString()
         },
         {
-          id: 'flight-2',
+          id: crypto.randomUUID(),
           trip_id: tripId,
           origin: params.origin,
           destination: params.destination,
@@ -279,7 +279,7 @@ export const usePlannerBoard = (tripId: string) => {
         .eq('api_type', 'insurance')
         .eq('query_hash', queryHash)
         .gt('expires_at', new Date().toISOString())
-        .single();
+        .maybeSingle();
 
       if (cachedData) {
         setInsurance(cachedData.response_data);
@@ -289,7 +289,7 @@ export const usePlannerBoard = (tripId: string) => {
       // Simulate API call
       const mockInsurance: Insurance[] = [
         {
-          id: 'insurance-1',
+          id: crypto.randomUUID(),
           trip_id: tripId,
           policy_type: params.coverage,
           coverage_amount: 50000,
