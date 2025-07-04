@@ -93,6 +93,10 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onStartPlanning, onExp
   const handleDestinationSelect = (destination: string) => {
     setSearchValue(destination);
     setShowSuggestions(false);
+    // Navigate to dashboard with the selected destination
+    if (onStartPlanning) {
+      onStartPlanning();
+    }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {

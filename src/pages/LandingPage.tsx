@@ -11,6 +11,7 @@ export const LandingPage: React.FC = () => {
   const { createTripFromTemplate } = useTrips();
 
   const handleStartPlanning = () => {
+    // Check if we have a search value from the hero section
     navigate('/dashboard');
   };
 
@@ -50,7 +51,16 @@ export const LandingPage: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {/* Tokyo Template */}
             <div 
-              onClick={handleStartPlanning}
+              onClick={() => handleSelectTemplate({
+                id: 'tokyo_adventure',
+                title: 'Tokyo Adventure',
+                destination: 'Tokyo, Japan',
+                duration_days: 5,
+                estimated_budget: 1200,
+                image_url: 'https://images.pexels.com/photos/2506923/pexels-photo-2506923.jpeg?auto=compress&cs=tinysrgb&w=800',
+                description: 'Experience the perfect blend of traditional and modern Japan',
+                days: []
+              })}
               className="bg-white bg-opacity-10 backdrop-blur-sm rounded-2xl p-8 hover:bg-opacity-20 hover:scale-105 transition-all duration-300 cursor-pointer group border border-white border-opacity-20"
             >
               <div className="flex items-center space-x-4 mb-6">
@@ -81,7 +91,16 @@ export const LandingPage: React.FC = () => {
 
             {/* Paris Template */}
             <div 
-              onClick={handleStartPlanning}
+              onClick={() => handleSelectTemplate({
+                id: 'paris_romance',
+                title: 'Paris Romance',
+                destination: 'Paris, France',
+                duration_days: 4,
+                estimated_budget: 980,
+                image_url: 'https://images.pexels.com/photos/338515/pexels-photo-338515.jpeg?auto=compress&cs=tinysrgb&w=800',
+                description: 'A romantic getaway through the City of Light',
+                days: []
+              })}
               className="bg-white bg-opacity-10 backdrop-blur-sm rounded-2xl p-8 hover:bg-opacity-20 hover:scale-105 transition-all duration-300 cursor-pointer group border border-white border-opacity-20"
             >
               <div className="flex items-center space-x-4 mb-6">
@@ -112,7 +131,16 @@ export const LandingPage: React.FC = () => {
 
             {/* Bali Template */}
             <div 
-              onClick={handleStartPlanning}
+              onClick={() => handleSelectTemplate({
+                id: 'bali_escape',
+                title: 'Bali Escape',
+                destination: 'Bali, Indonesia',
+                duration_days: 7,
+                estimated_budget: 800,
+                image_url: 'https://images.pexels.com/photos/2474690/pexels-photo-2474690.jpeg?auto=compress&cs=tinysrgb&w=800',
+                description: 'Tropical paradise with beaches, temples, and culture',
+                days: []
+              })}
               className="bg-white bg-opacity-10 backdrop-blur-sm rounded-2xl p-8 hover:bg-opacity-20 hover:scale-105 transition-all duration-300 cursor-pointer group border border-white border-opacity-20"
             >
               <div className="flex items-center space-x-4 mb-6">
