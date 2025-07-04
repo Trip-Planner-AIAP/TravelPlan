@@ -552,7 +552,7 @@ export const CustomTripBuilder: React.FC = () => {
                   <div className="mt-4 p-3 bg-orange-50 rounded-lg">
                     <p className="text-xs text-orange-700 flex items-center">
                       <span className="mr-2">💡</span>
-                      Use "Move to Day" buttons to organize your itinerary
+                      Use "Move to Day\" buttons to organize your itinerary
                     </p>
                     <div className="mt-2 text-xs text-orange-600">
                       Total: ${selectedActivities.reduce((sum, a) => sum + a.estimated_cost, 0)}
