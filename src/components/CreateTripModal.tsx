@@ -4,6 +4,30 @@ import { useNavigate } from 'react-router-dom';
 import { useTrips } from '../hooks/useTrips';
 import type { TripTemplate } from '../types';
 
+// Popular destinations list
+const popularDestinations = [
+  'Tokyo, Japan',
+  'Paris, France',
+  'London, England',
+  'New York, USA',
+  'Bali, Indonesia',
+  'Rome, Italy',
+  'Barcelona, Spain',
+  'Bangkok, Thailand',
+  'Sydney, Australia',
+  'Dubai, UAE',
+  'Amsterdam, Netherlands',
+  'Berlin, Germany',
+  'Istanbul, Turkey',
+  'Prague, Czech Republic',
+  'Vienna, Austria',
+  'Lisbon, Portugal',
+  'Copenhagen, Denmark',
+  'Stockholm, Sweden',
+  'Reykjavik, Iceland',
+  'Santorini, Greece'
+];
+
 interface CreateTripModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -15,6 +39,7 @@ export const CreateTripModal: React.FC<CreateTripModalProps> = ({ isOpen, onClos
   const [destination, setDestination] = useState('');
   const [selectedTemplate, setSelectedTemplate] = useState<TripTemplate | null>(null);
   const [showTemplateDropdown, setShowTemplateDropdown] = useState(false);
+  const [showDestinationDropdown, setShowDestinationDropdown] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [message, setMessage] = useState('');
   const { createCustomTrip, createTripFromTemplate, templates } = useTrips();
@@ -73,6 +98,7 @@ export const CreateTripModal: React.FC<CreateTripModalProps> = ({ isOpen, onClos
     setDestination('');
     setSelectedTemplate(null);
     setShowTemplateDropdown(false);
+    setShowDestinationDropdown(false);
     setMessage('');
     onClose();
   };
@@ -181,11 +207,58 @@ export const CreateTripModal: React.FC<CreateTripModalProps> = ({ isOpen, onClos
                 id="destination"
                 value={destination}
                 onChange={(e) => setDestination(e.target.value)}
+                onFocus={() => !selectedTemplate && setShowDestinationDropdown(true)}
                 required={!selectedTemplate}
                 disabled={!!selectedTemplate}
-                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors"
+                className="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors"
                 placeholder="e.g., Paris, France"
               />
+              {!selectedTemplate && (
+                <button
+                  type="button"
+                  onClick={() => setShowDestinationDropdown(!showDestinationDropdown)}
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                >
+                  <ChevronDown className={`w-5 h-5 transition-transform ${showDestinationDropdown ? 'rotate-180' : ''}`} />
+                </button>
+              )}
+              
+              {showDestinationDropdown && !selectedTemplate && (
+                <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+                  {popularDestinations
+                    .filter(dest => dest.toLowerCase().includes(destination.toLowerCase()))
+                    .map((dest) => (
+                    <button
+                      key={dest}
+                      type="button"
+                      onClick={() => {
+                        setDestination(dest);
+                        setShowDestinationDropdown(false);
+                      }}
+                      className="w-full px-4 py-3 text-left hover:bg-orange-50 border-b border-gray-100 last:border-b-0"
+                    >
+                      <div className="flex items-center">
+                        <MapPin className="w-4 h-4 mr-2 text-gray-400" />
+                        <span className="text-gray-900">{dest}</span>
+                      </div>
+                    </button>
+                  ))}
+                  {destination && !popularDestinations.some(dest => 
+                    dest.toLowerCase().includes(destination.toLowerCase())
+                  ) && (
+                    <button
+                      type="button"
+                      onClick={() => setShowDestinationDropdown(false)}
+                      className="w-full px-4 py-3 text-left hover:bg-gray-50 border-b border-gray-100"
+                    >
+                      <div className="flex items-center">
+                        <MapPin className="w-4 h-4 mr-2 text-gray-400" />
+                        <span className="text-gray-900">Use "{destination}"</span>
+                      </div>
+                    </button>
+                  )}
+                </div>
+              )}
             </div>
           </div>
 
