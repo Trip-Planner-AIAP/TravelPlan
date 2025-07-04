@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
 
 export const Dashboard: React.FC = () => {
-  const { user, loading } = useAuth();
+  const { user, loading, isGuest } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -33,8 +33,15 @@ export const Dashboard: React.FC = () => {
       <main>
         <div className="max-w-7xl mx-auto px-4 py-8">
           <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-900">Welcome back!</h1>
-            <p className="text-gray-600 mt-2">Ready to plan your next adventure?</p>
+            <h1 className="text-3xl font-bold text-gray-900">
+              {isGuest ? 'Welcome, Guest!' : 'Welcome back!'}
+            </h1>
+            <p className="text-gray-600 mt-2">
+              {isGuest 
+                ? 'Explore our trip planning features in demo mode'
+                : 'Ready to plan your next adventure?'
+              }
+            </p>
           </div>
           <TripGrid />
         </div>

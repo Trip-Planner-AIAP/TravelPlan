@@ -13,7 +13,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
   const [isSignUp, setIsSignUp] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [message, setMessage] = useState('');
-  const { signInWithEmail, signUpWithEmail } = useAuth();
+  const { signInWithEmail, signUpWithEmail, continueAsGuest } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -37,6 +37,11 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
     }
 
     setIsSubmitting(false);
+  };
+
+  const handleGuestMode = () => {
+    continueAsGuest();
+    onClose();
   };
 
   if (!isOpen) return null;
@@ -126,6 +131,18 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
             </div>
           )}
         </form>
+
+        <div className="mt-6 pt-6 border-t border-gray-200">
+          <button
+            onClick={handleGuestMode}
+            className="w-full text-gray-600 hover:text-gray-800 font-medium py-2 transition-colors"
+          >
+            Continue as Guest
+          </button>
+          <p className="text-xs text-gray-500 text-center mt-2">
+            Explore features without creating an account
+          </p>
+        </div>
       </div>
     </div>
   );

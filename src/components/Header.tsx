@@ -3,7 +3,7 @@ import { Plane, User, LogOut } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 
 export const Header: React.FC = () => {
-  const { user, signOut } = useAuth();
+  const { user, isGuest, signOut } = useAuth();
 
   const handleSignOut = async () => {
     await signOut();
@@ -22,14 +22,21 @@ export const Header: React.FC = () => {
             <div className="flex items-center space-x-4">
               <div className="flex items-center space-x-2">
                 <User className="w-5 h-5 text-gray-600" />
-                <span className="text-gray-700">{user.email}</span>
+                <span className="text-gray-700">
+                  {isGuest ? 'Guest User' : user.email}
+                </span>
+                {isGuest && (
+                  <span className="bg-orange-100 text-orange-700 px-2 py-1 rounded-full text-xs font-medium">
+                    Guest
+                  </span>
+                )}
               </div>
               <button
                 onClick={handleSignOut}
                 className="flex items-center space-x-2 text-gray-600 hover:text-red-600 transition-colors"
               >
                 <LogOut className="w-5 h-5" />
-                <span>Sign Out</span>
+                <span>{isGuest ? 'Exit Guest' : 'Sign Out'}</span>
               </button>
             </div>
           )}
