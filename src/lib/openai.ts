@@ -95,7 +95,9 @@ Focus on destination-specific items and practical essentials.`
     };
   } catch (error) {
     console.error('OpenAI API Error:', error);
-    throw new Error('Failed to generate checklist with AI');
+    // Preserve the original error message for better error handling
+    const errorMessage = error instanceof Error ? error.message : 'Failed to generate checklist with AI';
+    throw new Error(errorMessage);
   }
 };
 
@@ -162,6 +164,8 @@ Include current, accurate information about SIM cards, money exchange, safety, a
     };
   } catch (error) {
     console.error('OpenAI API Error:', error);
-    throw new Error('Failed to get local essentials with AI');
+    // Preserve the original error message for better error handling
+    const errorMessage = error instanceof Error ? error.message : 'Failed to get local essentials with AI';
+    throw new Error(errorMessage);
   }
 };

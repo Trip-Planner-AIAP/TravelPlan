@@ -100,7 +100,23 @@ export const useAIFeatures = (tripId: string) => {
       }
 
       // Call real OpenAI API
-      const { items, tokensUsed } = await generateChecklistAI(destination, durationDays, season, activities);
+      let items, tokensUsed;
+      
+      try {
+        const result = await generateChecklistAI(destination, durationDays, season, activities);
+        items = result.items;
+        tokensUsed = result.tokensUsed;
+      } catch (apiError) {
+        // If quota exceeded, fall back to mock data
+        if (apiError instanceof Error && apiError.message.toLowerCase().includes('quota')) {
+          console.log('OpenAI quota exceeded, falling back to mock data');
+          const mockItems = generateMockChecklist(destination, durationDays, season, activities);
+          items = mockItems;
+          tokensUsed = 0; // No tokens used for mock data
+        } else {
+          throw apiError; // Re-throw other API errors
+        }
+      }
 
       // Insert checklist items
       const { data: insertedItems, error: insertError } = await supabase
@@ -164,7 +180,22 @@ export const useAIFeatures = (tripId: string) => {
       }
 
       // Call real OpenAI API
-      const { essentials, tokensUsed } = await getLocalEssentialsAI(destination, currency, travelDates);
+      let essentials, tokensUsed;
+      
+      try {
+        const result = await getLocalEssentialsAI(destination, currency, travelDates);
+        essentials = result.essentials;
+        tokensUsed = result.tokensUsed;
+      } catch (apiError) {
+        // If quota exceeded, fall back to mock data
+        if (apiError instanceof Error && apiError.message.toLowerCase().includes('quota')) {
+          console.log('OpenAI quota exceeded, falling back to mock data');
+          essentials = generateMockEssentials(destination, currency);
+          tokensUsed = 0; // No tokens used for mock data
+        } else {
+          throw apiError; // Re-throw other API errors
+        }
+      }
 
       // Insert essentials
       const { data: insertedEssentials, error: insertError } = await supabase
