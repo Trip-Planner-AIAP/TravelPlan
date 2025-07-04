@@ -24,6 +24,8 @@ import { FlightSearchCard } from '../components/FlightSearchCard';
 import { InsuranceCard } from '../components/InsuranceCard';
 import { AddActivityModal } from '../components/AddActivityModal';
 import { BudgetTracker } from '../components/BudgetTracker';
+import { ChecklistModal } from '../components/ChecklistModal';
+import { LocalEssentialsCard } from '../components/LocalEssentialsCard';
 import type { Activity } from '../types';
 
 interface SortableActivityCardProps {
@@ -169,6 +171,7 @@ export const PlannerBoard: React.FC = () => {
   const [selectedDayId, setSelectedDayId] = useState<string>('');
   const [showFlightResults, setShowFlightResults] = useState(false);
   const [showInsuranceQuote, setShowInsuranceQuote] = useState(false);
+  const [showChecklistModal, setShowChecklistModal] = useState(false);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -382,6 +385,30 @@ export const PlannerBoard: React.FC = () => {
               loading={false}
             />
 
+            {/* AI Checklist Button */}
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+              <div className="flex items-center space-x-3 mb-4">
+                <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-red-500 rounded-full flex items-center justify-center">
+                  <span className="text-2xl">🎯</span>
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900">Smart Checklist</h3>
+                  <p className="text-sm text-gray-600">AI-powered packing list</p>
+                </div>
+              </div>
+              
+              <button
+                onClick={() => setShowChecklistModal(true)}
+                className="w-full bg-gradient-to-r from-orange-600 to-red-600 text-white py-3 px-4 rounded-lg font-medium hover:from-orange-700 hover:to-red-700 transition-all duration-300 hover:scale-105 flex items-center justify-center space-x-2 shadow-lg"
+              >
+                <span className="text-lg">✨</span>
+                <span>Generate Smart Checklist</span>
+              </button>
+            </div>
+
+            {/* Local Essentials Card */}
+            <LocalEssentialsCard trip={trip} />
+
             {/* Flight Results (conditional) */}
             {showFlightResults && flights.length > 0 && (
               <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
@@ -439,6 +466,13 @@ export const PlannerBoard: React.FC = () => {
             setSelectedDayId('');
           }}
           onCreateActivity={handleCreateActivity}
+        />
+
+        {/* Checklist Modal */}
+        <ChecklistModal
+          isOpen={showChecklistModal}
+          onClose={() => setShowChecklistModal(false)}
+          trip={trip}
         />
       </div>
     </div>
