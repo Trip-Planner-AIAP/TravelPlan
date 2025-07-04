@@ -304,6 +304,17 @@ export const PlannerBoard: React.FC = () => {
               </div>
             </div>
             
+            {/* Logo - clickable to home */}
+            <div className="flex items-center space-x-4">
+              <button 
+                onClick={() => navigate('/')}
+                className="flex items-center space-x-2 hover:opacity-80 transition-opacity group"
+              >
+                <Plane className="w-6 h-6 text-orange-600" />
+                <span className="text-lg font-bold text-gray-900 group-hover:text-orange-600 transition-colors">TripPlanner</span>
+              </button>
+            </div>
+            
             {/* Budget Strip */}
             <BudgetTracker 
               totalCost={totalBudget}
