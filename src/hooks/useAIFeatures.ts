@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { supabase } from '../lib/supabase';
+import { generateChecklist as generateChecklistAI, getLocalEssentials as getLocalEssentialsAI } from '../lib/openai';
 
 interface ChecklistItem {
   id: string;
@@ -44,7 +45,7 @@ interface AIUsage {
 }
 
 const TOKEN_LIMIT = 6000;
-const ESTIMATED_TOKENS_PER_CALL = 2000;
+const ESTIMATED_TOKENS_PER_CALL = 1000; // More accurate estimate
 
 export const useAIFeatures = (tripId: string) => {
   const [loading, setLoading] = useState(false);
@@ -85,7 +86,7 @@ export const useAIFeatures = (tripId: string) => {
       // Check token usage first
       const { canMakeCall, remaining } = await checkTokenUsage();
       if (!canMakeCall) {
-        throw new Error(`Token limit reached. ${remaining} tokens remaining (need ${ESTIMATED_TOKENS_PER_CALL})`);
+        throw new Error(`Token limit reached. ${remaining} tokens remaining`);
       }
 
       // Check if checklist already exists
@@ -98,17 +99,17 @@ export const useAIFeatures = (tripId: string) => {
         return { success: true, data: existingChecklist };
       }
 
-      // Simulate AI response based on destination and duration
-      const mockChecklistItems = generateMockChecklist(destination, durationDays, season, activities);
+      // Call real OpenAI API
+      const { items, tokensUsed } = await generateChecklistAI(destination, durationDays, season, activities);
 
       // Insert checklist items
       const { data: insertedItems, error: insertError } = await supabase
         .from('checklist')
         .insert(
-          mockChecklistItems.map(item => ({
+          items.map(item => ({
             trip_id: tripId,
             category: item.category,
-            item_name: item.item_name,
+            item_name: item.name,
             priority: item.priority
           }))
         )
@@ -122,7 +123,7 @@ export const useAIFeatures = (tripId: string) => {
         .insert({
           trip_id: tripId,
           function_name: 'generate_checklist',
-          tokens_used: ESTIMATED_TOKENS_PER_CALL
+          tokens_used: tokensUsed
         });
 
       return { success: true, data: insertedItems };
@@ -148,7 +149,7 @@ export const useAIFeatures = (tripId: string) => {
       // Check token usage first
       const { canMakeCall, remaining } = await checkTokenUsage();
       if (!canMakeCall) {
-        throw new Error(`Token limit reached. ${remaining} tokens remaining (need ${ESTIMATED_TOKENS_PER_CALL})`);
+        throw new Error(`Token limit reached. ${remaining} tokens remaining`);
       }
 
       // Check if essentials already exist
@@ -162,17 +163,17 @@ export const useAIFeatures = (tripId: string) => {
         return { success: true, data: existingEssentials };
       }
 
-      // Generate mock essentials based on destination
-      const mockEssentials = generateMockEssentials(destination, currency);
+      // Call real OpenAI API
+      const { essentials, tokensUsed } = await getLocalEssentialsAI(destination, currency, travelDates);
 
       // Insert essentials
       const { data: insertedEssentials, error: insertError } = await supabase
         .from('essentials')
         .insert({
           trip_id: tripId,
-          sim_info: mockEssentials.sim_info,
-          forex_info: mockEssentials.forex_info,
-          safety_notes: mockEssentials.safety_notes
+          sim_info: essentials.sim_info,
+          forex_info: essentials.forex_info,
+          safety_notes: essentials.safety_notes
         })
         .select()
         .single();
@@ -185,7 +186,7 @@ export const useAIFeatures = (tripId: string) => {
         .insert({
           trip_id: tripId,
           function_name: 'get_local_essentials',
-          tokens_used: ESTIMATED_TOKENS_PER_CALL
+          tokens_used: tokensUsed
         });
 
       return { success: true, data: insertedEssentials };
