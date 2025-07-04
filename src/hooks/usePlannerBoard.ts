@@ -328,16 +328,23 @@ export const usePlannerBoard = (tripId: string) => {
                      flights.reduce((sum, flight) => sum + (flight.price || 0), 0) +
                      insurance.reduce((sum, policy) => sum + (policy.premium_cost || 0), 0);
 
-  const addActivity = async (dayId: string, title: string, activityType: string = 'attraction') => {
+  const addActivity = async (
+    dayId: string, 
+    title: string, 
+    activityType: string = 'attraction',
+    estimatedCost: number = 0,
+    durationMinutes: number = 60,
+    description: string = ''
+  ) => {
     try {
       const newActivity: Activity = {
         id: crypto.randomUUID(),
         day_id: dayId,
         title,
-        description: '',
+        description,
         activity_type: activityType as Activity['activity_type'],
-        estimated_cost: 0,
-        duration_minutes: 60,
+        estimated_cost: estimatedCost,
+        duration_minutes: durationMinutes,
         order_index: activities.filter(a => a.day_id === dayId).length,
         created_at: new Date().toISOString()
       };
@@ -360,10 +367,10 @@ export const usePlannerBoard = (tripId: string) => {
         id: crypto.randomUUID(),
         day_id: dayId,
         title,
-        description: '',
+        description,
         activity_type: activityType as Activity['activity_type'],
-        estimated_cost: 0,
-        duration_minutes: 60,
+        estimated_cost: estimatedCost,
+        duration_minutes: durationMinutes,
         order_index: activities.filter(a => a.day_id === dayId).length,
         created_at: new Date().toISOString()
       };
