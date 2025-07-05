@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { supabase } from '../lib/supabase';
 import { generateChecklist as generateChecklistAI, getLocalEssentials as getLocalEssentialsAI } from '../lib/openai';
+import OpenAI from 'openai';
 
 interface ChecklistItem {
   id: string;
@@ -107,8 +108,9 @@ export const useAIFeatures = (tripId: string) => {
         items = result.items;
         tokensUsed = result.tokensUsed;
       } catch (apiError) {
-        // If quota exceeded, fall back to mock data
-        if (apiError instanceof Error && apiError.message.toLowerCase().includes('quota')) {
+        // If quota exceeded or other API error, fall back to mock data
+        if ((apiError instanceof OpenAI.APIError && apiError.status === 429) || 
+            (apiError instanceof Error && apiError.message.toLowerCase().includes('quota'))) {
           console.log('OpenAI quota exceeded, falling back to mock data');
           const mockItems = generateMockChecklist(destination, durationDays, season, activities);
           items = mockItems;
@@ -188,8 +190,9 @@ export const useAIFeatures = (tripId: string) => {
         essentials = result.essentials;
         tokensUsed = result.tokensUsed;
       } catch (apiError) {
-        // If quota exceeded, fall back to mock data
-        if (apiError instanceof Error && apiError.message.toLowerCase().includes('quota')) {
+        // If quota exceeded or other API error, fall back to mock data
+        if ((apiError instanceof OpenAI.APIError && apiError.status === 429) || 
+            (apiError instanceof Error && apiError.message.toLowerCase().includes('quota'))) {
           console.log('OpenAI quota exceeded, falling back to mock data');
           essentials = generateMockEssentials(destination, currency);
           tokensUsed = 0; // No tokens used for mock data
