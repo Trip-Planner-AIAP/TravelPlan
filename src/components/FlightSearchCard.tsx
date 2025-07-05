@@ -90,7 +90,7 @@ export const FlightSearchCard: React.FC<FlightSearchCardProps> = ({
               <label className="block text-xs font-medium text-gray-700 mb-1">From</label>
               <input
                 type="text"
-                defaultValue="NYC"
+                placeholder="Enter departure city"
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               />
             </div>
@@ -98,7 +98,7 @@ export const FlightSearchCard: React.FC<FlightSearchCardProps> = ({
               <label className="block text-xs font-medium text-gray-700 mb-1">To</label>
               <input
                 type="text"
-                defaultValue="Tokyo"
+                placeholder="Enter destination"
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               />
             </div>
