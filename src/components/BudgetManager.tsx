@@ -20,6 +20,18 @@ interface BudgetSuggestion {
 }
 
 export const BudgetManager: React.FC<BudgetManagerProps> = ({ trip, activities, onTripUpdate }) => {
+  // Helper function to categorize activity types
+  const getCategoryFromActivityType = (activityType: string): string => {
+    switch (activityType) {
+      case 'hotel': return 'accommodation';
+      case 'meal': return 'food';
+      case 'flight':
+      case 'transport': return 'transport';
+      case 'attraction': return 'activities';
+      default: return 'misc';
+    }
+  };
+
   const [isExpanded, setIsExpanded] = useState(false);
   const [numberOfTravelers, setNumberOfTravelers] = useState(trip.number_of_travelers || 1);
   const [budgetPerPerson, setBudgetPerPerson] = useState(trip.budget_per_person || trip.estimated_budget);
@@ -50,17 +62,6 @@ export const BudgetManager: React.FC<BudgetManagerProps> = ({ trip, activities, 
   useEffect(() => {
     generateBudgetSuggestions();
   }, [activities, numberOfTravelers, budgetPerPerson, budgetBreakdown]);
-
-  const getCategoryFromActivityType = (activityType: string): string => {
-    switch (activityType) {
-      case 'hotel': return 'accommodation';
-      case 'meal': return 'food';
-      case 'flight':
-      case 'transport': return 'transport';
-      case 'attraction': return 'activities';
-      default: return 'misc';
-    }
-  };
 
   const generateBudgetSuggestions = () => {
     const newSuggestions: BudgetSuggestion[] = [];
