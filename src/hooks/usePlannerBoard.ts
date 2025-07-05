@@ -426,12 +426,12 @@ export const usePlannerBoard = (tripId: string) => {
       // Cache the results
       await supabase
         .from('api_cache')
-        .insert({
+        .upsert({
           api_type: 'flights',
           query_hash: queryHash,
           response_data: mockFlights,
           expires_at: new Date(Date.now() + 6 * 60 * 60 * 1000).toISOString() // 6 hours
-        });
+        }, { onConflict: 'query_hash' });
 
       return { success: true, data: mockFlights };
     } catch (error) {
@@ -531,12 +531,12 @@ export const usePlannerBoard = (tripId: string) => {
       // Cache the results
       await supabase
         .from('api_cache')
-        .insert({
+        .upsert({
           api_type: 'insurance',
           query_hash: queryHash,
           response_data: mockInsurance,
           expires_at: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString() // 24 hours
-        });
+        }, { onConflict: 'query_hash' });
 
       // Save to insurance table
       await supabase
