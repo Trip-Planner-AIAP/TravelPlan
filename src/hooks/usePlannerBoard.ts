@@ -198,6 +198,62 @@ export const usePlannerBoard = (tripId: string) => {
     }
   };
 
+  const selectFlight = async (flight: Flight) => {
+    try {
+      // Add flight to selected flights if not already selected
+      if (!flights.some(f => f.id === flight.id)) {
+        setFlights(prev => [...prev, flight]);
+      }
+
+      // Automatically add flight activities to the itinerary
+      await addFlightActivities(flight);
+      
+      return { success: true };
+    } catch (error) {
+      console.error('Error selecting flight:', error);
+      return { success: false, error };
+    }
+  };
+
+  const addFlightActivities = async (flight: Flight) => {
+    try {
+      const isOutbound = flight.departure_date === trip?.start_date;
+      const isReturn = flight.return_date === trip?.end_date;
+      
+      if (isOutbound) {
+        // Add arrival activity to first day
+        const firstDay = days.find(d => d.day_number === 1);
+        if (firstDay) {
+          await addActivity(
+            firstDay.id,
+            `Arrive via ${flight.airline} ${flight.flight_number}`,
+            'flight',
+            flight.price || 0,
+            180, // 3 hours for international arrival
+            `Flight from ${flight.origin} to ${flight.destination}`
+          );
+        }
+      }
+      
+      if (isReturn) {
+        // Add departure activity to last day
+        const lastDay = days[days.length - 1];
+        if (lastDay) {
+          await addActivity(
+            lastDay.id,
+            `Depart via ${flight.airline} ${flight.flight_number}`,
+            'flight',
+            0, // Return flight cost already counted
+            120, // 2 hours for departure
+            `Return flight from ${flight.destination} to ${flight.origin}`
+          );
+        }
+      }
+    } catch (error) {
+      console.error('Error adding flight activities:', error);
+    }
+  };
+
   const searchFlights = async (params: FlightSearchParams) => {
     try {
       // Check cache first
@@ -212,7 +268,6 @@ export const usePlannerBoard = (tripId: string) => {
 
       if (cachedData) {
         // Use cached data
-        setFlights(cachedData.response_data);
         return { success: true, data: cachedData.response_data };
       }
 
@@ -244,6 +299,19 @@ export const usePlannerBoard = (tripId: string) => {
           api_response: {},
           created_at: new Date().toISOString()
         }
+        {
+          id: crypto.randomUUID(),
+          trip_id: tripId,
+          origin: params.origin,
+          destination: params.destination,
+          departure_date: params.departureDate,
+          return_date: params.returnDate,
+          price: 580,
+          airline: 'United Airlines',
+          flight_number: 'UA78',
+          api_response: {},
+          created_at: new Date().toISOString()
+        }
       ];
 
       // Cache the results
@@ -256,12 +324,6 @@ export const usePlannerBoard = (tripId: string) => {
           expires_at: new Date(Date.now() + 6 * 60 * 60 * 1000).toISOString() // 6 hours
         });
 
-      // Save to flights table
-      await supabase
-        .from('flights')
-        .insert(mockFlights);
-
-      setFlights(mockFlights);
       return { success: true, data: mockFlights };
     } catch (error) {
       console.error('Error searching flights:', error);
@@ -476,6 +538,7 @@ export const usePlannerBoard = (tripId: string) => {
     moveActivity,
     addActivity,
     deleteActivity,
+    selectFlight,
     searchFlights,
     getInsuranceQuote,
     refetch: fetchTripData

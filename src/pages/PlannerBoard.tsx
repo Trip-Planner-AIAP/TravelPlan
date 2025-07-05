@@ -222,6 +222,7 @@ export const PlannerBoard: React.FC = () => {
     moveActivity,
     addActivity,
     deleteActivity,
+    selectFlight,
     searchFlights,
     getInsuranceQuote,
     refetch
@@ -230,8 +231,9 @@ export const PlannerBoard: React.FC = () => {
   const [activeId, setActiveId] = useState<string | null>(null);
   const [showAddActivityModal, setShowAddActivityModal] = useState(false);
   const [selectedDayId, setSelectedDayId] = useState<string>('');
-  const [showFlightResults, setShowFlightResults] = useState(false);
   const [showInsuranceQuote, setShowInsuranceQuote] = useState(false);
+  const [availableFlights, setAvailableFlights] = useState<Flight[]>([]);
+  const [showSummaryReport, setShowSummaryReport] = useState(false);
 
   // Checklist state
   const [checklist, setChecklist] = useState<any[]>([]);
@@ -401,8 +403,16 @@ export const PlannerBoard: React.FC = () => {
       returnDate: trip.end_date
     });
     
+    if (result.success && result.data) {
+      setAvailableFlights(result.data);
+    }
+  };
+
+  const handleSelectFlight = async (flight: Flight) => {
+    const result = await selectFlight(flight);
     if (result.success) {
-      setShowFlightResults(true);
+      // Flight has been selected and activities added
+      console.log('Flight selected successfully');
     }
   };
 
@@ -423,6 +433,28 @@ export const PlannerBoard: React.FC = () => {
       setShowInsuranceQuote(true);
     }
   };
+
+  // Check if user has completed major planning phases
+  const getPlanningProgress = () => {
+    const hasActivities = activities.length > 0;
+    const hasFlights = flights.length > 0;
+    const hasInsurance = insurance.length > 0;
+    const hasChecklist = checklist.length > 0;
+    
+    const completedPhases = [hasActivities, hasFlights, hasInsurance, hasChecklist].filter(Boolean).length;
+    const canShowSummary = completedPhases >= 2; // Show summary when at least 2 phases are complete
+    
+    return {
+      hasActivities,
+      hasFlights,
+      hasInsurance,
+      hasChecklist,
+      completedPhases,
+      canShowSummary
+    };
+  };
+
+  const planningProgress = getPlanningProgress();
 
   const handleAddActivity = (dayId: string) => {
     setSelectedDayId(dayId);
@@ -632,6 +664,9 @@ export const PlannerBoard: React.FC = () => {
             <FlightSearchCard
               onSearch={handleFlightSearch}
               loading={false}
+              flights={availableFlights}
+              onSelectFlight={handleSelectFlight}
+              selectedFlights={flights}
             />
 
             {/* Insurance Card */}
@@ -688,39 +723,49 @@ export const PlannerBoard: React.FC = () => {
             {/* Local Essentials Card */}
             <LocalEssentialsCard trip={trip} />
 
-            {/* Flight Results (conditional) */}
-            {showFlightResults && flights.length > 0 && (
-              <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 animate-fadeIn">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center space-x-2">
-                  <span className="text-xl">✈️</span>
-                  <span>Flight Results</span>
-                </h3>
-                <div className="space-y-3">
-                  {flights.slice(0, 3).map((flight) => (
-                    <div key={flight.id} className="border border-gray-200 rounded-lg p-3 hover:border-blue-300 hover:bg-blue-50 transition-all">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="font-medium flex items-center space-x-2">
-                            <span>🛫</span>
-                            <span>{flight.airline}</span>
-                          </p>
-                          <p className="text-sm text-gray-600 flex items-center space-x-1">
-                            <span>{flight.origin}</span>
-                            <span>→</span>
-                            <span>{flight.destination}</span>
-                          </p>
-                        </div>
-                        <div className="text-right">
-                          <p className="font-semibold text-green-600 flex items-center space-x-1">
-                            <span>💰</span>
-                            <span>${flight.price}</span>
-                          </p>
-                          <p className="text-xs text-gray-500">{flight.flight_number}</p>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
+            {/* Trip Summary Action Button */}
+            {planningProgress.canShowSummary && (
+              <div className="bg-gradient-to-br from-purple-50 to-indigo-50 rounded-xl shadow-sm border border-purple-200 p-6 animate-fadeIn">
+                <div className="flex items-center space-x-3 mb-4">
+                  <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-indigo-500 rounded-full flex items-center justify-center shadow-lg">
+                    <span className="text-2xl">📊</span>
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-900">Trip Summary</h3>
+                    <p className="text-sm text-gray-600 flex items-center space-x-1">
+                      <span>✨</span>
+                      <span>Your planning is {Math.round((planningProgress.completedPhases / 4) * 100)}% complete</span>
+                    </p>
+                  </div>
                 </div>
+                
+                {/* Progress Indicators */}
+                <div className="grid grid-cols-2 gap-3 mb-4">
+                  <div className={`flex items-center space-x-2 text-sm ${planningProgress.hasActivities ? 'text-green-600' : 'text-gray-400'}`}>
+                    <span>{planningProgress.hasActivities ? '✅' : '⭕'}</span>
+                    <span>Activities</span>
+                  </div>
+                  <div className={`flex items-center space-x-2 text-sm ${planningProgress.hasFlights ? 'text-green-600' : 'text-gray-400'}`}>
+                    <span>{planningProgress.hasFlights ? '✅' : '⭕'}</span>
+                    <span>Flights</span>
+                  </div>
+                  <div className={`flex items-center space-x-2 text-sm ${planningProgress.hasInsurance ? 'text-green-600' : 'text-gray-400'}`}>
+                    <span>{planningProgress.hasInsurance ? '✅' : '⭕'}</span>
+                    <span>Insurance</span>
+                  </div>
+                  <div className={`flex items-center space-x-2 text-sm ${planningProgress.hasChecklist ? 'text-green-600' : 'text-gray-400'}`}>
+                    <span>{planningProgress.hasChecklist ? '✅' : '⭕'}</span>
+                    <span>Checklist</span>
+                  </div>
+                </div>
+                
+                <button
+                  onClick={() => setShowSummaryReport(true)}
+                  className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white py-3 px-4 rounded-xl font-medium hover:from-purple-700 hover:to-indigo-700 transition-all duration-300 hover:scale-105 flex items-center justify-center space-x-2 shadow-lg"
+                >
+                  <span className="text-lg">📋</span>
+                  <span>View Trip Summary Report</span>
+                </button>
               </div>
             )}
 
@@ -959,6 +1004,19 @@ export const PlannerBoard: React.FC = () => {
             setSelectedDayId('');
           }}
           onCreateActivity={handleCreateActivity}
+        />
+
+        {/* Trip Summary Report Modal */}
+        <TripSummaryReport
+          isOpen={showSummaryReport}
+          onClose={() => setShowSummaryReport(false)}
+          trip={trip}
+          days={days}
+          activities={activities}
+          flights={flights}
+          insurance={insurance}
+          checklist={checklist}
+          totalBudget={totalBudget}
         />
       </div>
     </div>
