@@ -57,6 +57,8 @@ export interface TripTemplate {
   destination: string;
   duration_days: number;
   estimated_budget: number;
+  number_of_travelers?: number;
+  budget_per_person?: number;
   image_url: string;
   description: string;
   days: {

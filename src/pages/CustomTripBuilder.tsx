@@ -208,6 +208,7 @@ export const CustomTripBuilder: React.FC = () => {
   const tripDetails = location.state as { 
     title: string; 
     destination: string; 
+    durationDays?: number;
     numberOfTravelers?: number; 
     budgetPerPerson?: number; 
   } | null;
@@ -219,7 +220,7 @@ export const CustomTripBuilder: React.FC = () => {
     1: [], 2: [], 3: [], 4: [], 5: []
   });
   const [isSaving, setIsSaving] = useState(false);
-  const [tripDuration, setTripDuration] = useState(3);
+  const [tripDuration, setTripDuration] = useState(tripDetails?.durationDays || 3);
   const [numberOfTravelers, setNumberOfTravelers] = useState(tripDetails?.numberOfTravelers || 1);
   const [budgetPerPerson, setBudgetPerPerson] = useState(tripDetails?.budgetPerPerson || 500);
 

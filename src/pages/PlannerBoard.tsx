@@ -601,7 +601,7 @@ export const PlannerBoard: React.FC = () => {
               </div>
               <div className="text-right">
                 <div className="text-lg font-bold text-blue-600">
-                  {Math.round((activities.length / (days.length * 3)) * 100)}%
+                  {activities.length === 0 ? 0 : Math.round((activities.length / (days.length * 2)) * 100)}%
                 </div>
                 <div className="text-xs text-gray-500">Complete</div>
               </div>
@@ -609,7 +609,7 @@ export const PlannerBoard: React.FC = () => {
             <div className="mt-3 w-full bg-white rounded-full h-2">
               <div
                 className="bg-gradient-to-r from-blue-500 to-purple-500 h-2 rounded-full transition-all duration-300"
-                style={{ width: `${Math.min((activities.length / (days.length * 3)) * 100, 100)}%` }}
+                style={{ width: `${activities.length === 0 ? 0 : Math.min((activities.length / (days.length * 2)) * 100, 100)}%` }}
               ></div>
             </div>
           </div>
@@ -620,7 +620,7 @@ export const PlannerBoard: React.FC = () => {
             onDragEnd={handleDragEnd}
           >
             <div className="grid grid-cols-1 md:grid-cols-5 gap-3">
-              {days.slice(0, 5).map((day) => {
+              {days.map((day) => {
                 const dayActivities = activities.filter(a => a.day_id === day.id);
                 return (
                   <DayColumn

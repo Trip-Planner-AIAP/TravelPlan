@@ -110,8 +110,8 @@ export const useTrips = () => {
           end_date: endDate.toISOString().split('T')[0],
           duration_days: template.duration_days,
           estimated_budget: template.estimated_budget,
-          number_of_travelers: 1,
-          budget_per_person: template.estimated_budget,
+          number_of_travelers: template.number_of_travelers || 1,
+          budget_per_person: template.budget_per_person || template.estimated_budget,
           template_id: template.id,
           image_url: template.image_url
         })
@@ -120,26 +120,27 @@ export const useTrips = () => {
 
       if (tripError) throw tripError;
 
-      // Create days and activities
-      for (const templateDay of template.days) {
+      // Create days for the specified duration
+      for (let dayNum = 1; dayNum <= template.duration_days; dayNum++) {
         const dayDate = new Date(startDate);
-        dayDate.setDate(dayDate.getDate() + templateDay.day_number - 1);
+        dayDate.setDate(dayDate.getDate() + dayNum - 1);
 
         const { data: dayData, error: dayError } = await supabase
           .from('days')
           .insert({
             trip_id: tripData.id,
-            day_number: templateDay.day_number,
+            day_number: dayNum,
             date: dayDate.toISOString().split('T')[0],
-            title: `Day ${templateDay.day_number}`
+            title: `Day ${dayNum}`
           })
           .select()
           .single();
 
         if (dayError) throw dayError;
 
-        // Create activities for this day
-        if (templateDay.activities.length > 0) {
+        // Create activities for this day if template has them
+        const templateDay = template.days?.find(d => d.day_number === dayNum);
+        if (templateDay && templateDay.activities.length > 0) {
           const activities = templateDay.activities.map(activity => ({
             day_id: dayData.id,
             ...activity
@@ -167,8 +168,8 @@ export const useTrips = () => {
         end_date: new Date(Date.now() + (7 + template.duration_days - 1) * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
         duration_days: template.duration_days,
         estimated_budget: template.estimated_budget,
-        number_of_travelers: 1,
-        budget_per_person: template.estimated_budget,
+        number_of_travelers: template.number_of_travelers || 1,
+        budget_per_person: template.budget_per_person || template.estimated_budget,
         image_url: template.image_url,
         user_id: user.id,
         template_id: template.id,
@@ -179,14 +180,14 @@ export const useTrips = () => {
     }
   };
 
-  const createCustomTrip = async (title: string, destination: string, numberOfTravelers: number = 1, budgetPerPerson: number = 500) => {
+  const createCustomTrip = async (title: string, destination: string, durationDays: number = 3, numberOfTravelers: number = 1, budgetPerPerson: number = 500) => {
     if (!user) return { error: 'User not authenticated' };
 
     try {
       const startDate = new Date();
       startDate.setDate(startDate.getDate() + 7);
       const endDate = new Date(startDate);
-      endDate.setDate(endDate.getDate() + 2); // 3-day default trip
+      endDate.setDate(endDate.getDate() + durationDays - 1);
 
       const { data, error } = await supabase
         .from('trips')
@@ -196,7 +197,7 @@ export const useTrips = () => {
           destination,
           start_date: startDate.toISOString().split('T')[0],
           end_date: endDate.toISOString().split('T')[0],
-          duration_days: 3,
+          duration_days: durationDays,
           estimated_budget: budgetPerPerson * numberOfTravelers,
           number_of_travelers: numberOfTravelers,
           budget_per_person: budgetPerPerson,
@@ -207,8 +208,8 @@ export const useTrips = () => {
 
       if (error) throw error;
 
-      // Create default days
-      for (let i = 1; i <= 3; i++) {
+      // Create days for the specified duration
+      for (let i = 1; i <= durationDays; i++) {
         const dayDate = new Date(startDate);
         dayDate.setDate(dayDate.getDate() + i - 1);
 
@@ -233,8 +234,8 @@ export const useTrips = () => {
         title,
         destination,
         start_date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-        end_date: new Date(Date.now() + 9 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-        duration_days: 3,
+        end_date: new Date(Date.now() + (7 + durationDays - 1) * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+        duration_days: durationDays,
         estimated_budget: budgetPerPerson * numberOfTravelers,
         number_of_travelers: numberOfTravelers,
         budget_per_person: budgetPerPerson,

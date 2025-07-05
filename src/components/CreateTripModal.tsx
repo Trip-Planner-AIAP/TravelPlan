@@ -37,6 +37,7 @@ export const CreateTripModal: React.FC<CreateTripModalProps> = ({ isOpen, onClos
   const navigate = useNavigate();
   const [title, setTitle] = useState('');
   const [destination, setDestination] = useState('');
+  const [durationDays, setDurationDays] = useState(3);
   const [numberOfTravelers, setNumberOfTravelers] = useState(1);
   const [budgetPerPerson, setBudgetPerPerson] = useState(500);
   const [selectedTemplate, setSelectedTemplate] = useState<TripTemplate | null>(null);
@@ -60,11 +61,13 @@ export const CreateTripModal: React.FC<CreateTripModalProps> = ({ isOpen, onClos
         ? { 
             ...selectedTemplate, 
             title: title.trim(),
+            duration_days: durationDays,
             estimated_budget: budgetPerPerson * numberOfTravelers,
             number_of_travelers: numberOfTravelers
           }
         : { 
             ...selectedTemplate,
+            duration_days: durationDays,
             estimated_budget: budgetPerPerson * numberOfTravelers,
             number_of_travelers: numberOfTravelers
           };
@@ -82,6 +85,7 @@ export const CreateTripModal: React.FC<CreateTripModalProps> = ({ isOpen, onClos
         state: { 
           title: title.trim(), 
           destination: destination.trim(),
+          durationDays,
           numberOfTravelers,
           budgetPerPerson
         }
@@ -112,6 +116,7 @@ export const CreateTripModal: React.FC<CreateTripModalProps> = ({ isOpen, onClos
   const handleClose = () => {
     setTitle('');
     setDestination('');
+    setDurationDays(3);
     setNumberOfTravelers(1);
     setBudgetPerPerson(500);
     setSelectedTemplate(null);
@@ -124,8 +129,8 @@ export const CreateTripModal: React.FC<CreateTripModalProps> = ({ isOpen, onClos
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-2xl p-8 max-w-md w-full relative transform transition-all duration-300 scale-100">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 overflow-y-auto">
+      <div className="bg-white rounded-2xl p-8 max-w-lg w-full relative transform transition-all duration-300 scale-100 my-8 max-h-[90vh] overflow-y-auto">
         <button
           onClick={handleClose}
           className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors"
@@ -200,11 +205,28 @@ export const CreateTripModal: React.FC<CreateTripModalProps> = ({ isOpen, onClos
             </div>
           </div>
 
-          {/* Travelers and Budget */}
-          <div className="grid grid-cols-2 gap-4">
+          {/* Duration, Travelers and Budget */}
+          <div className="grid grid-cols-3 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Number of Travelers
+                Trip Duration
+              </label>
+              <select
+                value={durationDays}
+                onChange={(e) => setDurationDays(parseInt(e.target.value))}
+                className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors"
+              >
+                {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21].map(days => (
+                  <option key={days} value={days}>
+                    {days} day{days !== 1 ? 's' : ''}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Travelers
               </label>
               <div className="flex items-center space-x-3">
                 <button
@@ -227,7 +249,7 @@ export const CreateTripModal: React.FC<CreateTripModalProps> = ({ isOpen, onClos
 
             <div>
               <label htmlFor="budget" className="block text-sm font-medium text-gray-700 mb-2">
-                Budget per Person ($)
+                Budget/Person ($)
               </label>
               <input
                 type="number"
@@ -251,7 +273,7 @@ export const CreateTripModal: React.FC<CreateTripModalProps> = ({ isOpen, onClos
               </span>
             </div>
             <p className="text-xs text-orange-700 mt-1">
-              ${budgetPerPerson} × {numberOfTravelers} traveler{numberOfTravelers > 1 ? 's' : ''}
+              ${budgetPerPerson} × {numberOfTravelers} traveler{numberOfTravelers > 1 ? 's' : ''} × {durationDays} day{durationDays > 1 ? 's' : ''}
             </p>
           </div>
 
