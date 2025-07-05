@@ -23,7 +23,7 @@ import { usePlannerBoard } from '../hooks/usePlannerBoard';
 import { FlightSearchCard } from '../components/FlightSearchCard';
 import { InsuranceCard } from '../components/InsuranceCard';
 import { AddActivityModal } from '../components/AddActivityModal';
-import { BudgetTracker } from '../components/BudgetTracker';
+import { BudgetManager } from '../components/BudgetManager';
 import { LocalEssentialsCard } from '../components/LocalEssentialsCard';
 import { ItineraryAnalyzer } from '../components/ItineraryAnalyzer';
 import { useAIFeatures } from '../hooks/useAIFeatures';
@@ -164,7 +164,8 @@ export const PlannerBoard: React.FC = () => {
     addActivity,
     deleteActivity,
     searchFlights,
-    getInsuranceQuote
+    getInsuranceQuote,
+    refetch
   } = usePlannerBoard(tripId!);
 
   const [activeId, setActiveId] = useState<string | null>(null);
@@ -444,10 +445,18 @@ export const PlannerBoard: React.FC = () => {
             </div>
             
             {/* Budget Strip */}
-            <BudgetTracker 
-              totalCost={totalBudget}
-              estimatedBudget={trip.estimated_budget}
-            />
+            <div className="flex items-center space-x-2 bg-white rounded-lg px-4 py-2 border border-gray-200 shadow-sm">
+              <DollarSign className="w-5 h-5 text-green-600" />
+              <div className="text-sm">
+                <span className="font-medium text-gray-900">
+                  ${totalBudget.toFixed(2)}
+                </span>
+                <span className="text-gray-500 mx-1">/</span>
+                <span className="text-gray-600">
+                  ${(trip.estimated_budget || 0).toFixed(2)}
+                </span>
+              </div>
+            </div>
           </div>
         </div>
       </header>
@@ -602,6 +611,18 @@ export const PlannerBoard: React.FC = () => {
               </div>
             )}
           </div>
+        </div>
+
+        {/* Budget Manager Section */}
+        <div className="mt-8">
+          <BudgetManager 
+            trip={trip} 
+            activities={activities} 
+            onTripUpdate={(updatedTrip) => {
+              // Update the trip state and refetch data
+              refetch();
+            }}
+          />
         </div>
 
         {/* Smart Travel Checklist Section */}

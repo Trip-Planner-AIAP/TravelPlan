@@ -13,6 +13,16 @@ export interface Trip {
   end_date: string;
   duration_days: number;
   estimated_budget: number;
+  number_of_travelers: number;
+  budget_per_person?: number;
+  budget_breakdown?: {
+    accommodation: number;
+    food: number;
+    activities: number;
+    transport: number;
+    misc: number;
+  };
+  budget_alerts_enabled?: boolean;
   image_url: string;
   user_id: string;
   template_id?: string;
