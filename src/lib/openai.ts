@@ -99,7 +99,6 @@ Focus on destination-specific items and practical essentials.`
       tokensUsed
     };
   } catch (error) {
-    console.error('OpenAI API Error:', error);
     // Preserve the original error message for better error handling
     throw error;
   }
@@ -172,7 +171,6 @@ Include current, accurate information about SIM cards, money exchange, safety, a
       tokensUsed
     };
   } catch (error) {
-    console.error('OpenAI API Error:', error);
     // Preserve the original error message for better error handling
     throw error;
   }
