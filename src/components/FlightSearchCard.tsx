@@ -8,7 +8,7 @@ interface FlightSearchCardProps {
   loading: boolean;
   flights: Flight[];
   onSelectFlight: (flight: Flight) => Promise<void>;
-  onDeselectFlight: (flightId: string) => Promise<void>;
+  onDeselectFlight: (flightId: string) => Promise<{ success: boolean; error?: any }>;
   selectedFlights: Flight[];
 }
 
