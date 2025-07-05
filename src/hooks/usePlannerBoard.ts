@@ -551,6 +551,71 @@ export const usePlannerBoard = (tripId: string) => {
     }
   };
 
+  const selectInsurance = async (insurancePolicy: Insurance) => {
+    try {
+      // Add insurance to selected insurance if not already selected
+      if (!insurance.some(i => i.id === insurancePolicy.id)) {
+        setInsurance(prev => [...prev, insurancePolicy]);
+        
+        // Try to save to database
+        const { error } = await supabase
+          .from('insurance')
+          .insert({
+            id: insurancePolicy.id,
+            trip_id: insurancePolicy.trip_id,
+            policy_type: insurancePolicy.policy_type,
+            coverage_amount: insurancePolicy.coverage_amount,
+            premium_cost: insurancePolicy.premium_cost,
+            provider: insurancePolicy.provider,
+            policy_pdf_url: insurancePolicy.policy_pdf_url,
+            api_response: insurancePolicy.api_response
+          });
+        
+        if (error) {
+          console.error('Database error (continuing with local state):', error);
+        }
+      }
+      
+      return { success: true };
+    } catch (error) {
+      console.error('Error selecting insurance:', error);
+      // Still update local state even if database fails
+      if (!insurance.some(i => i.id === insurancePolicy.id)) {
+        setInsurance(prev => [...prev, insurancePolicy]);
+      }
+      return { success: true }; // Return success for local state update
+    }
+  };
+
+  const deselectInsurance = async (insuranceId: string) => {
+    try {
+      // Remove insurance from selected insurance
+      const insuranceToRemove = insurance.find(i => i.id === insuranceId);
+      if (!insuranceToRemove) return { success: false, error: 'Insurance not found' };
+      
+      setInsurance(prev => prev.filter(i => i.id !== insuranceId));
+      
+      // Remove from database
+      const { error } = await supabase
+        .from('insurance')
+        .delete()
+        .eq('id', insuranceId);
+      
+      if (error) {
+        console.error('Database error:', error);
+        // Still continue with local state update for demo purposes
+        return { success: false, error };
+      }
+      
+      return { success: true };
+    } catch (error) {
+      console.error('Error deselecting insurance:', error);
+      // Still update local state even if database fails
+      setInsurance(prev => prev.filter(i => i.id !== insuranceId));
+      return { success: false, error };
+    }
+  };
+
   const totalBudget = activities.reduce((sum, activity) => sum + activity.estimated_cost, 0) +
                      flights.reduce((sum, flight) => sum + (flight.price || 0), 0) +
                      insurance.reduce((sum, policy) => sum + (policy.premium_cost || 0), 0);
@@ -651,6 +716,8 @@ export const usePlannerBoard = (tripId: string) => {
     deselectFlight,
     searchFlights,
     getInsuranceQuote,
+    selectInsurance,
+    deselectInsurance,
     refetch: fetchTripData
   };
 };

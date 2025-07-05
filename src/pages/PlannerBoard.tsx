@@ -209,6 +209,8 @@ export const PlannerBoard: React.FC = () => {
     deselectFlight,
     searchFlights,
     getInsuranceQuote,
+    selectInsurance,
+    deselectInsurance,
     refetch
   } = usePlannerBoard(tripId!);
 
@@ -217,6 +219,7 @@ export const PlannerBoard: React.FC = () => {
   const [selectedDayId, setSelectedDayId] = useState<string>('');
   const [showInsuranceQuote, setShowInsuranceQuote] = useState(false);
   const [availableFlights, setAvailableFlights] = useState<Flight[]>([]);
+  const [availableInsurance, setAvailableInsurance] = useState<Insurance[]>([]);
   const [showSummaryReport, setShowSummaryReport] = useState(false);
 
   // Checklist state
@@ -425,7 +428,26 @@ export const PlannerBoard: React.FC = () => {
     });
     
     if (result.success) {
+      setAvailableInsurance(result.data || []);
       setShowInsuranceQuote(true);
+    }
+  };
+
+  const handleSelectInsurance = async (insurance: Insurance) => {
+    try {
+      const result = await selectInsurance(insurance);
+      if (result && result.success) {
+        console.log('Insurance selected successfully');
+      }
+    } catch (error) {
+      console.error('Error selecting insurance:', error);
+    }
+  };
+
+  const handleDeselectInsurance = async (insuranceId: string) => {
+    const result = await deselectInsurance(insuranceId);
+    if (result.success) {
+      console.log('Insurance deselected successfully');
     }
   };
 
@@ -642,6 +664,10 @@ export const PlannerBoard: React.FC = () => {
           <InsuranceCard
             onGetQuote={handleInsuranceQuote}
             loading={false}
+            availableInsurance={availableInsurance}
+            selectedInsurance={insurance}
+            onSelectInsurance={handleSelectInsurance}
+            onDeselectInsurance={handleDeselectInsurance}
           />
 
           {/* AI Checklist Button */}
@@ -741,41 +767,6 @@ export const PlannerBoard: React.FC = () => {
             </div>
           )}
 
-          {/* Insurance Quote (conditional) */}
-          {showInsuranceQuote && insurance.length > 0 && (
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 animate-fadeIn">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center space-x-2">
-                <span className="text-xl">🛡️</span>
-                <span>Insurance Quote</span>
-              </h3>
-              <div className="space-y-3">
-                {insurance.slice(0, 3).map((policy) => (
-                  <div key={policy.id} className="border border-gray-200 rounded-lg p-3 hover:border-green-300 hover:bg-green-50 transition-all">
-                    <div className="flex items-center justify-between mb-2">
-                      <div>
-                        <p className="font-medium flex items-center space-x-2">
-                          <span>🏢</span>
-                          <span>{policy.provider}</span>
-                        </p>
-                        <p className="text-xs text-gray-600 capitalize">{policy.policy_type} Coverage</p>
-                      </div>
-                      <p className="font-semibold text-green-600 flex items-center space-x-1">
-                        <span>💰</span>
-                        <span>${policy.premium_cost}</span>
-                      </p>
-                    </div>
-                    <p className="text-sm text-gray-600 flex items-center space-x-1">
-                      <span>🛡️</span>
-                      <span>Coverage: ${policy.coverage_amount?.toLocaleString()}</span>
-                    </p>
-                    <button className="mt-2 w-full bg-green-600 text-white py-2 px-3 rounded-lg text-xs font-medium hover:bg-green-700 transition-all hover:scale-105">
-                      Select This Plan
-                    </button>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
         </div>
 
         {/* Budget Manager Section */}
