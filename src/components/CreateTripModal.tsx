@@ -37,6 +37,8 @@ export const CreateTripModal: React.FC<CreateTripModalProps> = ({ isOpen, onClos
   const navigate = useNavigate();
   const [title, setTitle] = useState('');
   const [destination, setDestination] = useState('');
+  const [numberOfTravelers, setNumberOfTravelers] = useState(1);
+  const [budgetPerPerson, setBudgetPerPerson] = useState(500);
   const [selectedTemplate, setSelectedTemplate] = useState<TripTemplate | null>(null);
   const [showTemplateDropdown, setShowTemplateDropdown] = useState(false);
   const [showDestinationDropdown, setShowDestinationDropdown] = useState(false);
@@ -55,8 +57,17 @@ export const CreateTripModal: React.FC<CreateTripModalProps> = ({ isOpen, onClos
     if (selectedTemplate) {
       // Use template with custom title if provided
       const templateToUse = title.trim() 
-        ? { ...selectedTemplate, title: title.trim() }
-        : selectedTemplate;
+        ? { 
+            ...selectedTemplate, 
+            title: title.trim(),
+            estimated_budget: budgetPerPerson * numberOfTravelers,
+            number_of_travelers: numberOfTravelers
+          }
+        : { 
+            ...selectedTemplate,
+            estimated_budget: budgetPerPerson * numberOfTravelers,
+            number_of_travelers: numberOfTravelers
+          };
       result = await createTripFromTemplate(templateToUse);
     } else {
       // Create custom trip
@@ -68,7 +79,12 @@ export const CreateTripModal: React.FC<CreateTripModalProps> = ({ isOpen, onClos
       // Navigate to custom trip builder instead
       onClose();
       navigate('/custom-trip-builder', {
-        state: { title: title.trim(), destination: destination.trim() }
+        state: { 
+          title: title.trim(), 
+          destination: destination.trim(),
+          numberOfTravelers,
+          budgetPerPerson
+        }
       });
       setIsSubmitting(false);
       return;
@@ -96,6 +112,8 @@ export const CreateTripModal: React.FC<CreateTripModalProps> = ({ isOpen, onClos
   const handleClose = () => {
     setTitle('');
     setDestination('');
+    setNumberOfTravelers(1);
+    setBudgetPerPerson(500);
     setSelectedTemplate(null);
     setShowTemplateDropdown(false);
     setShowDestinationDropdown(false);
@@ -181,6 +199,62 @@ export const CreateTripModal: React.FC<CreateTripModalProps> = ({ isOpen, onClos
               )}
             </div>
           </div>
+
+          {/* Travelers and Budget */}
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Number of Travelers
+              </label>
+              <div className="flex items-center space-x-3">
+                <button
+                  type="button"
+                  onClick={() => setNumberOfTravelers(Math.max(1, numberOfTravelers - 1))}
+                  className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center hover:bg-gray-300 transition-colors"
+                >
+                  -
+                </button>
+                <span className="text-lg font-semibold w-8 text-center">{numberOfTravelers}</span>
+                <button
+                  type="button"
+                  onClick={() => setNumberOfTravelers(Math.min(10, numberOfTravelers + 1))}
+                  className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center hover:bg-gray-300 transition-colors"
+                >
+                  +
+                </button>
+              </div>
+            </div>
+
+            <div>
+              <label htmlFor="budget" className="block text-sm font-medium text-gray-700 mb-2">
+                Budget per Person ($)
+              </label>
+              <input
+                type="number"
+                id="budget"
+                value={budgetPerPerson}
+                onChange={(e) => setBudgetPerPerson(parseInt(e.target.value) || 500)}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors"
+                placeholder="500"
+                min="50"
+                step="50"
+              />
+            </div>
+          </div>
+
+          {/* Total Budget Display */}
+          <div className="bg-orange-50 rounded-lg p-4 border border-orange-200">
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-medium text-orange-800">Total Trip Budget:</span>
+              <span className="text-lg font-bold text-orange-900">
+                ${(budgetPerPerson * numberOfTravelers).toLocaleString()}
+              </span>
+            </div>
+            <p className="text-xs text-orange-700 mt-1">
+              ${budgetPerPerson} × {numberOfTravelers} traveler{numberOfTravelers > 1 ? 's' : ''}
+            </p>
+          </div>
+
           <div>
             <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-2">
               Trip Title {!selectedTemplate && <span className="text-red-500">*</span>}

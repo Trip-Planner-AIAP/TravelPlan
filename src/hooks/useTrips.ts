@@ -103,7 +103,9 @@ export const useTrips = () => {
           start_date: startDate.toISOString().split('T')[0],
           end_date: endDate.toISOString().split('T')[0],
           duration_days: template.duration_days,
-          estimated_budget: template.estimated_budget,
+          estimated_budget: template.estimated_budget || template.budget_per_person * template.number_of_travelers,
+          number_of_travelers: template.number_of_travelers || 1,
+          budget_per_person: template.budget_per_person || template.estimated_budget,
           template_id: template.id,
           image_url: template.image_url
         })
@@ -158,7 +160,9 @@ export const useTrips = () => {
         start_date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
         end_date: new Date(Date.now() + (7 + template.duration_days - 1) * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
         duration_days: template.duration_days,
-        estimated_budget: template.estimated_budget,
+        estimated_budget: template.estimated_budget || template.budget_per_person * template.number_of_travelers,
+        number_of_travelers: template.number_of_travelers || 1,
+        budget_per_person: template.budget_per_person || template.estimated_budget,
         image_url: template.image_url,
         user_id: user.id,
         template_id: template.id,
@@ -170,6 +174,7 @@ export const useTrips = () => {
   };
 
   const createCustomTrip = async (title: string, destination: string) => {
+  const createCustomTrip = async (title: string, destination: string, numberOfTravelers: number = 1, budgetPerPerson: number = 500) => {
     if (!user) return { error: 'User not authenticated' };
 
     try {
@@ -187,7 +192,9 @@ export const useTrips = () => {
           start_date: startDate.toISOString().split('T')[0],
           end_date: endDate.toISOString().split('T')[0],
           duration_days: 3,
-          estimated_budget: 500,
+          estimated_budget: budgetPerPerson * numberOfTravelers,
+          number_of_travelers: numberOfTravelers,
+          budget_per_person: budgetPerPerson,
           image_url: 'https://images.pexels.com/photos/1285625/pexels-photo-1285625.jpeg?auto=compress&cs=tinysrgb&w=800'
         })
         .select()
@@ -223,7 +230,9 @@ export const useTrips = () => {
         start_date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
         end_date: new Date(Date.now() + 9 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
         duration_days: 3,
-        estimated_budget: 500,
+        estimated_budget: budgetPerPerson * numberOfTravelers,
+        number_of_travelers: numberOfTravelers,
+        budget_per_person: budgetPerPerson,
         image_url: 'https://images.pexels.com/photos/1285625/pexels-photo-1285625.jpeg?auto=compress&cs=tinysrgb&w=800',
         user_id: user.id,
         created_at: new Date().toISOString()
