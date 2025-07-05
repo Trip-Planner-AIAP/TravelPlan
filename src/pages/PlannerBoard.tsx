@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Plane, Shield, DollarSign, Plus, GripVertical, X, Target, CheckCircle, Circle, Sparkles, AlertTriangle, Check, BookmarkPlus } from 'lucide-react';
+import { ArrowLeft, Plane, Shield, DollarSign, Plus, GripVertical, X } from 'lucide-react';
 import {
   DndContext,
   DragEndEvent,
@@ -171,13 +171,13 @@ export const PlannerBoard: React.FC = () => {
   const [selectedDayId, setSelectedDayId] = useState<string>('');
   const [showFlightResults, setShowFlightResults] = useState(false);
   const [showInsuranceQuote, setShowInsuranceQuote] = useState(false);
-  
+
   // Checklist state
   const [checklist, setChecklist] = useState<any[]>([]);
   const [isGeneratingChecklist, setIsGeneratingChecklist] = useState(false);
   const [hasGeneratedChecklist, setHasGeneratedChecklist] = useState(false);
   const [isChecklistConfirmed, setIsChecklistConfirmed] = useState(false);
-  const [checklistTokenInfo, setChecklistTokenInfo] = useState<{ remaining: number; canMakeCall: boolean }>({ remaining: 6000, canMakeCall: true });
+  const [tokenInfo, setTokenInfo] = useState<{ remaining: number; canMakeCall: boolean }>({ remaining: 6000, canMakeCall: true });
   
   const { 
     loading: aiLoading, 
@@ -186,7 +186,7 @@ export const PlannerBoard: React.FC = () => {
     updateChecklistItem, 
     getChecklist,
     checkTokenUsage 
-  } = useAIFeatures(tripId!);
+  } = useAIFeatures(trip?.id || '');
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -195,6 +195,26 @@ export const PlannerBoard: React.FC = () => {
       },
     })
   );
+
+  useEffect(() => {
+    if (trip) {
+      loadChecklist();
+      loadTokenInfo();
+    }
+  }, [trip]);
+
+  const loadChecklist = async () => {
+    if (!trip) return;
+    const items = await getChecklist();
+    setChecklist(items);
+    setHasGeneratedChecklist(items.length > 0);
+  };
+
+  const loadTokenInfo = async () => {
+    if (!trip) return;
+    const info = await checkTokenUsage();
+    setTokenInfo(info);
+  };
 
   const handleDragStart = (event: DragStartEvent) => {
     setActiveId(event.active.id as string);
@@ -221,25 +241,6 @@ export const PlannerBoard: React.FC = () => {
     setActiveId(null);
   };
 
-  // Load checklist data
-  useEffect(() => {
-    if (trip) {
-      loadChecklist();
-      loadChecklistTokenInfo();
-    }
-  }, [trip]);
-
-  const loadChecklist = async () => {
-    const items = await getChecklist();
-    setChecklist(items);
-    setHasGeneratedChecklist(items.length > 0);
-  };
-
-  const loadChecklistTokenInfo = async () => {
-    const info = await checkTokenUsage();
-    setChecklistTokenInfo(info);
-  };
-
   const handleGenerateChecklist = async () => {
     if (!trip) return;
     
@@ -263,7 +264,7 @@ export const PlannerBoard: React.FC = () => {
     if (result.success && result.data) {
       setChecklist(result.data);
       setHasGeneratedChecklist(true);
-      await loadChecklistTokenInfo(); // Refresh token info
+      await loadTokenInfo(); // Refresh token info
     }
     
     setIsGeneratingChecklist(false);
@@ -509,44 +510,46 @@ export const PlannerBoard: React.FC = () => {
             />
 
             {/* AI Checklist Button */}
-            {!hasGeneratedChecklist && (
-              <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                <div className="flex items-center space-x-3 mb-4">
-                  <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-red-500 rounded-full flex items-center justify-center">
-                    <span className="text-2xl">🎯</span>
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-semibold text-gray-900">Smart Checklist</h3>
-                    <p className="text-sm text-gray-600">AI-powered packing list</p>
-                  </div>
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+              <div className="flex items-center space-x-3 mb-4">
+                <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-red-500 rounded-full flex items-center justify-center">
+                  <span className="text-2xl">🎯</span>
                 </div>
-                
-                <button
-                  onClick={handleGenerateChecklist}
-                  disabled={isGeneratingChecklist || !checklistTokenInfo.canMakeCall}
-                  className="w-full bg-gradient-to-r from-orange-600 to-red-600 text-white py-3 px-4 rounded-lg font-medium hover:from-orange-700 hover:to-red-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 hover:scale-105 flex items-center justify-center space-x-2 shadow-lg"
-                >
-                  {isGeneratingChecklist ? (
-                    <>
-                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                      <span>Generating...</span>
-                    </>
-                  ) : (
-                    <>
-                      <span className="text-lg">✨</span>
-                      <span>Generate Smart Checklist</span>
-                    </>
-                  )}
-                </button>
-                
-                {!checklistTokenInfo.canMakeCall && (
-                  <div className="mt-3 flex items-center space-x-2 text-sm text-yellow-700 bg-yellow-50 px-3 py-2 rounded-lg">
-                    <AlertTriangle className="w-4 h-4" />
-                    <span>Token limit reached. Checklist unavailable.</span>
-                  </div>
-                )}
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900">Smart Checklist</h3>
+                  <p className="text-sm text-gray-600">AI-powered packing list</p>
+                </div>
               </div>
-            )}
+              
+              <button
+                onClick={handleGenerateChecklist}
+                disabled={isGeneratingChecklist || (!tokenInfo.canMakeCall && !hasGeneratedChecklist)}
+                className="w-full bg-gradient-to-r from-orange-600 to-red-600 text-white py-3 px-4 rounded-lg font-medium hover:from-orange-700 hover:to-red-700 transition-all duration-300 hover:scale-105 flex items-center justify-center space-x-2 shadow-lg"
+              >
+                {isGeneratingChecklist ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    <span>Generating...</span>
+                  </>
+                ) : hasGeneratedChecklist ? (
+                  <>
+                    <span className="text-lg">📋</span>
+                    <span>View Checklist Below</span>
+                  </>
+                ) : (
+                  <>
+                    <span className="text-lg">✨</span>
+                    <span>Generate Smart Checklist</span>
+                  </>
+                )}
+              </button>
+              
+              {!tokenInfo.canMakeCall && !hasGeneratedChecklist && (
+                <div className="mt-3 text-xs text-yellow-700 bg-yellow-50 px-3 py-2 rounded-lg">
+                  Token limit reached. Checklist generation unavailable.
+                </div>
+              )}
+            </div>
 
             {/* Local Essentials Card */}
             <LocalEssentialsCard trip={trip} />
@@ -604,35 +607,37 @@ export const PlannerBoard: React.FC = () => {
         {hasGeneratedChecklist && (
           <div className="mt-12 bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
             {/* Header */}
-            <div className="p-8 border-b border-gray-200 bg-gradient-to-r from-orange-50 to-red-50">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-4">
-                  <div className="w-16 h-16 bg-gradient-to-br from-orange-500 to-red-500 rounded-2xl flex items-center justify-center">
-                    <Target className="w-8 h-8 text-white" />
-                  </div>
-                  <div>
-                    <h3 className="text-2xl font-bold text-gray-900">Smart Travel Checklist</h3>
-                    <p className="text-gray-600">{trip.destination} • {trip.duration_days} days</p>
-                  </div>
+            <div className="bg-gradient-to-r from-orange-50 to-red-50 p-8 border-b border-gray-200">
+              <div className="flex items-center space-x-4 mb-6">
+                <div className="w-16 h-16 bg-gradient-to-br from-orange-500 to-red-500 rounded-2xl flex items-center justify-center shadow-lg">
+                  <span className="text-3xl">🎯</span>
                 </div>
-                
-                {/* Progress Stats */}
-                <div className="text-right">
-                  <div className="text-3xl font-bold text-orange-600">{getChecklistCompletionStats().percentage}%</div>
-                  <div className="text-sm text-gray-600">Complete</div>
+                <div>
+                  <h2 className="text-3xl font-bold text-gray-900">Smart Travel Checklist</h2>
+                  <p className="text-lg text-gray-600">{trip.destination} • {trip.duration_days} days</p>
                 </div>
               </div>
               
-              {/* Progress Bar */}
-              <div className="mt-6">
-                <div className="w-full bg-gray-200 rounded-full h-4">
+              {/* Progress Header */}
+              <div className="bg-white rounded-xl p-6 shadow-sm">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-xl font-semibold text-gray-900">
+                    Perfect! Your personalized checklist is ready 🎯
+                  </h3>
+                  <div className="text-right">
+                    <div className="text-3xl font-bold text-orange-600">{getChecklistCompletionStats().percentage}%</div>
+                    <div className="text-sm text-gray-600">Complete</div>
+                  </div>
+                </div>
+                
+                <div className="w-full bg-gray-200 rounded-full h-4 mb-3">
                   <div
                     className="bg-gradient-to-r from-orange-500 to-red-500 h-4 rounded-full transition-all duration-500"
                     style={{ width: `${getChecklistCompletionStats().percentage}%` }}
                   ></div>
                 </div>
                 
-                <p className="text-sm text-gray-600 mt-2">
+                <p className="text-gray-600">
                   You've packed {getChecklistCompletionStats().completed} of {getChecklistCompletionStats().total} items!
                   {getChecklistCompletionStats().percentage === 100 && " 🎉 You're all set for your adventure!"}
                 </p>
@@ -641,123 +646,131 @@ export const PlannerBoard: React.FC = () => {
 
             {/* Checklist Content */}
             <div className="p-8">
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                {Object.entries(groupedChecklist).map(([category, items]) => (
-                  <div key={category} className="border border-gray-200 rounded-xl overflow-hidden">
-                    <div className="bg-gray-50 px-6 py-4 border-b border-gray-200">
-                      <div className="flex items-center space-x-3">
-                        <span className="text-2xl">{categoryIcons[category as keyof typeof categoryIcons]}</span>
-                        <h5 className="text-lg font-semibold text-gray-900">
-                          {categoryNames[category as keyof typeof categoryNames]}
-                        </h5>
-                        <span className="text-sm text-gray-500 bg-white px-2 py-1 rounded-full">
-                          ({items.filter(item => item.is_completed).length}/{items.length})
-                        </span>
-                      </div>
-                    </div>
-                    
-                    <div className="p-6 space-y-4">
-                      {items
-                        .sort((a, b) => a.priority - b.priority)
-                        .map((item) => (
-                        <div
-                          key={item.id}
-                          className={`flex items-center space-x-4 p-4 rounded-lg border transition-all hover:shadow-sm ${
-                            item.is_completed 
-                              ? 'bg-green-50 border-green-200' 
-                              : 'bg-white border-gray-200 hover:border-orange-300'
-                          }`}
-                        >
-                          <button
-                            onClick={() => handleToggleChecklistItem(item.id, item.is_completed)}
-                            className="flex-shrink-0"
-                          >
-                            {item.is_completed ? (
-                              <CheckCircle className="w-6 h-6 text-green-600" />
-                            ) : (
-                              <Circle className="w-6 h-6 text-gray-400 hover:text-orange-500 transition-colors" />
-                            )}
-                          </button>
-                          
-                          <div className="flex-1">
-                            <span className={`font-medium ${
-                              item.is_completed 
-                                ? 'text-green-700 line-through' 
-                                : 'text-gray-900'
-                            }`}>
-                              {item.item_name}
+              {!isChecklistConfirmed ? (
+                <>
+                  {/* Checklist Items */}
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+                    {Object.entries(groupedChecklist).map(([category, items]) => (
+                      <div key={category} className="border border-gray-200 rounded-xl overflow-hidden shadow-sm">
+                        <div className="bg-gray-50 px-6 py-4 border-b border-gray-200">
+                          <div className="flex items-center space-x-3">
+                            <span className="text-2xl">{categoryIcons[category as keyof typeof categoryIcons]}</span>
+                            <h4 className="text-lg font-semibold text-gray-900">
+                              {categoryNames[category as keyof typeof categoryNames]}
+                            </h4>
+                            <span className="text-sm text-gray-500 bg-gray-200 px-2 py-1 rounded-full">
+                              ({items.filter(item => item.is_completed).length}/{items.length})
                             </span>
                           </div>
-                          
-                          <div className={`px-3 py-1 rounded-full text-xs font-medium border ${
-                            priorityColors[item.priority as keyof typeof priorityColors]
-                          }`}>
-                            {priorityLabels[item.priority as keyof typeof priorityLabels]}
-                          </div>
                         </div>
-                      ))}
+                        
+                        <div className="p-6 space-y-4">
+                          {items
+                            .sort((a, b) => a.priority - b.priority)
+                            .map((item) => (
+                            <div
+                              key={item.id}
+                              className={`flex items-center space-x-4 p-4 rounded-xl border transition-all hover:shadow-sm ${
+                                item.is_completed 
+                                  ? 'bg-green-50 border-green-200' 
+                                  : 'bg-white border-gray-200 hover:border-orange-300'
+                              }`}
+                            >
+                              <button
+                                onClick={() => handleToggleChecklistItem(item.id, item.is_completed)}
+                                className="flex-shrink-0"
+                              >
+                                {item.is_completed ? (
+                                  <div className="w-6 h-6 bg-green-600 rounded-full flex items-center justify-center">
+                                    <span className="text-white text-sm">✓</span>
+                                  </div>
+                                ) : (
+                                  <div className="w-6 h-6 border-2 border-gray-300 rounded-full hover:border-orange-500 transition-colors"></div>
+                                )}
+                              </button>
+                              
+                              <div className="flex-1">
+                                <span className={`font-medium ${
+                                  item.is_completed 
+                                    ? 'text-green-700 line-through' 
+                                    : 'text-gray-900'
+                                }`}>
+                                  {item.item_name}
+                                </span>
+                              </div>
+                              
+                              <div className={`px-3 py-1 rounded-full text-xs font-medium border ${
+                                priorityColors[item.priority as keyof typeof priorityColors]
+                              }`}>
+                                {priorityLabels[item.priority as keyof typeof priorityLabels]}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Action Buttons */}
+                  <div className="bg-gradient-to-r from-orange-50 to-red-50 rounded-xl p-8 border border-orange-200">
+                    <div className="text-center mb-6">
+                      <h4 className="text-2xl font-semibold text-gray-900 mb-3">
+                        Your checklist is ready! 🎉
+                      </h4>
+                      <p className="text-lg text-gray-600">
+                        What would you like to do next?
+                      </p>
+                    </div>
+                    
+                    <div className="flex flex-col sm:flex-row gap-6 justify-center max-w-2xl mx-auto">
+                      <button
+                        onClick={handleConfirmChecklist}
+                        className="flex-1 bg-gradient-to-r from-green-600 to-emerald-600 text-white px-8 py-4 rounded-xl font-semibold hover:from-green-700 hover:to-emerald-700 transition-all duration-300 hover:scale-105 flex items-center justify-center space-x-3 shadow-lg hover:shadow-green-500/30"
+                      >
+                        <span className="text-xl">✅</span>
+                        <span>Perfect! I'm Ready to Pack</span>
+                      </button>
+                      
+                      <button
+                        className="flex-1 bg-white border-2 border-orange-300 text-orange-700 px-8 py-4 rounded-xl font-semibold hover:bg-orange-50 hover:border-orange-400 transition-all duration-300 hover:scale-105 flex items-center justify-center space-x-3 shadow-sm"
+                      >
+                        <span className="text-xl">📌</span>
+                        <span>Save for Later</span>
+                      </button>
+                    </div>
+                    
+                    <div className="mt-6 text-center">
+                      <p className="text-sm text-gray-500">
+                        Your checklist is automatically saved and you can access it anytime
+                      </p>
+                      <p className="text-xs text-gray-400 mt-2">
+                        AI-powered insights • Tokens remaining: {tokenInfo.remaining} / 6000
+                      </p>
                     </div>
                   </div>
-                ))}
-              </div>
-
-              {/* Action Buttons */}
-              {!isChecklistConfirmed && (
-                <div className="mt-8 p-6 bg-gradient-to-r from-orange-50 to-red-50 rounded-xl border border-orange-200">
-                  <div className="text-center mb-6">
-                    <h4 className="text-xl font-semibold text-gray-900 mb-2">
-                      Your checklist is ready! 🎉
-                    </h4>
-                    <p className="text-gray-600">
-                      What would you like to do next?
-                    </p>
+                </>
+              ) : (
+                /* Confirmation Message */
+                <div className="text-center py-16">
+                  <div className="w-24 h-24 bg-gradient-to-br from-green-500 to-emerald-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
+                    <span className="text-4xl text-white">✅</span>
                   </div>
-                  
-                  <div className="flex flex-col sm:flex-row gap-4 justify-center max-w-2xl mx-auto">
-                    <button
-                      onClick={handleConfirmChecklist}
-                      className="flex-1 bg-gradient-to-r from-green-600 to-emerald-600 text-white px-8 py-4 rounded-xl font-semibold hover:from-green-700 hover:to-emerald-700 transition-all duration-300 hover:scale-105 flex items-center justify-center space-x-3 shadow-lg hover:shadow-green-500/30"
-                    >
-                      <Check className="w-5 h-5" />
-                      <span>Perfect! I'm Ready to Pack</span>
-                    </button>
-                    
-                    <button
-                      onClick={() => {/* Already saved, just visual feedback */}}
-                      className="flex-1 bg-white border-2 border-orange-300 text-orange-700 px-8 py-4 rounded-xl font-semibold hover:bg-orange-50 hover:border-orange-400 transition-all duration-300 hover:scale-105 flex items-center justify-center space-x-3 shadow-sm"
-                    >
-                      <BookmarkPlus className="w-5 h-5" />
-                      <span>Save for Later</span>
-                    </button>
-                  </div>
-                  
-                  <div className="mt-4 text-center">
-                    <p className="text-sm text-gray-500">
-                      Your checklist is automatically saved and you can access it anytime
-                    </p>
-                  </div>
-                </div>
-              )}
-
-              {/* Confirmation Message */}
-              {isChecklistConfirmed && (
-                <div className="mt-8 p-8 bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl border border-green-200 text-center">
-                  <div className="w-20 h-20 bg-gradient-to-br from-green-500 to-emerald-500 rounded-full flex items-center justify-center mx-auto mb-6">
-                    <Check className="w-10 h-10 text-white" />
-                  </div>
-                  <h4 className="text-2xl font-bold text-green-800 mb-3">
-                    Checklist Confirmed! ✅
-                  </h4>
-                  <p className="text-green-700 text-lg">
+                  <h3 className="text-3xl font-bold text-green-800 mb-4">
+                    Checklist Confirmed! 
+                  </h3>
+                  <p className="text-xl text-green-700 mb-8">
                     You're all set for your {trip.destination} adventure. Have an amazing trip!
                   </p>
+                  <div className="bg-green-50 rounded-xl p-6 max-w-md mx-auto">
+                    <p className="text-green-800 font-medium">
+                      🎒 {getChecklistCompletionStats().completed} items packed
+                    </p>
+                    <p className="text-green-700 text-sm mt-2">
+                      Your checklist will remain available for future reference
+                    </p>
+                  </div>
                 </div>
               )}
-
-              {/* Token Usage Info */}
-              <div className="mt-6 text-center text-xs text-gray-500 pt-4 border-t border-gray-200">
-                <p>AI-powered smart checklist • Tokens remaining: {checklistTokenInfo.remaining} / 6000</p>
-              </div>
             </div>
           </div>
         )}
