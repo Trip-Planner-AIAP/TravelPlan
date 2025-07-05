@@ -144,20 +144,20 @@ export const TripGrid: React.FC = () => {
                               e.stopPropagation();
                               setActiveDropdown(activeDropdown === trip.id ? null : trip.id);
                             }}
-                            className="bg-white bg-opacity-90 backdrop-blur-sm hover:bg-opacity-100 text-gray-700 p-2 rounded-full shadow-lg transition-all hover:scale-110"
+                            className="bg-white bg-opacity-95 backdrop-blur-sm hover:bg-opacity-100 text-gray-700 p-2 rounded-full shadow-lg transition-all hover:scale-110 border border-gray-200"
                           >
                             <MoreVertical className="w-4 h-4" />
                           </button>
                           
                           {activeDropdown === trip.id && (
-                            <div className="absolute top-12 left-0 bg-white rounded-lg shadow-xl border border-gray-200 py-2 min-w-40 z-10">
+                            <div className="absolute top-12 left-0 bg-white rounded-lg shadow-xl border border-gray-200 py-2 min-w-40 z-50">
                               <button
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   navigate(`/planner/${trip.id}`);
                                   setActiveDropdown(null);
                                 }}
-                                className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-50 flex items-center space-x-2 transition-colors"
+                                className="w-full px-4 py-3 text-left text-gray-700 hover:bg-gray-50 flex items-center space-x-2 transition-colors"
                               >
                                 <Eye className="w-4 h-4" />
                                 <span>View Trip</span>
@@ -169,19 +169,19 @@ export const TripGrid: React.FC = () => {
                                   console.log('Edit trip:', trip.id);
                                   setActiveDropdown(null);
                                 }}
-                                className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-50 flex items-center space-x-2 transition-colors"
+                                className="w-full px-4 py-3 text-left text-gray-700 hover:bg-gray-50 flex items-center space-x-2 transition-colors"
                               >
                                 <Edit className="w-4 h-4" />
                                 <span>Edit Trip</span>
                               </button>
-                              <hr className="my-1" />
+                              <hr className="my-2 border-gray-200" />
                               <button
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   setShowDeleteConfirm(trip.id);
                                   setActiveDropdown(null);
                                 }}
-                                className="w-full px-4 py-2 text-left text-red-600 hover:bg-red-50 flex items-center space-x-2 transition-colors"
+                                className="w-full px-4 py-3 text-left text-red-600 hover:bg-red-50 flex items-center space-x-2 transition-colors font-medium"
                               >
                                 <Trash2 className="w-4 h-4" />
                                 <span>Delete Trip</span>
@@ -328,7 +328,7 @@ export const TripGrid: React.FC = () => {
       {/* Click outside to close dropdown */}
       {activeDropdown && (
         <div 
-          className="fixed inset-0 z-5" 
+          className="fixed inset-0 z-40" 
           onClick={() => setActiveDropdown(null)}
         />
       )}
