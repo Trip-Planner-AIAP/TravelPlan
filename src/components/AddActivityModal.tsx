@@ -71,32 +71,37 @@ export const AddActivityModal: React.FC<AddActivityModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 backdrop-blur-sm">
+      <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden shadow-2xl transform transition-all duration-300 scale-100">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-200">
-          <h3 className="text-xl font-semibold text-gray-900">Add New Activity</h3>
+        <div className="flex items-center justify-between p-6 border-b border-gray-200 bg-gradient-to-r from-orange-50 to-red-50">
+          <div className="flex items-center space-x-3">
+            <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-red-500 rounded-full flex items-center justify-center">
+              <span className="text-white text-lg">✨</span>
+            </div>
+            <h3 className="text-xl font-semibold text-gray-900">Add New Activity</h3>
+          </div>
           <button
             onClick={handleClose}
-            className="text-gray-400 hover:text-gray-600 transition-colors"
+            className="text-gray-400 hover:text-gray-600 hover:bg-white hover:bg-opacity-50 rounded-full p-2 transition-all"
           >
             <X className="w-6 h-6" />
           </button>
         </div>
 
         {/* Category Tabs */}
-        <div className="flex border-b border-gray-200 overflow-x-auto">
+        <div className="flex border-b border-gray-200 overflow-x-auto bg-gray-50">
           {categories.map((category) => (
             <button
               key={category.id}
               onClick={() => setSelectedCategory(category.id)}
-              className={`flex items-center space-x-2 px-4 py-3 text-sm font-medium whitespace-nowrap border-b-2 transition-colors ${
+              className={`flex items-center space-x-2 px-6 py-4 text-sm font-medium whitespace-nowrap border-b-2 transition-all hover:scale-105 ${
                 selectedCategory === category.id
-                  ? 'border-orange-500 text-orange-600 bg-orange-50'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-50'
+                  ? 'border-orange-500 text-orange-600 bg-white shadow-sm'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:bg-white hover:bg-opacity-50'
               }`}
             >
-              <span>{category.icon}</span>
+              <span className="text-lg">{category.icon}</span>
               <span>{category.name}</span>
             </button>
           ))}
@@ -106,20 +111,20 @@ export const AddActivityModal: React.FC<AddActivityModalProps> = ({
           {/* Search and Custom Toggle */}
           <div className="flex items-center space-x-4 mb-6">
             <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
               <input
                 type="text"
                 placeholder="Search activities..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all"
               />
             </div>
             <button
               onClick={() => setCustomMode(!customMode)}
-              className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+              className={`px-6 py-3 rounded-xl font-medium transition-all hover:scale-105 shadow-sm ${
                 customMode
-                  ? 'bg-orange-600 text-white'
+                  ? 'bg-gradient-to-r from-orange-600 to-red-600 text-white shadow-lg'
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
               }`}
             >
@@ -213,24 +218,34 @@ export const AddActivityModal: React.FC<AddActivityModalProps> = ({
                     <div
                       key={index}
                       onClick={() => handleSuggestionClick(suggestion)}
-                      className="p-4 border border-gray-200 rounded-lg hover:border-orange-300 hover:bg-orange-50 cursor-pointer transition-all group"
+                      className="p-5 border border-gray-200 rounded-xl hover:border-orange-300 hover:bg-orange-50 cursor-pointer transition-all group hover:shadow-md hover:scale-[1.02]"
                     >
                       <div className="flex items-start justify-between">
                         <div className="flex-1">
                           <div className="flex items-center space-x-2 mb-1">
-                            <span className="text-lg">{suggestion.icon}</span>
+                            <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-500 rounded-lg flex items-center justify-center">
+                              <span className="text-sm">{suggestion.icon}</span>
+                            </div>
                             <h4 className="font-medium text-gray-900 group-hover:text-orange-700">
                               {suggestion.title}
                             </h4>
                           </div>
                           <p className="text-sm text-gray-600 mb-2">{suggestion.description}</p>
-                          <div className="flex items-center space-x-4 text-xs text-gray-500">
-                            <span>💰 ${suggestion.estimatedCost}</span>
-                            <span>⏱️ {suggestion.durationMinutes}min</span>
+                          <div className="flex items-center space-x-3">
+                            <div className="flex items-center space-x-1 text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
+                              <span>💰</span>
+                              <span>${suggestion.estimatedCost}</span>
+                            </div>
+                            <div className="flex items-center space-x-1 text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
+                              <span>⏱️</span>
+                              <span>{suggestion.durationMinutes}min</span>
+                            </div>
                           </div>
                         </div>
-                        <div className="text-orange-600 opacity-0 group-hover:opacity-100 transition-opacity">
-                          <span className="text-sm font-medium">Add</span>
+                        <div className="text-orange-600 opacity-0 group-hover:opacity-100 transition-all transform group-hover:scale-110">
+                          <div className="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center">
+                            <span className="text-lg">+</span>
+                          </div>
                         </div>
                       </div>
                     </div>

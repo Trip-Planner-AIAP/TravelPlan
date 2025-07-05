@@ -53,32 +53,42 @@ const SortableActivityCard: React.FC<SortableActivityCardProps> = ({ activity, o
 
   const getActivityIcon = (type: string) => {
     switch (type) {
-      case 'flight': return '✈️';
-      case 'hotel': return '🏨';
-      case 'meal': return '🍽️';
-      case 'transport': return '🚗';
-      default: return '📍';
+      case 'flight': return { emoji: '✈️', bg: 'from-blue-500 to-sky-500' };
+      case 'hotel': return { emoji: '🏨', bg: 'from-purple-500 to-indigo-500' };
+      case 'meal': return { emoji: '🍽️', bg: 'from-orange-500 to-red-500' };
+      case 'transport': return { emoji: '🚗', bg: 'from-green-500 to-emerald-500' };
+      default: return { emoji: '📍', bg: 'from-gray-500 to-slate-500' };
     }
   };
+
+  const activityIcon = getActivityIcon(activity.activity_type);
 
   return (
     <div
       ref={setNodeRef}
       style={style}
-      className="bg-white rounded-lg border border-gray-200 p-4 shadow-sm hover:shadow-md transition-shadow"
+      className="bg-white rounded-xl border border-gray-200 p-4 shadow-sm hover:shadow-lg transition-all duration-300 hover:scale-[1.02] group"
     >
       <div className="flex items-start justify-between">
         <div className="flex-1">
-          <div className="flex items-center space-x-2 mb-2">
-            <span className="text-lg">{getActivityIcon(activity.activity_type)}</span>
-            <h4 className="font-medium text-gray-900">{activity.title}</h4>
+          <div className="flex items-center space-x-3 mb-3">
+            <div className={`w-10 h-10 bg-gradient-to-br ${activityIcon.bg} rounded-xl flex items-center justify-center shadow-md group-hover:scale-110 transition-transform duration-300`}>
+              <span className="text-lg">{activityIcon.emoji}</span>
+            </div>
+            <h4 className="font-semibold text-gray-900 group-hover:text-orange-600 transition-colors">{activity.title}</h4>
           </div>
           {activity.description && (
-            <p className="text-sm text-gray-600 mb-2">{activity.description}</p>
+            <p className="text-sm text-gray-600 mb-3 leading-relaxed">{activity.description}</p>
           )}
-          <div className="flex items-center justify-between text-sm">
-            <span className="text-gray-500">{activity.duration_minutes}min</span>
-            <span className="font-medium text-orange-600">${activity.estimated_cost}</span>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-1 text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
+              <span>⏱️</span>
+              <span>{activity.duration_minutes}min</span>
+            </div>
+            <div className="flex items-center space-x-1 text-sm font-semibold text-orange-600 bg-orange-50 px-2 py-1 rounded-full">
+              <span>💰</span>
+              <span>${activity.estimated_cost}</span>
+            </div>
           </div>
         </div>
         <div className="flex items-center space-x-1 ml-2">
@@ -87,7 +97,7 @@ const SortableActivityCard: React.FC<SortableActivityCardProps> = ({ activity, o
               e.stopPropagation();
               onDelete(activity.id);
             }}
-            className="opacity-0 group-hover:opacity-100 p-1 text-red-400 hover:text-red-600 hover:bg-red-50 rounded transition-all"
+            className="opacity-0 group-hover:opacity-100 p-1.5 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all hover:scale-110"
             title="Delete activity"
           >
             <X className="w-4 h-4" />
@@ -95,7 +105,7 @@ const SortableActivityCard: React.FC<SortableActivityCardProps> = ({ activity, o
           <div
             {...attributes}
             {...listeners}
-            className="cursor-grab active:cursor-grabbing p-1 text-gray-400 hover:text-gray-600"
+            className="cursor-grab active:cursor-grabbing p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-all"
           >
             <GripVertical className="w-4 h-4" />
           </div>
@@ -114,24 +124,72 @@ interface DayColumnProps {
 }
 
 const DayColumn: React.FC<DayColumnProps> = ({ dayNumber, dayId, activities, onAddActivity, onDeleteActivity }) => {
+  const totalCost = activities.reduce((sum, activity) => sum + activity.estimated_cost, 0);
+  const totalDuration = activities.reduce((sum, activity) => sum + activity.duration_minutes, 0);
+  const totalHours = Math.floor(totalDuration / 60);
+  const remainingMinutes = totalDuration % 60;
+
   return (
-    <div className="bg-gray-50 rounded-xl p-4 min-h-96">
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="font-semibold text-gray-900">Day {dayNumber}</h3>
+    <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl p-5 min-h-96 border border-gray-200 shadow-sm hover:shadow-md transition-all duration-300">
+      {/* Day Header */}
+      <div className="flex items-center justify-between mb-5">
+        <div className="flex items-center space-x-3">
+          <div className="w-8 h-8 bg-gradient-to-br from-orange-500 to-red-500 rounded-full flex items-center justify-center shadow-md">
+            <span className="text-white font-bold text-sm">{dayNumber}</span>
+          </div>
+          <h3 className="font-bold text-gray-900 text-lg">Day {dayNumber}</h3>
+        </div>
         <button
           onClick={() => onAddActivity(dayId)}
-          className="text-orange-600 hover:text-orange-700 p-1 hover:bg-orange-50 rounded transition-colors"
+          className="w-8 h-8 bg-white text-orange-600 hover:text-white hover:bg-orange-600 rounded-full flex items-center justify-center shadow-sm hover:shadow-md transition-all duration-300 hover:scale-110"
           title="Add new activity"
         >
-          <Plus className="w-4 h-4" />
+          <Plus className="w-4 h-4 font-bold" />
         </button>
       </div>
       
+      {/* Day Stats */}
+      {activities.length > 0 && (
+        <div className="bg-white rounded-xl p-3 mb-4 shadow-sm border border-gray-200">
+          <div className="grid grid-cols-3 gap-2 text-center">
+            <div className="flex flex-col items-center">
+              <span className="text-xs text-gray-500 mb-1">Activities</span>
+              <div className="flex items-center space-x-1">
+                <span className="text-sm">📋</span>
+                <span className="font-semibold text-gray-900 text-sm">{activities.length}</span>
+              </div>
+            </div>
+            <div className="flex flex-col items-center">
+              <span className="text-xs text-gray-500 mb-1">Duration</span>
+              <div className="flex items-center space-x-1">
+                <span className="text-sm">⏰</span>
+                <span className="font-semibold text-gray-900 text-sm">
+                  {totalHours > 0 ? `${totalHours}h` : ''}{remainingMinutes > 0 ? ` ${remainingMinutes}m` : ''}
+                </span>
+              </div>
+            </div>
+            <div className="flex flex-col items-center">
+              <span className="text-xs text-gray-500 mb-1">Cost</span>
+              <div className="flex items-center space-x-1">
+                <span className="text-sm">💰</span>
+                <span className="font-semibold text-orange-600 text-sm">${totalCost}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       <SortableContext items={activities.map(a => a.id)} strategy={verticalListSortingStrategy}>
-        <div className="space-y-3">
+        <div className="space-y-4">
           {activities.length === 0 ? (
-            <div className="text-center py-8 text-gray-500">
-              <p className="text-sm">Drag activities here or add new ones</p>
+            <div className="text-center py-12 text-gray-500 border-2 border-dashed border-gray-300 rounded-xl bg-white bg-opacity-50">
+              <div className="mb-3">
+                <div className="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-3">
+                  <span className="text-2xl">📅</span>
+                </div>
+              </div>
+              <p className="text-sm font-medium text-gray-700 mb-1">No activities planned</p>
+              <p className="text-xs text-gray-500">Drag activities here or click + to add</p>
             </div>
           ) : (
             activities.map((activity) => (
@@ -467,11 +525,44 @@ export const PlannerBoard: React.FC = () => {
           <div className="lg:col-span-3">
             <div className="mb-6">
               <h2 className="text-xl font-semibold text-gray-900 mb-2">
-                Let's plan your {trip.destination} adventure! 🎉
+                <span className="bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent">
+                  Let's plan your {trip.destination} adventure! 
+                </span>
+                <span className="ml-2">🎉</span>
               </h2>
-              <p className="text-gray-600">
-                Drag activities between days to organize your perfect itinerary
+              <p className="text-gray-600 flex items-center space-x-2">
+                <span>✨</span>
+                <span>Drag activities between days to organize your perfect itinerary</span>
               </p>
+            </div>
+
+            {/* Travel Progress Indicator */}
+            <div className="mb-6 bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl p-4 border border-blue-200">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-3">
+                  <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center">
+                    <span className="text-white text-lg">🗺️</span>
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-gray-900">Trip Planning Progress</h4>
+                    <p className="text-sm text-gray-600">
+                      {activities.length} activities planned across {days.length} days
+                    </p>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <div className="text-2xl font-bold text-blue-600">
+                    {Math.round((activities.length / (days.length * 3)) * 100)}%
+                  </div>
+                  <div className="text-xs text-gray-500">Complete</div>
+                </div>
+              </div>
+              <div className="mt-3 w-full bg-white rounded-full h-2">
+                <div
+                  className="bg-gradient-to-r from-blue-500 to-purple-500 h-2 rounded-full transition-all duration-500"
+                  style={{ width: `${Math.min((activities.length / (days.length * 3)) * 100, 100)}%` }}
+                ></div>
+              </div>
             </div>
 
             <DndContext
@@ -479,7 +570,7 @@ export const PlannerBoard: React.FC = () => {
               onDragStart={handleDragStart}
               onDragEnd={handleDragEnd}
             >
-              <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
                 {days.slice(0, 5).map((day) => {
                   const dayActivities = activities.filter(a => a.day_id === day.id);
                   return (
@@ -497,8 +588,11 @@ export const PlannerBoard: React.FC = () => {
 
               <DragOverlay>
                 {activeId ? (
-                  <div className="bg-white rounded-lg border border-gray-200 p-4 shadow-lg opacity-90">
-                    <div className="font-medium text-gray-900">Moving activity...</div>
+                  <div className="bg-white rounded-xl border-2 border-orange-300 p-4 shadow-2xl transform rotate-3 scale-105">
+                    <div className="flex items-center space-x-2">
+                      <span className="text-lg">✨</span>
+                      <div className="font-semibold text-orange-600">Moving activity...</div>
+                    </div>
                   </div>
                 ) : null}
               </DragOverlay>
@@ -507,6 +601,32 @@ export const PlannerBoard: React.FC = () => {
 
           {/* Side Panel */}
           <div className="lg:col-span-1 space-y-6">
+            {/* Quick Actions Panel */}
+            <div className="bg-gradient-to-br from-orange-50 to-red-50 rounded-2xl p-6 border border-orange-200">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center space-x-2">
+                <span className="text-xl">🚀</span>
+                <span>Quick Actions</span>
+              </h3>
+              <div className="grid grid-cols-2 gap-3">
+                <button className="bg-white hover:bg-orange-50 border border-orange-200 rounded-xl p-3 text-center transition-all hover:scale-105 hover:shadow-md">
+                  <div className="text-2xl mb-1">✈️</div>
+                  <div className="text-xs font-medium text-gray-700">Flights</div>
+                </button>
+                <button className="bg-white hover:bg-orange-50 border border-orange-200 rounded-xl p-3 text-center transition-all hover:scale-105 hover:shadow-md">
+                  <div className="text-2xl mb-1">🏨</div>
+                  <div className="text-xs font-medium text-gray-700">Hotels</div>
+                </button>
+                <button className="bg-white hover:bg-orange-50 border border-orange-200 rounded-xl p-3 text-center transition-all hover:scale-105 hover:shadow-md">
+                  <div className="text-2xl mb-1">🎯</div>
+                  <div className="text-xs font-medium text-gray-700">Activities</div>
+                </button>
+                <button className="bg-white hover:bg-orange-50 border border-orange-200 rounded-xl p-3 text-center transition-all hover:scale-105 hover:shadow-md">
+                  <div className="text-2xl mb-1">🍽️</div>
+                  <div className="text-xs font-medium text-gray-700">Dining</div>
+                </button>
+              </div>
+            </div>
+
             {/* Flight Search Card */}
             <FlightSearchCard
               onSearch={handleFlightSearch}
@@ -522,12 +642,15 @@ export const PlannerBoard: React.FC = () => {
             {/* AI Checklist Button */}
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
               <div className="flex items-center space-x-3 mb-4">
-                <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-red-500 rounded-full flex items-center justify-center">
-                  <span className="text-2xl">🎯</span>
+                <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-red-500 rounded-full flex items-center justify-center shadow-lg">
+                  <span className="text-2xl animate-pulse">🎯</span>
                 </div>
                 <div>
                   <h3 className="text-lg font-semibold text-gray-900">Smart Checklist</h3>
-                  <p className="text-sm text-gray-600">AI-powered packing list</p>
+                  <p className="text-sm text-gray-600 flex items-center space-x-1">
+                    <span>🤖</span>
+                    <span>AI-powered packing list</span>
+                  </p>
                 </div>
               </div>
               
@@ -566,18 +689,31 @@ export const PlannerBoard: React.FC = () => {
 
             {/* Flight Results (conditional) */}
             {showFlightResults && flights.length > 0 && (
-              <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Flight Results</h3>
+              <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 animate-fadeIn">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center space-x-2">
+                  <span className="text-xl">✈️</span>
+                  <span>Flight Results</span>
+                </h3>
                 <div className="space-y-3">
                   {flights.slice(0, 3).map((flight) => (
-                    <div key={flight.id} className="border border-gray-200 rounded-lg p-3">
+                    <div key={flight.id} className="border border-gray-200 rounded-lg p-3 hover:border-blue-300 hover:bg-blue-50 transition-all">
                       <div className="flex items-center justify-between">
                         <div>
-                          <p className="font-medium">{flight.airline}</p>
-                          <p className="text-sm text-gray-600">{flight.origin} → {flight.destination}</p>
+                          <p className="font-medium flex items-center space-x-2">
+                            <span>🛫</span>
+                            <span>{flight.airline}</span>
+                          </p>
+                          <p className="text-sm text-gray-600 flex items-center space-x-1">
+                            <span>{flight.origin}</span>
+                            <span>→</span>
+                            <span>{flight.destination}</span>
+                          </p>
                         </div>
                         <div className="text-right">
-                          <p className="font-semibold text-orange-600">${flight.price}</p>
+                          <p className="font-semibold text-green-600 flex items-center space-x-1">
+                            <span>💰</span>
+                            <span>${flight.price}</span>
+                          </p>
                           <p className="text-xs text-gray-500">{flight.flight_number}</p>
                         </div>
                       </div>
@@ -589,20 +725,32 @@ export const PlannerBoard: React.FC = () => {
 
             {/* Insurance Quote (conditional) */}
             {showInsuranceQuote && insurance.length > 0 && (
-              <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Insurance Quote</h3>
+              <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 animate-fadeIn">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center space-x-2">
+                  <span className="text-xl">🛡️</span>
+                  <span>Insurance Quote</span>
+                </h3>
                 <div className="space-y-3">
                   {insurance.slice(0, 3).map((policy) => (
-                    <div key={policy.id} className="border border-gray-200 rounded-lg p-3">
+                    <div key={policy.id} className="border border-gray-200 rounded-lg p-3 hover:border-green-300 hover:bg-green-50 transition-all">
                       <div className="flex items-center justify-between mb-2">
                         <div>
-                          <p className="font-medium">{policy.provider}</p>
+                          <p className="font-medium flex items-center space-x-2">
+                            <span>🏢</span>
+                            <span>{policy.provider}</span>
+                          </p>
                           <p className="text-xs text-gray-600 capitalize">{policy.policy_type} Coverage</p>
                         </div>
-                        <p className="font-semibold text-orange-600">${policy.premium_cost}</p>
+                        <p className="font-semibold text-green-600 flex items-center space-x-1">
+                          <span>💰</span>
+                          <span>${policy.premium_cost}</span>
+                        </p>
                       </div>
-                      <p className="text-sm text-gray-600">Coverage: ${policy.coverage_amount?.toLocaleString()}</p>
-                      <button className="mt-2 w-full bg-green-600 text-white py-1 px-3 rounded text-xs hover:bg-green-700 transition-colors">
+                      <p className="text-sm text-gray-600 flex items-center space-x-1">
+                        <span>🛡️</span>
+                        <span>Coverage: ${policy.coverage_amount?.toLocaleString()}</span>
+                      </p>
+                      <button className="mt-2 w-full bg-green-600 text-white py-2 px-3 rounded-lg text-xs font-medium hover:bg-green-700 transition-all hover:scale-105">
                         Select This Plan
                       </button>
                     </div>

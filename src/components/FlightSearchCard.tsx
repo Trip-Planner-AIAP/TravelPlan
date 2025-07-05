@@ -19,14 +19,17 @@ export const FlightSearchCard: React.FC<FlightSearchCardProps> = ({ onSearch, lo
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-all duration-300">
       <div className="flex items-center space-x-3 mb-4">
-        <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-          <Plane className="w-6 h-6 text-blue-600" />
+        <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-sky-500 rounded-full flex items-center justify-center shadow-lg">
+          <Plane className="w-6 h-6 text-white" />
         </div>
         <div>
           <h3 className="text-lg font-semibold text-gray-900">Find Flights</h3>
-          <p className="text-sm text-gray-600">Search for the perfect flight</p>
+          <p className="text-sm text-gray-600 flex items-center space-x-1">
+            <span>✈️</span>
+            <span>Search for the perfect flight</span>
+          </p>
         </div>
       </div>
 
@@ -70,12 +73,15 @@ export const FlightSearchCard: React.FC<FlightSearchCardProps> = ({ onSearch, lo
         <button
           onClick={handleSearch}
           disabled={isSearching}
-          className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center space-x-2"
+          className="w-full bg-gradient-to-r from-blue-600 to-sky-600 text-white py-3 px-4 rounded-xl font-medium hover:from-blue-700 hover:to-sky-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 hover:scale-105 flex items-center justify-center space-x-2 shadow-lg"
         >
           {isSearching ? (
             <Loader2 className="w-4 h-4 animate-spin" />
           ) : (
-            <Search className="w-4 h-4" />
+            <>
+              <Search className="w-4 h-4" />
+              <span className="text-lg">🛫</span>
+            </>
           )}
           <span>{isSearching ? 'Searching...' : 'Find the perfect flight'}</span>
         </button>
