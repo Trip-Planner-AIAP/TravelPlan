@@ -223,6 +223,7 @@ export const PlannerBoard: React.FC = () => {
     addActivity,
     deleteActivity,
     selectFlight,
+    deselectFlight,
     searchFlights,
     getInsuranceQuote,
     refetch
@@ -413,6 +414,13 @@ export const PlannerBoard: React.FC = () => {
     if (result.success) {
       // Flight has been selected and activities added
       console.log('Flight selected successfully');
+    }
+  };
+
+  const handleDeselectFlight = async (flightId: string) => {
+    const result = await deselectFlight(flightId);
+    if (result.success) {
+      console.log('Flight deselected successfully');
     }
   };
 
@@ -666,6 +674,7 @@ export const PlannerBoard: React.FC = () => {
               loading={false}
               flights={availableFlights}
               onSelectFlight={handleSelectFlight}
+              onDeselectFlight={handleDeselectFlight}
               selectedFlights={flights}
             />
 

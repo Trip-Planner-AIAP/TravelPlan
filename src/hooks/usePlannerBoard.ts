@@ -203,6 +203,11 @@ export const usePlannerBoard = (tripId: string) => {
       // Add flight to selected flights if not already selected
       if (!flights.some(f => f.id === flight.id)) {
         setFlights(prev => [...prev, flight]);
+        
+        // Save to database
+        await supabase
+          .from('flights')
+          .insert(flight);
       }
 
       // Automatically add flight activities to the itinerary
@@ -212,6 +217,49 @@ export const usePlannerBoard = (tripId: string) => {
     } catch (error) {
       console.error('Error selecting flight:', error);
       return { success: false, error };
+    }
+  };
+
+  const deselectFlight = async (flightId: string) => {
+    try {
+      // Remove flight from selected flights
+      const flightToRemove = flights.find(f => f.id === flightId);
+      if (!flightToRemove) return { success: false, error: 'Flight not found' };
+      
+      setFlights(prev => prev.filter(f => f.id !== flightId));
+      
+      // Remove from database
+      await supabase
+        .from('flights')
+        .delete()
+        .eq('id', flightId);
+      
+      // Remove related flight activities
+      await removeFlightActivities(flightToRemove);
+      
+      return { success: true };
+    } catch (error) {
+      console.error('Error deselecting flight:', error);
+      return { success: false, error };
+    }
+  };
+
+  const removeFlightActivities = async (flight: Flight) => {
+    try {
+      // Find and remove flight-related activities
+      const flightActivities = activities.filter(activity => 
+        activity.activity_type === 'flight' && 
+        (activity.title.includes(flight.airline || '') || 
+         activity.title.includes(flight.flight_number || '') ||
+         activity.description?.includes(flight.origin) ||
+         activity.description?.includes(flight.destination))
+      );
+      
+      for (const activity of flightActivities) {
+        await deleteActivity(activity.id);
+      }
+    } catch (error) {
+      console.error('Error removing flight activities:', error);
     }
   };
 
@@ -539,6 +587,7 @@ export const usePlannerBoard = (tripId: string) => {
     addActivity,
     deleteActivity,
     selectFlight,
+    deselectFlight,
     searchFlights,
     getInsuranceQuote,
     refetch: fetchTripData

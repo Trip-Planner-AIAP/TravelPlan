@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Plane, Search, Loader2, Check, Plus } from 'lucide-react';
+import { X } from 'lucide-react';
 import type { Flight } from '../types';
 
 interface FlightSearchCardProps {
@@ -7,6 +8,7 @@ interface FlightSearchCardProps {
   loading: boolean;
   flights: Flight[];
   onSelectFlight: (flight: Flight) => Promise<void>;
+  onDeselectFlight: (flightId: string) => Promise<void>;
   selectedFlights: Flight[];
 }
 
@@ -15,6 +17,7 @@ export const FlightSearchCard: React.FC<FlightSearchCardProps> = ({
   loading, 
   flights, 
   onSelectFlight, 
+  onDeselectFlight,
   selectedFlights 
 }) => {
   const [isSearching, setIsSearching] = useState(false);
@@ -32,6 +35,10 @@ export const FlightSearchCard: React.FC<FlightSearchCardProps> = ({
 
   const handleSelectFlight = async (flight: Flight) => {
     await onSelectFlight(flight);
+  };
+
+  const handleDeselectFlight = async (flightId: string) => {
+    await onDeselectFlight(flightId);
   };
 
   const isFlightSelected = (flightId: string) => {
@@ -186,7 +193,16 @@ export const FlightSearchCard: React.FC<FlightSearchCardProps> = ({
                   </div>
                 </div>
               </div>
-            ))}
+              <div className="flex items-center space-x-2">
+                <p className="font-semibold text-green-600">${flight.price}</p>
+                <button
+                  onClick={() => handleDeselectFlight(flight.id)}
+                  className="text-red-400 hover:text-red-600 hover:bg-red-50 rounded-full p-1 transition-all"
+                  title="Remove flight"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
           </div>
         </div>
       )}
@@ -218,7 +234,12 @@ export const FlightSearchCard: React.FC<FlightSearchCardProps> = ({
             </p>
           </div>
         </div>
-      )}
-    </div>
-  );
-};
+        <div className="mt-4 pt-4 border-t border-green-200">
+          <div className="flex items-center justify-between">
+            <p className="text-sm font-medium text-green-800">
+              Total Flight Cost: ${selectedFlights.reduce((sum, f) => sum + (f.price || 0), 0)}
+            </p>
+            <div className="bg-gradient-to-r from-green-600 to-emerald-600 text-white px-4 py-2 rounded-lg text-sm font-semibold shadow-lg">
+              ✅ Flights Confirmed
+            </div>
+          </div>
