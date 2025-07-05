@@ -334,58 +334,59 @@ export const ChecklistModal: React.FC<ChecklistModalProps> = ({ isOpen, onClose,
                   </div>
                 ))}
               </div>
-            </div>
-          )}
-          {/* Action Buttons - only show when checklist is generated */}
-          {hasGenerated && !isConfirmed && (
-            <div className="mt-8 p-6 bg-gradient-to-r from-orange-50 to-red-50 rounded-xl border border-orange-200">
-              <div className="text-center mb-6">
-                <h4 className="text-lg font-semibold text-gray-900 mb-2">
-                  Your checklist is ready! 🎉
-                </h4>
-                <p className="text-gray-600">
-                  What would you like to do next?
-                </p>
-              </div>
-              
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <button
-                  onClick={handleConfirmChecklist}
-                  className="flex-1 sm:flex-none bg-gradient-to-r from-green-600 to-emerald-600 text-white px-8 py-4 rounded-xl font-semibold hover:from-green-700 hover:to-emerald-700 transition-all duration-300 hover:scale-105 flex items-center justify-center space-x-3 shadow-lg hover:shadow-green-500/30"
-                >
-                  <Check className="w-5 h-5" />
-                  <span>Perfect! I'm Ready to Pack</span>
-                </button>
-                
-                <button
-                  onClick={handleSaveForLater}
-                  className="flex-1 sm:flex-none bg-white border-2 border-orange-300 text-orange-700 px-8 py-4 rounded-xl font-semibold hover:bg-orange-50 hover:border-orange-400 transition-all duration-300 hover:scale-105 flex items-center justify-center space-x-3 shadow-sm"
-                >
-                  <BookmarkPlus className="w-5 h-5" />
-                  <span>Save for Later</span>
-                </button>
-              </div>
-              
-              <div className="mt-4 text-center">
-                <p className="text-sm text-gray-500">
-                  Your checklist is automatically saved and you can access it anytime
-                </p>
-              </div>
-            </div>
-          )}
 
-          {/* Confirmation Message */}
-          {isConfirmed && (
-            <div className="mt-8 p-6 bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl border border-green-200 text-center">
-              <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Check className="w-8 h-8 text-white" />
-              </div>
-              <h4 className="text-xl font-bold text-green-800 mb-2">
-                Checklist Confirmed! ✅
-              </h4>
-              <p className="text-green-700">
-                You're all set for your {trip.destination} adventure. Have an amazing trip!
-              </p>
+              {/* Action Buttons - only show when checklist is generated and not confirmed */}
+              {!isConfirmed && (
+                <div className="mt-8 p-6 bg-gradient-to-r from-orange-50 to-red-50 rounded-xl border border-orange-200">
+                  <div className="text-center mb-6">
+                    <h4 className="text-lg font-semibold text-gray-900 mb-2">
+                      Your checklist is ready! 🎉
+                    </h4>
+                    <p className="text-gray-600">
+                      What would you like to do next?
+                    </p>
+                  </div>
+                  
+                  <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                    <button
+                      onClick={handleConfirmChecklist}
+                      className="flex-1 sm:flex-none bg-gradient-to-r from-green-600 to-emerald-600 text-white px-8 py-4 rounded-xl font-semibold hover:from-green-700 hover:to-emerald-700 transition-all duration-300 hover:scale-105 flex items-center justify-center space-x-3 shadow-lg hover:shadow-green-500/30"
+                    >
+                      <Check className="w-5 h-5" />
+                      <span>Perfect! I'm Ready to Pack</span>
+                    </button>
+                    
+                    <button
+                      onClick={handleSaveForLater}
+                      className="flex-1 sm:flex-none bg-white border-2 border-orange-300 text-orange-700 px-8 py-4 rounded-xl font-semibold hover:bg-orange-50 hover:border-orange-400 transition-all duration-300 hover:scale-105 flex items-center justify-center space-x-3 shadow-sm"
+                    >
+                      <BookmarkPlus className="w-5 h-5" />
+                      <span>Save for Later</span>
+                    </button>
+                  </div>
+                  
+                  <div className="mt-4 text-center">
+                    <p className="text-sm text-gray-500">
+                      Your checklist is automatically saved and you can access it anytime
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {/* Confirmation Message */}
+              {isConfirmed && (
+                <div className="mt-8 p-6 bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl border border-green-200 text-center">
+                  <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Check className="w-8 h-8 text-white" />
+                  </div>
+                  <h4 className="text-xl font-bold text-green-800 mb-2">
+                    Checklist Confirmed! ✅
+                  </h4>
+                  <p className="text-green-700">
+                    You're all set for your {trip.destination} adventure. Have an amazing trip!
+                  </p>
+                </div>
+              )}
             </div>
           )}
         </div>
