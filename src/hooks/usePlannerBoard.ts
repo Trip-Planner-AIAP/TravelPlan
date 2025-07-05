@@ -229,10 +229,15 @@ export const usePlannerBoard = (tripId: string) => {
       setFlights(prev => prev.filter(f => f.id !== flightId));
       
       // Remove from database
-      await supabase
+      const { error } = await supabase
         .from('flights')
         .delete()
         .eq('id', flightId);
+      
+      if (error) {
+        console.error('Database error:', error);
+        // Still continue with local state update for demo purposes
+      }
       
       // Remove related flight activities
       await removeFlightActivities(flightToRemove);
@@ -240,6 +245,8 @@ export const usePlannerBoard = (tripId: string) => {
       return { success: true };
     } catch (error) {
       console.error('Error deselecting flight:', error);
+      // Still update local state even if database fails
+      setFlights(prev => prev.filter(f => f.id !== flightId));
       return { success: false, error };
     }
   };
@@ -251,12 +258,23 @@ export const usePlannerBoard = (tripId: string) => {
         activity.activity_type === 'flight' && 
         (activity.title.includes(flight.airline || '') || 
          activity.title.includes(flight.flight_number || '') ||
-         activity.description?.includes(flight.origin) ||
-         activity.description?.includes(flight.destination))
+         activity.description?.includes(flight.origin || '') ||
+         activity.description?.includes(flight.destination || ''))
       );
       
       for (const activity of flightActivities) {
-        await deleteActivity(activity.id);
+        // Remove from local state
+        setActivities(prev => prev.filter(a => a.id !== activity.id));
+        
+        // Try to remove from database
+        try {
+          await supabase
+            .from('activities')
+            .delete()
+            .eq('id', activity.id);
+        } catch (dbError) {
+          console.error('Error removing activity from database:', dbError);
+        }
       }
     } catch (error) {
       console.error('Error removing flight activities:', error);

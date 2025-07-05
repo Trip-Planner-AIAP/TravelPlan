@@ -38,7 +38,16 @@ export const FlightSearchCard: React.FC<FlightSearchCardProps> = ({
   };
 
   const handleDeselectFlight = async (flightId: string) => {
-    await onDeselectFlight(flightId);
+    try {
+      const result = await onDeselectFlight(flightId);
+      if (result.success) {
+        console.log('Flight successfully removed');
+      } else {
+        console.error('Failed to remove flight:', result.error);
+      }
+    } catch (error) {
+      console.error('Error removing flight:', error);
+    }
   };
 
   const isFlightSelected = (flightId: string) => {
