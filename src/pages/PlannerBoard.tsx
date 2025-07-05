@@ -669,51 +669,6 @@ export const PlannerBoard: React.FC = () => {
             onSelectInsurance={handleSelectInsurance}
             onDeselectInsurance={handleDeselectInsurance}
           />
-
-          {/* Smart Checklist Button */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <div className="flex items-center space-x-3 mb-4">
-              <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-red-500 rounded-full flex items-center justify-center shadow-lg">
-                <span className="text-2xl animate-pulse">🎯</span>
-              </div>
-              <div>
-                <h3 className="text-lg font-semibold text-gray-900">Smart Checklist</h3>
-                <p className="text-sm text-gray-600 flex items-center space-x-1">
-                  <span>🤖</span>
-                  <span>AI-powered packing list</span>
-                </p>
-              </div>
-            </div>
-            
-            <button
-              onClick={handleGenerateChecklist}
-              disabled={isGeneratingChecklist || (!tokenInfo.canMakeCall && !hasGeneratedChecklist)}
-              className="w-full bg-gradient-to-r from-orange-600 to-red-600 text-white py-3 px-4 rounded-lg font-medium hover:from-orange-700 hover:to-red-700 transition-all duration-300 hover:scale-105 flex items-center justify-center space-x-2 shadow-lg"
-            >
-              {isGeneratingChecklist ? (
-                <>
-                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                  <span>Generating...</span>
-                </>
-              ) : hasGeneratedChecklist ? (
-                <>
-                  <span className="text-lg">📋</span>
-                  <span>View Checklist Below</span>
-                </>
-              ) : (
-                <>
-                  <span className="text-lg">✨</span>
-                  <span>Generate Smart Checklist</span>
-                </>
-              )}
-            </button>
-            
-            {!tokenInfo.canMakeCall && !hasGeneratedChecklist && (
-              <div className="mt-3 text-xs text-yellow-700 bg-yellow-50 px-3 py-2 rounded-lg">
-                Token limit reached. Checklist generation unavailable.
-              </div>
-            )}
-          </div>
         </div>
 
         {/* Local Essentials and Trip Summary Row */}
@@ -740,6 +695,59 @@ export const PlannerBoard: React.FC = () => {
         {/* AI Itinerary Analyzer */}
         <div className="mb-8">
           <ItineraryAnalyzer trip={trip} days={days} activities={activities} />
+        </div>
+
+        {/* Smart Checklist Button - Below AI Assistant */}
+        <div className="mb-8">
+          <div className="bg-gradient-to-br from-orange-50 to-red-50 rounded-xl shadow-sm border border-orange-200 p-6">
+            <div className="text-center">
+              <div className="w-16 h-16 bg-gradient-to-br from-orange-500 to-red-500 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
+                <span className="text-3xl animate-pulse">🎯</span>
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-2">Ready for Your Smart Checklist?</h3>
+              <p className="text-gray-600 mb-6 max-w-md mx-auto">
+                Now that you've planned your itinerary and the AI has analyzed it, let's create your personalized packing checklist!
+              </p>
+              
+              <button
+                onClick={handleGenerateChecklist}
+                disabled={isGeneratingChecklist || (!tokenInfo.canMakeCall && !hasGeneratedChecklist)}
+                className="bg-gradient-to-r from-orange-600 to-red-600 text-white px-8 py-4 rounded-xl font-semibold hover:from-orange-700 hover:to-red-700 transition-all duration-300 hover:scale-105 flex items-center justify-center space-x-3 shadow-lg mx-auto"
+              >
+                {isGeneratingChecklist ? (
+                  <>
+                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    <span>Generating Smart Checklist...</span>
+                  </>
+                ) : hasGeneratedChecklist ? (
+                  <>
+                    <span className="text-xl">📋</span>
+                    <span>View Your Checklist Below</span>
+                  </>
+                ) : (
+                  <>
+                    <span className="text-xl">✨</span>
+                    <span>Generate AI-Powered Checklist</span>
+                  </>
+                )}
+              </button>
+              
+              {!tokenInfo.canMakeCall && !hasGeneratedChecklist && (
+                <div className="mt-4 text-sm text-yellow-700 bg-yellow-100 px-4 py-3 rounded-lg border border-yellow-300">
+                  <div className="flex items-center space-x-2">
+                    <span>⚠️</span>
+                    <span>Token limit reached. Checklist generation unavailable.</span>
+                  </div>
+                </div>
+              )}
+              
+              {!hasGeneratedChecklist && tokenInfo.canMakeCall && (
+                <div className="mt-4 text-xs text-gray-500">
+                  <p>AI-powered insights • Tokens remaining: {tokenInfo.remaining} / 6000</p>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
 
         {/* Smart Travel Checklist Section */}
