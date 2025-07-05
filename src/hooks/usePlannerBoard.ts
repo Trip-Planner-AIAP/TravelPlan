@@ -283,14 +283,20 @@ export const usePlannerBoard = (tripId: string) => {
 
   const addFlightActivities = async (flight: Flight) => {
     try {
-      const isOutbound = flight.departure_date === trip?.start_date;
-      const isReturn = flight.return_date === trip?.end_date;
+      // Check if this is an outbound or return flight based on dates
+      const tripStartDate = new Date(trip?.start_date || '');
+      const tripEndDate = new Date(trip?.end_date || '');
+      const flightDepartureDate = new Date(flight.departure_date || '');
+      const flightReturnDate = new Date(flight.return_date || '');
+      
+      const isOutbound = Math.abs(flightDepartureDate.getTime() - tripStartDate.getTime()) < 24 * 60 * 60 * 1000; // Within 1 day
+      const isReturn = flight.return_date && Math.abs(flightReturnDate.getTime() - tripEndDate.getTime()) < 24 * 60 * 60 * 1000;
       
       if (isOutbound) {
         // Add arrival activity to first day
         const firstDay = days.find(d => d.day_number === 1);
         if (firstDay) {
-          await addActivity(
+          const result = await addActivity(
             firstDay.id,
             `Arrive via ${flight.airline} ${flight.flight_number}`,
             'flight',
@@ -298,6 +304,7 @@ export const usePlannerBoard = (tripId: string) => {
             180, // 3 hours for international arrival
             `Flight from ${flight.origin} to ${flight.destination}`
           );
+          console.log('Added arrival activity:', result);
         }
       }
       
@@ -305,7 +312,7 @@ export const usePlannerBoard = (tripId: string) => {
         // Add departure activity to last day
         const lastDay = days[days.length - 1];
         if (lastDay) {
-          await addActivity(
+          const result = await addActivity(
             lastDay.id,
             `Depart via ${flight.airline} ${flight.flight_number}`,
             'flight',
@@ -313,6 +320,21 @@ export const usePlannerBoard = (tripId: string) => {
             120, // 2 hours for departure
             `Return flight from ${flight.destination} to ${flight.origin}`
           );
+          console.log('Added departure activity:', result);
+        }
+      } else {
+        // If no return date specified, add as one-way flight to first day
+        const firstDay = days.find(d => d.day_number === 1);
+        if (firstDay) {
+          const result = await addActivity(
+            firstDay.id,
+            `${flight.airline} ${flight.flight_number}`,
+            'flight',
+            flight.price || 0,
+            180,
+            `Flight from ${flight.origin} to ${flight.destination}`
+          );
+          console.log('Added one-way flight activity:', result);
         }
       }
     } catch (error) {

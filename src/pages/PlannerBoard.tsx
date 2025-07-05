@@ -68,47 +68,49 @@ const SortableActivityCard: React.FC<SortableActivityCardProps> = ({ activity, o
     <div
       ref={setNodeRef}
       style={style}
-      className="bg-white rounded-xl border border-gray-200 p-4 shadow-sm hover:shadow-lg transition-all duration-300 hover:scale-[1.02] group"
+      className="bg-white rounded-2xl border border-gray-200 p-5 shadow-sm hover:shadow-xl transition-all duration-300 hover:scale-[1.03] group hover:border-orange-300"
     >
       <div className="flex items-start justify-between">
         <div className="flex-1">
-          <div className="flex items-center space-x-3 mb-3">
-            <div className={`w-10 h-10 bg-gradient-to-br ${activityIcon.bg} rounded-xl flex items-center justify-center shadow-md group-hover:scale-110 transition-transform duration-300`}>
-              <span className="text-lg">{activityIcon.emoji}</span>
+          <div className="flex items-center space-x-4 mb-4">
+            <div className={`w-12 h-12 bg-gradient-to-br ${activityIcon.bg} rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300`}>
+              <span className="text-xl">{activityIcon.emoji}</span>
             </div>
-            <h4 className="font-semibold text-gray-900 group-hover:text-orange-600 transition-colors">{activity.title}</h4>
+            <div className="flex-1">
+              <h4 className="font-bold text-gray-900 group-hover:text-orange-600 transition-colors text-lg leading-tight">{activity.title}</h4>
+            </div>
           </div>
           {activity.description && (
-            <p className="text-sm text-gray-600 mb-3 leading-relaxed">{activity.description}</p>
+            <p className="text-sm text-gray-600 mb-4 leading-relaxed pl-16">{activity.description}</p>
           )}
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-1 text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
+          <div className="flex items-center justify-between pl-16">
+            <div className="flex items-center space-x-1 text-xs text-gray-600 bg-gray-100 px-3 py-2 rounded-full font-medium">
               <span>⏱️</span>
               <span>{activity.duration_minutes}min</span>
             </div>
-            <div className="flex items-center space-x-1 text-sm font-semibold text-orange-600 bg-orange-50 px-2 py-1 rounded-full">
+            <div className="flex items-center space-x-1 text-sm font-bold text-orange-600 bg-orange-50 px-3 py-2 rounded-full">
               <span>💰</span>
               <span>${activity.estimated_cost}</span>
             </div>
           </div>
         </div>
-        <div className="flex items-center space-x-1 ml-2">
+        <div className="flex flex-col items-center space-y-2 ml-4">
           <button
             onClick={(e) => {
               e.stopPropagation();
               onDelete(activity.id);
             }}
-            className="opacity-0 group-hover:opacity-100 p-1.5 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all hover:scale-110"
+            className="opacity-0 group-hover:opacity-100 p-2 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all hover:scale-110"
             title="Delete activity"
           >
-            <X className="w-4 h-4" />
+            <X className="w-5 h-5" />
           </button>
           <div
             {...attributes}
             {...listeners}
-            className="cursor-grab active:cursor-grabbing p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-all"
+            className="cursor-grab active:cursor-grabbing p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-xl transition-all"
           >
-            <GripVertical className="w-4 h-4" />
+            <GripVertical className="w-5 h-5" />
           </div>
         </div>
       </div>
@@ -131,49 +133,52 @@ const DayColumn: React.FC<DayColumnProps> = ({ dayNumber, dayId, activities, onA
   const remainingMinutes = totalDuration % 60;
 
   return (
-    <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl p-5 min-h-96 border border-gray-200 shadow-sm hover:shadow-md transition-all duration-300">
+    <div className="bg-white rounded-2xl p-6 min-h-[500px] border border-gray-200 shadow-sm hover:shadow-lg transition-all duration-300 hover:scale-[1.02]">
       {/* Day Header */}
-      <div className="flex items-center justify-between mb-5">
+      <div className="flex items-center justify-between mb-6">
         <div className="flex items-center space-x-3">
-          <div className="w-8 h-8 bg-gradient-to-br from-orange-500 to-red-500 rounded-full flex items-center justify-center shadow-md">
-            <span className="text-white font-bold text-sm">{dayNumber}</span>
+          <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-red-500 rounded-2xl flex items-center justify-center shadow-lg">
+            <span className="text-white font-bold text-lg">{dayNumber}</span>
           </div>
-          <h3 className="font-bold text-gray-900 text-lg">Day {dayNumber}</h3>
+          <div>
+            <h3 className="font-bold text-gray-900 text-xl">Day {dayNumber}</h3>
+            <p className="text-sm text-gray-500">Plan your activities</p>
+          </div>
         </div>
         <button
           onClick={() => onAddActivity(dayId)}
-          className="w-8 h-8 bg-white text-orange-600 hover:text-white hover:bg-orange-600 rounded-full flex items-center justify-center shadow-sm hover:shadow-md transition-all duration-300 hover:scale-110"
+          className="w-10 h-10 bg-gradient-to-br from-orange-100 to-red-100 text-orange-600 hover:text-white hover:from-orange-500 hover:to-red-500 rounded-xl flex items-center justify-center shadow-sm hover:shadow-md transition-all duration-300 hover:scale-110"
           title="Add new activity"
         >
-          <Plus className="w-4 h-4 font-bold" />
+          <Plus className="w-5 h-5 font-bold" />
         </button>
       </div>
       
       {/* Day Stats */}
       {activities.length > 0 && (
-        <div className="bg-white rounded-xl p-3 mb-4 shadow-sm border border-gray-200">
-          <div className="grid grid-cols-3 gap-2 text-center">
+        <div className="bg-gradient-to-r from-orange-50 to-red-50 rounded-xl p-4 mb-6 border border-orange-200">
+          <div className="grid grid-cols-3 gap-4 text-center">
             <div className="flex flex-col items-center">
-              <span className="text-xs text-gray-500 mb-1">Activities</span>
+              <span className="text-xs font-medium text-orange-700 mb-1">Activities</span>
               <div className="flex items-center space-x-1">
-                <span className="text-sm">📋</span>
-                <span className="font-semibold text-gray-900 text-sm">{activities.length}</span>
+                <span className="text-lg">📋</span>
+                <span className="font-bold text-orange-800 text-lg">{activities.length}</span>
               </div>
             </div>
             <div className="flex flex-col items-center">
-              <span className="text-xs text-gray-500 mb-1">Duration</span>
+              <span className="text-xs font-medium text-orange-700 mb-1">Duration</span>
               <div className="flex items-center space-x-1">
-                <span className="text-sm">⏰</span>
-                <span className="font-semibold text-gray-900 text-sm">
+                <span className="text-lg">⏰</span>
+                <span className="font-bold text-orange-800 text-sm">
                   {totalHours > 0 ? `${totalHours}h` : ''}{remainingMinutes > 0 ? ` ${remainingMinutes}m` : ''}
                 </span>
               </div>
             </div>
             <div className="flex flex-col items-center">
-              <span className="text-xs text-gray-500 mb-1">Cost</span>
+              <span className="text-xs font-medium text-orange-700 mb-1">Cost</span>
               <div className="flex items-center space-x-1">
-                <span className="text-sm">💰</span>
-                <span className="font-semibold text-orange-600 text-sm">${totalCost}</span>
+                <span className="text-lg">💰</span>
+                <span className="font-bold text-orange-800 text-lg">${totalCost}</span>
               </div>
             </div>
           </div>
@@ -181,16 +186,16 @@ const DayColumn: React.FC<DayColumnProps> = ({ dayNumber, dayId, activities, onA
       )}
 
       <SortableContext items={activities.map(a => a.id)} strategy={verticalListSortingStrategy}>
-        <div className="space-y-4">
+        <div className="space-y-5">
           {activities.length === 0 ? (
-            <div className="text-center py-12 text-gray-500 border-2 border-dashed border-gray-300 rounded-xl bg-white bg-opacity-50">
-              <div className="mb-3">
-                <div className="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-3">
-                  <span className="text-2xl">📅</span>
+            <div className="text-center py-16 text-gray-500 border-2 border-dashed border-gray-300 rounded-2xl bg-gradient-to-br from-gray-50 to-gray-100">
+              <div className="mb-4">
+                <div className="w-20 h-20 bg-gradient-to-br from-gray-200 to-gray-300 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-sm">
+                  <span className="text-3xl">📅</span>
                 </div>
               </div>
-              <p className="text-sm font-medium text-gray-700 mb-1">No activities planned</p>
-              <p className="text-xs text-gray-500">Drag activities here or click + to add</p>
+              <p className="text-lg font-medium text-gray-700 mb-2">No activities planned</p>
+              <p className="text-sm text-gray-500">Drag activities here or click + to add</p>
             </div>
           ) : (
             activities.map((activity) => (
@@ -629,10 +634,10 @@ export const PlannerBoard: React.FC = () => {
 
               <DragOverlay>
                 {activeId ? (
-                  <div className="bg-white rounded-xl border-2 border-orange-300 p-4 shadow-2xl transform rotate-3 scale-105">
+                  <div className="bg-white rounded-2xl border-2 border-orange-400 p-6 shadow-2xl transform rotate-2 scale-110">
                     <div className="flex items-center space-x-2">
-                      <span className="text-lg">✨</span>
-                      <div className="font-semibold text-orange-600">Moving activity...</div>
+                      <span className="text-2xl">✨</span>
+                      <div className="font-bold text-orange-600 text-lg">Moving activity...</div>
                     </div>
                   </div>
                 ) : null}
@@ -643,7 +648,7 @@ export const PlannerBoard: React.FC = () => {
           {/* Side Panel */}
           <div className="lg:col-span-1 space-y-6">
             {/* Quick Actions Panel */}
-            <div className="bg-gradient-to-br from-orange-50 to-red-50 rounded-2xl p-6 border border-orange-200">
+            <div className="bg-gradient-to-br from-orange-50 to-red-50 rounded-2xl p-6 border border-orange-200 shadow-sm">
               <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center space-x-2">
                 <span className="text-xl">🚀</span>
                 <span>Quick Actions</span>
