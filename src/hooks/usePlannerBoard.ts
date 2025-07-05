@@ -298,7 +298,7 @@ export const usePlannerBoard = (tripId: string) => {
           flight_number: 'NH110',
           api_response: {},
           created_at: new Date().toISOString()
-        }
+        },
         {
           id: crypto.randomUUID(),
           trip_id: tripId,

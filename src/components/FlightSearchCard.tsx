@@ -219,7 +219,6 @@ export const FlightSearchCard: React.FC<FlightSearchCardProps> = ({
           </div>
         </div>
       )}
-      </div>
     </div>
   );
 };
