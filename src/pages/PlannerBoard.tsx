@@ -25,6 +25,7 @@ import { InsuranceCard } from '../components/InsuranceCard';
 import { AddActivityModal } from '../components/AddActivityModal';
 import { BudgetTracker } from '../components/BudgetTracker';
 import { LocalEssentialsCard } from '../components/LocalEssentialsCard';
+import { ItineraryAnalyzer } from '../components/ItineraryAnalyzer';
 import { useAIFeatures } from '../hooks/useAIFeatures';
 import type { Activity } from '../types';
 
@@ -604,6 +605,11 @@ export const PlannerBoard: React.FC = () => {
         </div>
 
         {/* Smart Travel Checklist Section */}
+        {/* AI Itinerary Analyzer */}
+        <div className="mt-8">
+          <ItineraryAnalyzer trip={trip} days={days} activities={activities} />
+        </div>
+
         {hasGeneratedChecklist && (
           <div className="mt-12 bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
             {/* Header */}
