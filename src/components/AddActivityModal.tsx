@@ -1,16 +1,18 @@
 import React, { useState } from 'react';
 import { X, Search } from 'lucide-react';
-import { activitySuggestions, type ActivitySuggestion } from '../data/activitySuggestions';
+import { activitySuggestions, getRegionSpecificSuggestions, type ActivitySuggestion } from '../data/activitySuggestions';
 
 interface AddActivityModalProps {
   isOpen: boolean;
   onClose: () => void;
+  destination?: string;
   onCreateActivity: (title: string, type: string, estimatedCost: number, durationMinutes: number, description: string) => void;
 }
 
 export const AddActivityModal: React.FC<AddActivityModalProps> = ({ 
   isOpen, 
   onClose, 
+  destination = '',
   onCreateActivity 
 }) => {
   const [selectedCategory, setSelectedCategory] = useState<string>('attraction');
@@ -31,10 +33,13 @@ export const AddActivityModal: React.FC<AddActivityModalProps> = ({
     { id: 'flight', name: 'Flights', icon: '✈️' }
   ];
 
-  const filteredSuggestions = activitySuggestions[selectedCategory]?.filter(activity =>
+  // Get region-specific suggestions based on destination
+  const regionSuggestions = getRegionSpecificSuggestions(selectedCategory, destination);
+  
+  const filteredSuggestions = regionSuggestions.filter(activity =>
     activity.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
     activity.description.toLowerCase().includes(searchTerm.toLowerCase())
-  ) || [];
+  );
 
   const handleSuggestionClick = (suggestion: ActivitySuggestion) => {
     onCreateActivity(

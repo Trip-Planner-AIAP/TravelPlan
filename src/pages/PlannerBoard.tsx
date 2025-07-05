@@ -7,13 +7,18 @@ import {
   DragOverlay,
   DragStartEvent,
   PointerSensor,
+  MouseSensor,
+  TouchSensor,
   useSensor,
   useSensors,
+  closestCenter,
+  DragOverEvent,
 } from '@dnd-kit/core';
 import {
   SortableContext,
   arrayMove,
   verticalListSortingStrategy,
+  rectSortingStrategy,
 } from '@dnd-kit/sortable';
 import {
   useSortable,
@@ -123,13 +128,31 @@ interface DayColumnProps {
 }
 
 const DayColumn: React.FC<DayColumnProps> = ({ dayNumber, dayId, activities, onAddActivity, onDeleteActivity }) => {
+  const {
+    setNodeRef,
+    isOver,
+  } = useSortable({ 
+    id: dayId,
+    data: {
+      type: 'day',
+      dayId: dayId
+    }
+  });
+
   const totalCost = activities.reduce((sum, activity) => sum + activity.estimated_cost, 0);
   const totalDuration = activities.reduce((sum, activity) => sum + activity.duration_minutes, 0);
   const totalHours = Math.floor(totalDuration / 60);
   const remainingMinutes = totalDuration % 60;
 
   return (
-    <div className="bg-white rounded-lg p-4 min-h-[350px] border border-gray-200 shadow-sm hover:shadow-md transition-all duration-200">
+    <div 
+      ref={setNodeRef}
+      className={`bg-white rounded-lg p-4 min-h-[350px] border shadow-sm hover:shadow-md transition-all duration-200 ${
+        isOver 
+          ? 'border-orange-400 bg-orange-50 shadow-lg scale-105' 
+          : 'border-gray-200'
+      }`}
+    >
       {/* Day Header */}
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center space-x-2">
@@ -239,9 +262,20 @@ export const PlannerBoard: React.FC = () => {
   } = useAIFeatures(trip?.id || '');
 
   const sensors = useSensors(
+    useSensor(MouseSensor, {
+      activationConstraint: {
+        distance: 3,
+      },
+    }),
+    useSensor(TouchSensor, {
+      activationConstraint: {
+        delay: 100,
+        tolerance: 5,
+      },
+    }),
     useSensor(PointerSensor, {
       activationConstraint: {
-        distance: 8,
+        distance: 3,
       },
     })
   );
@@ -270,6 +304,10 @@ export const PlannerBoard: React.FC = () => {
     setActiveId(event.active.id as string);
   };
 
+  const handleDragOver = (event: DragOverEvent) => {
+    // Optional: Add visual feedback during drag over
+  };
+
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
     
@@ -278,14 +316,20 @@ export const PlannerBoard: React.FC = () => {
     const activeId = active.id as string;
     const overId = over.id as string;
 
-    // Find which day the activity is being moved to
-    const targetDay = days.find(day => 
-      activities.filter(a => a.day_id === day.id).some(a => a.id === overId) ||
-      day.id === overId
-    );
-
+    // Check if we're dropping on a day column directly
+    const targetDay = days.find(day => day.id === overId);
+    
     if (targetDay) {
       moveActivity(activeId, targetDay.id);
+    } else {
+      // Find which day the target activity belongs to
+      const targetActivity = activities.find(a => a.id === overId);
+      if (targetActivity) {
+        const targetDay = days.find(day => day.id === targetActivity.day_id);
+        if (targetDay) {
+          moveActivity(activeId, targetDay.id);
+        }
+      }
     }
 
     setActiveId(null);
@@ -616,31 +660,37 @@ export const PlannerBoard: React.FC = () => {
 
           <DndContext
             sensors={sensors}
+            collisionDetection={closestCenter}
             onDragStart={handleDragStart}
+            onDragOver={handleDragOver}
             onDragEnd={handleDragEnd}
           >
-            <div className="grid grid-cols-1 md:grid-cols-5 gap-3">
-              {days.map((day) => {
-                const dayActivities = activities.filter(a => a.day_id === day.id);
-                return (
-                  <DayColumn
-                    key={day.id}
-                    dayNumber={day.day_number}
-                    dayId={day.id}
-                    activities={dayActivities}
-                    onAddActivity={handleAddActivity}
-                    onDeleteActivity={handleDeleteActivity}
-                  />
-                );
-              })}
-            </div>
+            <SortableContext items={days.map(d => d.id)} strategy={rectSortingStrategy}>
+              <div className="grid grid-cols-1 md:grid-cols-5 gap-3">
+                {days.map((day) => {
+                  const dayActivities = activities.filter(a => a.day_id === day.id);
+                  return (
+                    <DayColumn
+                      key={day.id}
+                      dayNumber={day.day_number}
+                      dayId={day.id}
+                      activities={dayActivities}
+                      onAddActivity={handleAddActivity}
+                      onDeleteActivity={handleDeleteActivity}
+                    />
+                  );
+                })}
+              </div>
+            </SortableContext>
 
             <DragOverlay>
               {activeId ? (
-                <div className="bg-white rounded-xl border-2 border-orange-300 p-4 shadow-xl transform rotate-1 scale-105">
-                  <div className="flex items-center space-x-3">
-                    <span className="text-lg">✨</span>
-                    <div className="font-semibold text-orange-600">Moving activity...</div>
+                <div className="bg-white rounded-lg border-2 border-orange-400 p-3 shadow-2xl transform rotate-2 scale-110 opacity-95">
+                  <div className="flex items-center space-x-2">
+                    <div className="w-6 h-6 bg-gradient-to-br from-orange-500 to-red-500 rounded-lg flex items-center justify-center">
+                      <span className="text-white text-xs">✨</span>
+                    </div>
+                    <div className="font-medium text-orange-700">Moving activity...</div>
                   </div>
                 </div>
               ) : null}
@@ -970,6 +1020,7 @@ export const PlannerBoard: React.FC = () => {
         {/* Add Activity Modal */}
         <AddActivityModal
           isOpen={showAddActivityModal}
+          destination={trip.destination}
           onClose={() => {
             setShowAddActivityModal(false);
             setSelectedDayId('');

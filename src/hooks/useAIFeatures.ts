@@ -614,6 +614,341 @@ function generateMockEssentials(destination: string, currency?: string): Omit<Lo
         ]
       }
     };
+  } else if (destinationLower.includes('thailand') || destinationLower.includes('bangkok')) {
+    essentials = {
+      sim_info: {
+        provider: 'AIS or True Move',
+        cost: '฿300-500/week',
+        coverage: 'Excellent in cities and tourist areas',
+        purchase_location: 'Airport, 7-Eleven, or official stores'
+      },
+      forex_info: {
+        currency: 'Thai Baht (THB)',
+        exchange_rate: '1 USD ≈ 35 THB',
+        best_exchange_locations: ['Super Rich exchange', 'Banks', 'ATMs'],
+        cash_recommendations: 'Cash preferred for street food and markets'
+      },
+      safety_notes: {
+        emergency_numbers: {
+          'Police': '191',
+          'Fire/Medical': '199',
+          'Tourist Police': '1155'
+        },
+        safety_tips: [
+          'Be cautious of tuk-tuk scams in tourist areas',
+          'Negotiate taxi fares beforehand or use meter',
+          'Avoid drinking tap water'
+        ],
+        cultural_notes: [
+          'Wai greeting (hands together, slight bow)',
+          'Never touch someone\'s head',
+          'Remove shoes before entering temples',
+          'Dress modestly at religious sites',
+          'Don\'t point feet toward Buddha statues'
+        ],
+        health_recommendations: [
+          'Drink bottled or boiled water',
+          'Use strong mosquito repellent',
+          'Be careful with street food hygiene',
+          'Consider hepatitis A/B vaccination'
+        ]
+      }
+    };
+  } else if (destinationLower.includes('italy') || destinationLower.includes('rome') || destinationLower.includes('venice')) {
+    essentials = {
+      sim_info: {
+        provider: 'TIM or Vodafone',
+        cost: '€15-30/week',
+        coverage: 'Excellent nationwide',
+        purchase_location: 'Airport, phone stores, or tabacchi'
+      },
+      forex_info: {
+        currency: 'Euro (EUR)',
+        exchange_rate: '1 USD ≈ 0.92 EUR',
+        best_exchange_locations: ['Banks', 'Post offices', 'ATMs'],
+        cash_recommendations: 'Many places accept cards, carry €50-100 cash'
+      },
+      safety_notes: {
+        emergency_numbers: {
+          'Police': '113',
+          'Fire/Medical': '115',
+          'European Emergency': '112'
+        },
+        safety_tips: [
+          'Watch for pickpockets near tourist attractions',
+          'Be cautious of fake police asking for documents',
+          'Avoid unlicensed taxi drivers'
+        ],
+        cultural_notes: [
+          'Dress appropriately for churches (cover shoulders/knees)',
+          'Lunch break is typically 1-4pm',
+          'Dinner is usually after 8pm',
+          'Tipping is not mandatory but appreciated'
+        ],
+        health_recommendations: [
+          'Tap water is safe to drink',
+          'Pharmacies (green cross) widely available',
+          'European Health Insurance Card if from EU'
+        ]
+      }
+    };
+  } else if (destinationLower.includes('spain') || destinationLower.includes('barcelona') || destinationLower.includes('madrid')) {
+    essentials = {
+      sim_info: {
+        provider: 'Movistar or Orange',
+        cost: '€15-25/week',
+        coverage: 'Excellent in cities, good in rural areas',
+        purchase_location: 'Airport, phone stores, or estancos'
+      },
+      forex_info: {
+        currency: 'Euro (EUR)',
+        exchange_rate: '1 USD ≈ 0.92 EUR',
+        best_exchange_locations: ['Banks', 'Casas de cambio', 'ATMs'],
+        cash_recommendations: 'Cards widely accepted, carry €50-100 cash'
+      },
+      safety_notes: {
+        emergency_numbers: {
+          'Police': '091',
+          'Fire/Medical': '080',
+          'European Emergency': '112'
+        },
+        safety_tips: [
+          'Watch for pickpockets in crowded areas',
+          'Be cautious of bag snatchers on motorcycles',
+          'Avoid walking alone late at night'
+        ],
+        cultural_notes: [
+          'Siesta time is 2-5pm (many shops close)',
+          'Dinner is typically after 9pm',
+          'Greet with two kisses on cheeks',
+          'Dress well - appearance is important'
+        ],
+        health_recommendations: [
+          'Tap water is safe to drink',
+          'Farmacias (green cross) for medications',
+          'European Health Insurance Card if from EU'
+        ]
+      }
+    };
+  } else if (destinationLower.includes('germany') || destinationLower.includes('berlin') || destinationLower.includes('munich')) {
+    essentials = {
+      sim_info: {
+        provider: 'Deutsche Telekom or Vodafone',
+        cost: '€20-35/week',
+        coverage: 'Excellent nationwide',
+        purchase_location: 'Airport, electronics stores, or supermarkets'
+      },
+      forex_info: {
+        currency: 'Euro (EUR)',
+        exchange_rate: '1 USD ≈ 0.92 EUR',
+        best_exchange_locations: ['Banks', 'Wechselstuben', 'ATMs'],
+        cash_recommendations: 'Cash still preferred in many places, carry €100-150'
+      },
+      safety_notes: {
+        emergency_numbers: {
+          'Police': '110',
+          'Fire/Medical': '112'
+        },
+        safety_tips: [
+          'Germany is very safe, but stay alert in tourist areas',
+          'Validate public transport tickets to avoid fines',
+          'Be cautious of bicycle lanes when walking'
+        ],
+        cultural_notes: [
+          'Punctuality is extremely important',
+          'Firm handshakes when greeting',
+          'Quiet hours (Ruhezeit) typically 10pm-6am',
+          'Separate recycling is taken seriously'
+        ],
+        health_recommendations: [
+          'Tap water is safe and high quality',
+          'Apotheken (pharmacies) for medications',
+          'European Health Insurance Card if from EU'
+        ]
+      }
+    };
+  } else if (destinationLower.includes('uk') || destinationLower.includes('london') || destinationLower.includes('england')) {
+    essentials = {
+      sim_info: {
+        provider: 'EE or O2',
+        cost: '£15-25/week',
+        coverage: 'Excellent in cities, good in rural areas',
+        purchase_location: 'Airport, phone shops, or supermarkets'
+      },
+      forex_info: {
+        currency: 'British Pound (GBP)',
+        exchange_rate: '1 USD ≈ 0.79 GBP',
+        best_exchange_locations: ['Banks', 'Post offices', 'ATMs'],
+        cash_recommendations: 'Cards widely accepted, carry £50-100 cash'
+      },
+      safety_notes: {
+        emergency_numbers: {
+          'Police/Fire/Medical': '999'
+        },
+        safety_tips: [
+          'Generally very safe, but watch for pickpockets in tourist areas',
+          'Mind the gap on London Underground',
+          'Look right when crossing streets'
+        ],
+        cultural_notes: [
+          'Queuing (standing in line) is very important',
+          'Say please, thank you, and sorry frequently',
+          'Pub etiquette: order at the bar, no table service',
+          'Tipping 10-15% in restaurants if service charge not included'
+        ],
+        health_recommendations: [
+          'Tap water is safe to drink',
+          'NHS walk-in centres for minor health issues',
+          'Pharmacies (chemists) widely available'
+        ]
+      }
+    };
+  } else if (destinationLower.includes('usa') || destinationLower.includes('america') || destinationLower.includes('new york')) {
+    essentials = {
+      sim_info: {
+        provider: 'Verizon or AT&T',
+        cost: '$30-50/week',
+        coverage: 'Excellent in cities, variable in rural areas',
+        purchase_location: 'Airport, carrier stores, or electronics retailers'
+      },
+      forex_info: {
+        currency: 'US Dollar (USD)',
+        exchange_rate: '1 USD = 1.00 USD',
+        best_exchange_locations: ['Banks', 'Currency exchanges', 'ATMs'],
+        cash_recommendations: 'Cards widely accepted, carry $50-100 cash for tips'
+      },
+      safety_notes: {
+        emergency_numbers: {
+          'Police/Fire/Medical': '911'
+        },
+        safety_tips: [
+          'Stay aware in crowded tourist areas',
+          'Don\'t leave valuables visible in cars',
+          'Be cautious when using ATMs at night'
+        ],
+        cultural_notes: [
+          'Tipping is expected (18-20% at restaurants)',
+          'Personal space is important',
+          'Small talk with strangers is common',
+          'Sales tax is added at checkout'
+        ],
+        health_recommendations: [
+          'Tap water is safe to drink',
+          'Healthcare is expensive - ensure you have insurance',
+          'Pharmacies widely available'
+        ]
+      }
+    };
+  } else if (destinationLower.includes('australia') || destinationLower.includes('sydney') || destinationLower.includes('melbourne')) {
+    essentials = {
+      sim_info: {
+        provider: 'Telstra or Optus',
+        cost: 'AUD $30-50/week',
+        coverage: 'Excellent in cities, limited in outback',
+        purchase_location: 'Airport, carrier stores, or post offices'
+      },
+      forex_info: {
+        currency: 'Australian Dollar (AUD)',
+        exchange_rate: '1 USD ≈ 1.50 AUD',
+        best_exchange_locations: ['Banks', 'Currency exchanges', 'ATMs'],
+        cash_recommendations: 'Cards widely accepted, carry AUD $50-100 cash'
+      },
+      safety_notes: {
+        emergency_numbers: {
+          'Police/Fire/Medical': '000'
+        },
+        safety_tips: [
+          'Sun protection is crucial - high UV levels',
+          'Be aware of dangerous wildlife in nature',
+          'Strong ocean currents - swim between flags'
+        ],
+        cultural_notes: [
+          'Casual, laid-back attitude',
+          'Tipping not mandatory but appreciated',
+          'BYO (Bring Your Own) alcohol to some restaurants',
+          'Mateship and fair play are valued'
+        ],
+        health_recommendations: [
+          'Tap water is safe to drink',
+          'Use high SPF sunscreen',
+          'Medicare reciprocal agreements with some countries'
+        ]
+      }
+    };
+  } else if (destinationLower.includes('canada') || destinationLower.includes('toronto') || destinationLower.includes('vancouver')) {
+    essentials = {
+      sim_info: {
+        provider: 'Rogers or Bell',
+        cost: 'CAD $35-55/week',
+        coverage: 'Excellent in cities, limited in remote areas',
+        purchase_location: 'Airport, carrier stores, or electronics retailers'
+      },
+      forex_info: {
+        currency: 'Canadian Dollar (CAD)',
+        exchange_rate: '1 USD ≈ 1.35 CAD',
+        best_exchange_locations: ['Banks', 'Currency exchanges', 'ATMs'],
+        cash_recommendations: 'Cards widely accepted, carry CAD $50-100 cash'
+      },
+      safety_notes: {
+        emergency_numbers: {
+          'Police/Fire/Medical': '911'
+        },
+        safety_tips: [
+          'Generally very safe country',
+          'Weather can change quickly - dress in layers',
+          'Wildlife encounters possible in nature'
+        ],
+        cultural_notes: [
+          'Politeness and saying "sorry" frequently',
+          'Tipping 15-18% at restaurants',
+          'Bilingual country (English and French)',
+          'Multiculturalism is celebrated'
+        ],
+        health_recommendations: [
+          'Tap water is safe to drink',
+          'Healthcare system available for emergencies',
+          'Pharmacies widely available'
+        ]
+      }
+    };
+  } else if (destinationLower.includes('mexico') || destinationLower.includes('cancun') || destinationLower.includes('mexico city')) {
+    essentials = {
+      sim_info: {
+        provider: 'Telcel or Movistar',
+        cost: '$200-400 MXN/week',
+        coverage: 'Good in cities and tourist areas',
+        purchase_location: 'Airport, OXXO stores, or carrier shops'
+      },
+      forex_info: {
+        currency: 'Mexican Peso (MXN)',
+        exchange_rate: '1 USD ≈ 18 MXN',
+        best_exchange_locations: ['Banks', 'Casas de cambio', 'ATMs'],
+        cash_recommendations: 'Cash preferred for small vendors and tips'
+      },
+      safety_notes: {
+        emergency_numbers: {
+          'Police': '911',
+          'Tourist Police': '078'
+        },
+        safety_tips: [
+          'Stay in tourist areas, especially at night',
+          'Don\'t display expensive items',
+          'Use official taxis or ride-sharing apps'
+        ],
+        cultural_notes: [
+          'Greet with handshake or kiss on cheek',
+          'Family and relationships are very important',
+          'Lunch is the main meal (2-4pm)',
+          'Bargaining is common in markets'
+        ],
+        health_recommendations: [
+          'Drink bottled water',
+          'Be cautious with street food initially',
+          'Use mosquito repellent',
+          'Consider travel insurance'
+        ]
+      }
+    };
   }
 
   return essentials;
