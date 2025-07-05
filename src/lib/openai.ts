@@ -83,24 +83,13 @@ Focus on destination-specific items and practical essentials.`
     }
 
     // Parse the JSON response
-    console.error('OpenAI API Error:', error.message);
-    
-    // Handle quota exceeded error gracefully
-    if (error.message?.includes('exceeded your current quota')) {
-      throw new Error('AI service temporarily unavailable due to quota limits. Please try again later or contact support.');
+    let parsed;
+    try {
+      parsed = JSON.parse(content);
+    } catch (parseError) {
+      throw new Error('Failed to parse AI response as JSON');
     }
-    
-    // Handle other API errors
-    if (error.message?.includes('API')) {
-      throw new Error('AI service is currently unavailable. Please try again later.');
-    }
-    
-    // Handle JSON parsing errors
-    if (error.message?.includes('JSON')) {
-      throw new Error('Failed to process AI response. Please try again.');
-    }
-    
-    throw new Error('An unexpected error occurred. Please try again.');
+
     if (!parsed.items || !Array.isArray(parsed.items)) {
       throw new Error('Invalid response format from OpenAI');
     }
@@ -171,7 +160,12 @@ Include current, accurate information about SIM cards, money exchange, safety, a
     }
 
     // Parse the JSON response
-    const parsed = JSON.parse(content);
+    let parsed;
+    try {
+      parsed = JSON.parse(content);
+    } catch (parseError) {
+      throw new Error('Failed to parse AI response as JSON');
+    }
     
     return {
       essentials: parsed,
