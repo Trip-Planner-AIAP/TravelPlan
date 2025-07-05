@@ -244,6 +244,56 @@ export const LandingPage: React.FC = () => {
                 <p className="text-gray-700 mb-8 max-w-lg mx-auto text-lg">
                   Choose from our curated templates or create your own custom itinerary
                 </p>
+                
+                {/* Planning Flow Icons */}
+                <div className="flex items-center justify-center space-x-4 md:space-x-8 mb-8">
+                  <div className="flex flex-col items-center">
+                    <div className="w-12 h-12 md:w-16 md:h-16 bg-white bg-opacity-90 backdrop-blur-md rounded-full flex items-center justify-center shadow-lg border border-white border-opacity-30 mb-2">
+                      <span className="text-2xl md:text-3xl">🗺️</span>
+                    </div>
+                    <span className="text-xs md:text-sm font-medium text-gray-700">Plan</span>
+                  </div>
+                  
+                  <div className="flex items-center">
+                    <div className="w-6 md:w-8 h-0.5 bg-gradient-to-r from-gray-300 to-gray-400"></div>
+                    <div className="w-2 h-2 bg-gray-400 rounded-full mx-1"></div>
+                    <div className="w-6 md:w-8 h-0.5 bg-gradient-to-r from-gray-400 to-gray-300"></div>
+                  </div>
+                  
+                  <div className="flex flex-col items-center">
+                    <div className="w-12 h-12 md:w-16 md:h-16 bg-white bg-opacity-90 backdrop-blur-md rounded-full flex items-center justify-center shadow-lg border border-white border-opacity-30 mb-2">
+                      <span className="text-2xl md:text-3xl">✈️</span>
+                    </div>
+                    <span className="text-xs md:text-sm font-medium text-gray-700">Book</span>
+                  </div>
+                  
+                  <div className="flex items-center">
+                    <div className="w-6 md:w-8 h-0.5 bg-gradient-to-r from-gray-300 to-gray-400"></div>
+                    <div className="w-2 h-2 bg-gray-400 rounded-full mx-1"></div>
+                    <div className="w-6 md:w-8 h-0.5 bg-gradient-to-r from-gray-400 to-gray-300"></div>
+                  </div>
+                  
+                  <div className="flex flex-col items-center">
+                    <div className="w-12 h-12 md:w-16 md:h-16 bg-white bg-opacity-90 backdrop-blur-md rounded-full flex items-center justify-center shadow-lg border border-white border-opacity-30 mb-2">
+                      <span className="text-2xl md:text-3xl">🎯</span>
+                    </div>
+                    <span className="text-xs md:text-sm font-medium text-gray-700">Pack</span>
+                  </div>
+                  
+                  <div className="flex items-center">
+                    <div className="w-6 md:w-8 h-0.5 bg-gradient-to-r from-gray-300 to-gray-400"></div>
+                    <div className="w-2 h-2 bg-gray-400 rounded-full mx-1"></div>
+                    <div className="w-6 md:w-8 h-0.5 bg-gradient-to-r from-gray-400 to-gray-300"></div>
+                  </div>
+                  
+                  <div className="flex flex-col items-center">
+                    <div className="w-12 h-12 md:w-16 md:h-16 bg-white bg-opacity-90 backdrop-blur-md rounded-full flex items-center justify-center shadow-lg border border-white border-opacity-30 mb-2">
+                      <span className="text-2xl md:text-3xl">🌟</span>
+                    </div>
+                    <span className="text-xs md:text-sm font-medium text-gray-700">Enjoy</span>
+                  </div>
+                </div>
+                
                 <div className="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-6">
                   <button
                     onClick={handleStartPlanning}
