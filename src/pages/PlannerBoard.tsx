@@ -670,7 +670,7 @@ export const PlannerBoard: React.FC = () => {
             onDeselectInsurance={handleDeselectInsurance}
           />
 
-          {/* AI Checklist Button */}
+          {/* Smart Checklist Button */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
             <div className="flex items-center space-x-3 mb-4">
               <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-red-500 rounded-full flex items-center justify-center shadow-lg">
@@ -716,57 +716,13 @@ export const PlannerBoard: React.FC = () => {
           </div>
         </div>
 
-        {/* Additional Services Row */}
+        {/* Local Essentials and Trip Summary Row */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
           {/* Local Essentials Card */}
           <LocalEssentialsCard trip={trip} />
 
-          {/* Trip Summary Action Button */}
-          {planningProgress.canShowSummary && (
-            <div className="bg-gradient-to-br from-purple-50 to-indigo-50 rounded-xl shadow-sm border border-purple-200 p-6 animate-fadeIn">
-              <div className="flex items-center space-x-3 mb-4">
-                <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-indigo-500 rounded-full flex items-center justify-center shadow-lg">
-                  <span className="text-2xl">📊</span>
-                </div>
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-900">Trip Summary</h3>
-                  <p className="text-sm text-gray-600 flex items-center space-x-1">
-                    <span>✨</span>
-                    <span>Your planning is {Math.round((planningProgress.completedPhases / 4) * 100)}% complete</span>
-                  </p>
-                </div>
-              </div>
-              
-              {/* Progress Indicators */}
-              <div className="grid grid-cols-2 gap-3 mb-4">
-                <div className={`flex items-center space-x-2 text-sm ${planningProgress.hasActivities ? 'text-green-600' : 'text-gray-400'}`}>
-                  <span>{planningProgress.hasActivities ? '✅' : '⭕'}</span>
-                  <span>Activities</span>
-                </div>
-                <div className={`flex items-center space-x-2 text-sm ${planningProgress.hasFlights ? 'text-green-600' : 'text-gray-400'}`}>
-                  <span>{planningProgress.hasFlights ? '✅' : '⭕'}</span>
-                  <span>Flights</span>
-                </div>
-                <div className={`flex items-center space-x-2 text-sm ${planningProgress.hasInsurance ? 'text-green-600' : 'text-gray-400'}`}>
-                  <span>{planningProgress.hasInsurance ? '✅' : '⭕'}</span>
-                  <span>Insurance</span>
-                </div>
-                <div className={`flex items-center space-x-2 text-sm ${planningProgress.hasChecklist ? 'text-green-600' : 'text-gray-400'}`}>
-                  <span>{planningProgress.hasChecklist ? '✅' : '⭕'}</span>
-                  <span>Checklist</span>
-                </div>
-              </div>
-              
-              <button
-                onClick={() => setShowSummaryReport(true)}
-                className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white py-3 px-4 rounded-xl font-medium hover:from-purple-700 hover:to-indigo-700 transition-all duration-300 hover:scale-105 flex items-center justify-center space-x-2 shadow-lg"
-              >
-                <span className="text-lg">📋</span>
-                <span>View Trip Summary Report</span>
-              </button>
-            </div>
-          )}
-
+          {/* Placeholder for symmetry */}
+          <div></div>
         </div>
 
         {/* Budget Manager Section */}
@@ -958,6 +914,51 @@ export const PlannerBoard: React.FC = () => {
           </div>
         )}
 
+        {/* Trip Summary Action Button - Below Checklist */}
+        {planningProgress.canShowSummary && (
+          <div className="mt-8 bg-gradient-to-br from-purple-50 to-indigo-50 rounded-xl shadow-sm border border-purple-200 p-6 animate-fadeIn">
+            <div className="flex items-center space-x-3 mb-4">
+              <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-indigo-500 rounded-full flex items-center justify-center shadow-lg">
+                <span className="text-2xl">📊</span>
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900">Trip Summary Report</h3>
+                <p className="text-sm text-gray-600 flex items-center space-x-1">
+                  <span>✨</span>
+                  <span>Your planning is {Math.round((planningProgress.completedPhases / 4) * 100)}% complete</span>
+                </p>
+              </div>
+            </div>
+            
+            {/* Progress Indicators */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+              <div className={`flex items-center space-x-2 text-sm ${planningProgress.hasActivities ? 'text-green-600' : 'text-gray-400'}`}>
+                <span>{planningProgress.hasActivities ? '✅' : '⭕'}</span>
+                <span>Activities</span>
+              </div>
+              <div className={`flex items-center space-x-2 text-sm ${planningProgress.hasFlights ? 'text-green-600' : 'text-gray-400'}`}>
+                <span>{planningProgress.hasFlights ? '✅' : '⭕'}</span>
+                <span>Flights</span>
+              </div>
+              <div className={`flex items-center space-x-2 text-sm ${planningProgress.hasInsurance ? 'text-green-600' : 'text-gray-400'}`}>
+                <span>{planningProgress.hasInsurance ? '✅' : '⭕'}</span>
+                <span>Insurance</span>
+              </div>
+              <div className={`flex items-center space-x-2 text-sm ${planningProgress.hasChecklist ? 'text-green-600' : 'text-gray-400'}`}>
+                <span>{planningProgress.hasChecklist ? '✅' : '⭕'}</span>
+                <span>Checklist</span>
+              </div>
+            </div>
+            
+            <button
+              onClick={() => setShowSummaryReport(true)}
+              className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white py-3 px-4 rounded-xl font-medium hover:from-purple-700 hover:to-indigo-700 transition-all duration-300 hover:scale-105 flex items-center justify-center space-x-2 shadow-lg"
+            >
+              <span className="text-lg">📋</span>
+              <span>Generate Complete Trip Summary Report</span>
+            </button>
+          </div>
+        )}
         {/* Add Activity Modal */}
         <AddActivityModal
           isOpen={showAddActivityModal}
