@@ -83,8 +83,24 @@ Focus on destination-specific items and practical essentials.`
     }
 
     // Parse the JSON response
-    const parsed = JSON.parse(content);
+    console.error('OpenAI API Error:', error.message);
     
+    // Handle quota exceeded error gracefully
+    if (error.message?.includes('exceeded your current quota')) {
+      throw new Error('AI service temporarily unavailable due to quota limits. Please try again later or contact support.');
+    }
+    
+    // Handle other API errors
+    if (error.message?.includes('API')) {
+      throw new Error('AI service is currently unavailable. Please try again later.');
+    }
+    
+    // Handle JSON parsing errors
+    if (error.message?.includes('JSON')) {
+      throw new Error('Failed to process AI response. Please try again.');
+    }
+    
+    throw new Error('An unexpected error occurred. Please try again.');
     if (!parsed.items || !Array.isArray(parsed.items)) {
       throw new Error('Invalid response format from OpenAI');
     }
