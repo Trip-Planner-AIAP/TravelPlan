@@ -237,6 +237,7 @@ export const usePlannerBoard = (tripId: string) => {
       if (error) {
         console.error('Database error:', error);
         // Still continue with local state update for demo purposes
+        return { success: false, error };
       }
       
       // Remove related flight activities
