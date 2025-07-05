@@ -3,6 +3,7 @@ import { supabase } from '../lib/supabase';
 import { useAuth } from './useAuth';
 import type { Trip, Day, Activity, TripTemplate } from '../types';
 import { tripTemplates } from '../data/tripTemplates';
+import { getDestinationImage } from '../utils/destinationImages';
 
 export const useTrips = () => {
   const [trips, setTrips] = useState<Trip[]>([]);
@@ -201,7 +202,7 @@ export const useTrips = () => {
           estimated_budget: budgetPerPerson * numberOfTravelers,
           number_of_travelers: numberOfTravelers,
           budget_per_person: budgetPerPerson,
-          image_url: 'https://images.pexels.com/photos/1285625/pexels-photo-1285625.jpeg?auto=compress&cs=tinysrgb&w=800'
+          image_url: getDestinationImage(destination)
         })
         .select()
         .single();
@@ -239,7 +240,7 @@ export const useTrips = () => {
         estimated_budget: budgetPerPerson * numberOfTravelers,
         number_of_travelers: numberOfTravelers,
         budget_per_person: budgetPerPerson,
-        image_url: 'https://images.pexels.com/photos/1285625/pexels-photo-1285625.jpeg?auto=compress&cs=tinysrgb&w=800',
+        image_url: getDestinationImage(destination),
         user_id: user.id,
         created_at: new Date().toISOString()
       };

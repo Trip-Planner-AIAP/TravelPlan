@@ -5,6 +5,7 @@ import { Search, User } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useTrips } from '../hooks/useTrips';
 import type { TripTemplate } from '../types';
+import { getDestinationImage } from '../utils/destinationImages';
 
 export const LandingPage: React.FC = () => {
   const navigate = useNavigate();
@@ -72,7 +73,9 @@ export const LandingPage: React.FC = () => {
                 destination: 'Tokyo, Japan',
                 duration_days: 5,
                 estimated_budget: 1200,
-                image_url: 'https://images.pexels.com/photos/2506923/pexels-photo-2506923.jpeg?auto=compress&cs=tinysrgb&w=800',
+                number_of_travelers: 1,
+                budget_per_person: 1200,
+                image_url: getDestinationImage('Tokyo, Japan'),
                 description: 'Experience the perfect blend of traditional and modern Japan',
                 days: []
               })}
@@ -81,7 +84,7 @@ export const LandingPage: React.FC = () => {
               {/* Background Image */}
               <div className="absolute inset-0">
                 <img 
-                  src="https://images.pexels.com/photos/2506923/pexels-photo-2506923.jpeg?auto=compress&cs=tinysrgb&w=800" 
+                  src={getDestinationImage('Tokyo, Japan')} 
                   alt="Tokyo Adventure"
                   className="w-full h-full object-cover"
                 />
@@ -135,7 +138,9 @@ export const LandingPage: React.FC = () => {
                 destination: 'Paris, France',
                 duration_days: 4,
                 estimated_budget: 980,
-                image_url: 'https://images.pexels.com/photos/338515/pexels-photo-338515.jpeg?auto=compress&cs=tinysrgb&w=800',
+                number_of_travelers: 2,
+                budget_per_person: 490,
+                image_url: getDestinationImage('Paris, France'),
                 description: 'A romantic getaway through the City of Light',
                 days: []
               })}
@@ -144,7 +149,7 @@ export const LandingPage: React.FC = () => {
               {/* Background Image */}
               <div className="absolute inset-0">
                 <img 
-                  src="https://images.pexels.com/photos/338515/pexels-photo-338515.jpeg?auto=compress&cs=tinysrgb&w=800" 
+                  src={getDestinationImage('Paris, France')} 
                   alt="Paris Romance"
                   className="w-full h-full object-cover"
                 />
@@ -198,7 +203,9 @@ export const LandingPage: React.FC = () => {
                 destination: 'Bali, Indonesia',
                 duration_days: 7,
                 estimated_budget: 800,
-                image_url: 'https://images.pexels.com/photos/2474690/pexels-photo-2474690.jpeg?auto=compress&cs=tinysrgb&w=800',
+                number_of_travelers: 1,
+                budget_per_person: 800,
+                image_url: getDestinationImage('Bali, Indonesia'),
                 description: 'Tropical paradise with beaches, temples, and culture',
                 days: []
               })}
@@ -207,7 +214,7 @@ export const LandingPage: React.FC = () => {
               {/* Background Image */}
               <div className="absolute inset-0">
                 <img 
-                  src="https://images.pexels.com/photos/2474690/pexels-photo-2474690.jpeg?auto=compress&cs=tinysrgb&w=800" 
+                  src={getDestinationImage('Bali, Indonesia')} 
                   alt="Bali Escape"
                   className="w-full h-full object-cover"
                 />

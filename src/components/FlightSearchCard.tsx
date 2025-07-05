@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Plane, Search, Loader2, Check, Plus } from 'lucide-react';
 import { X } from 'lucide-react';
+import { getDestinationImage } from '../utils/destinationImages';
 import type { Flight } from '../types';
 
 interface FlightSearchCardProps {
@@ -10,6 +11,7 @@ interface FlightSearchCardProps {
   onSelectFlight: (flight: Flight) => Promise<void>;
   onDeselectFlight: (flightId: string) => Promise<{ success: boolean; error?: any }>;
   selectedFlights: Flight[];
+  tripDestination?: string;
 }
 
 export const FlightSearchCard: React.FC<FlightSearchCardProps> = ({ 
@@ -18,7 +20,8 @@ export const FlightSearchCard: React.FC<FlightSearchCardProps> = ({
   flights, 
   onSelectFlight, 
   onDeselectFlight,
-  selectedFlights 
+  selectedFlights,
+  tripDestination = ''
 }) => {
   const [isSearching, setIsSearching] = useState(false);
   const [showResults, setShowResults] = useState(false);
@@ -91,6 +94,7 @@ export const FlightSearchCard: React.FC<FlightSearchCardProps> = ({
               <input
                 type="text"
                 placeholder="Enter departure city"
+                defaultValue="New York"
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               />
             </div>
@@ -99,6 +103,7 @@ export const FlightSearchCard: React.FC<FlightSearchCardProps> = ({
               <input
                 type="text"
                 placeholder="Enter destination"
+                defaultValue={tripDestination}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               />
             </div>

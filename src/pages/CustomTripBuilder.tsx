@@ -5,6 +5,7 @@ import { activitySuggestions, type ActivitySuggestion } from '../data/activitySu
 import { useTrips } from '../hooks/useTrips';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../hooks/useAuth';
+import { getDestinationImage } from '../utils/destinationImages';
 import type { Activity } from '../types';
 
 interface CustomActivity extends Omit<Activity, 'id' | 'day_id' | 'created_at'> {
@@ -340,7 +341,7 @@ export const CustomTripBuilder: React.FC = () => {
           estimated_budget: budgetPerPerson * numberOfTravelers,
           number_of_travelers: numberOfTravelers,
           budget_per_person: budgetPerPerson,
-          image_url: 'https://images.pexels.com/photos/1285625/pexels-photo-1285625.jpeg?auto=compress&cs=tinysrgb&w=800'
+          image_url: getDestinationImage(tripDetails.destination)
         })
         .select()
         .single();

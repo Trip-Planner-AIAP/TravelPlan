@@ -704,6 +704,7 @@ export const PlannerBoard: React.FC = () => {
           <FlightSearchCard
             onSearch={handleFlightSearch}
             loading={false}
+            tripDestination={trip.destination}
             flights={availableFlights}
             onSelectFlight={handleSelectFlight}
             onDeselectFlight={handleDeselectFlight}
