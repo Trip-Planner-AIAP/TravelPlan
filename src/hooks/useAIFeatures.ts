@@ -113,6 +113,7 @@ export const useAIFeatures = (tripId: string) => {
           const mockItems = generateMockChecklist(destination, durationDays, season, activities);
           items = mockItems;
           tokensUsed = 0; // No tokens used for mock data
+          setError(null); // Clear any error state since we're using fallback
         } else {
           throw apiError; // Re-throw other API errors
         }
@@ -192,6 +193,7 @@ export const useAIFeatures = (tripId: string) => {
           console.log('OpenAI quota exceeded, falling back to mock data');
           essentials = generateMockEssentials(destination, currency);
           tokensUsed = 0; // No tokens used for mock data
+          setError(null); // Clear any error state since we're using fallback
         } else {
           throw apiError; // Re-throw other API errors
         }
