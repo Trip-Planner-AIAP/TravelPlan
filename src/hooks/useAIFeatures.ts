@@ -110,12 +110,14 @@ export const useAIFeatures = (tripId: string) => {
       } catch (apiError) {
         // If quota exceeded or other API error, fall back to mock data
         if ((apiError instanceof OpenAI.APIError && apiError.status === 429) || 
-            (apiError instanceof Error && apiError.message.toLowerCase().includes('quota'))) {
+            (apiError instanceof Error && (
+              apiError.message.toLowerCase().includes('quota') ||
+              apiError.message.toLowerCase().includes('429')
+            ))) {
           console.log('OpenAI quota exceeded, falling back to mock data');
           const mockItems = generateMockChecklist(destination, durationDays, season, activities);
           items = mockItems;
           tokensUsed = 0; // No tokens used for mock data
-          setError(null); // Clear any error state since we're using fallback
         } else {
           throw apiError; // Re-throw other API errors
         }
@@ -147,6 +149,38 @@ export const useAIFeatures = (tripId: string) => {
 
       return { success: true, data: insertedItems };
     } catch (err) {
+      // Check if this is a quota error that should use fallback
+      if (err instanceof Error && (
+        err.message.toLowerCase().includes('quota') ||
+        err.message.toLowerCase().includes('429')
+      )) {
+        // Use mock data as fallback
+        console.log('Using mock checklist data due to quota limits');
+        const mockItems = generateMockChecklist(destination, durationDays, season, activities);
+        
+        // Insert mock checklist items
+        const { data: insertedItems, error: insertError } = await supabase
+          .from('checklist')
+          .insert(
+            mockItems.map((item: any) => ({
+              trip_id: tripId,
+              category: item.category,
+              item_name: item.item_name,
+              priority: item.priority
+            }))
+          )
+          .select();
+
+        if (insertError) {
+          const errorMessage = 'Failed to save checklist';
+          setError(errorMessage);
+          return { success: false, error: errorMessage };
+        }
+
+        setError(null); // Clear any error state since we're using fallback
+        return { success: true, data: insertedItems };
+      }
+      
       const errorMessage = err instanceof Error ? err.message : 'Failed to generate checklist';
       setError(errorMessage);
       return { success: false, error: errorMessage };
@@ -192,11 +226,13 @@ export const useAIFeatures = (tripId: string) => {
       } catch (apiError) {
         // If quota exceeded or other API error, fall back to mock data
         if ((apiError instanceof OpenAI.APIError && apiError.status === 429) || 
-            (apiError instanceof Error && apiError.message.toLowerCase().includes('quota'))) {
+            (apiError instanceof Error && (
+              apiError.message.toLowerCase().includes('quota') ||
+              apiError.message.toLowerCase().includes('429')
+            ))) {
           console.log('OpenAI quota exceeded, falling back to mock data');
           essentials = generateMockEssentials(destination, currency);
           tokensUsed = 0; // No tokens used for mock data
-          setError(null); // Clear any error state since we're using fallback
         } else {
           throw apiError; // Re-throw other API errors
         }
@@ -227,6 +263,37 @@ export const useAIFeatures = (tripId: string) => {
 
       return { success: true, data: insertedEssentials };
     } catch (err) {
+      // Check if this is a quota error that should use fallback
+      if (err instanceof Error && (
+        err.message.toLowerCase().includes('quota') ||
+        err.message.toLowerCase().includes('429')
+      )) {
+        // Use mock data as fallback
+        console.log('Using mock essentials data due to quota limits');
+        const mockEssentials = generateMockEssentials(destination, currency);
+        
+        // Insert mock essentials
+        const { data: insertedEssentials, error: insertError } = await supabase
+          .from('essentials')
+          .insert({
+            trip_id: tripId,
+            sim_info: mockEssentials.sim_info,
+            forex_info: mockEssentials.forex_info,
+            safety_notes: mockEssentials.safety_notes
+          })
+          .select()
+          .single();
+
+        if (insertError) {
+          const errorMessage = 'Failed to save local essentials';
+          setError(errorMessage);
+          return { success: false, error: errorMessage };
+        }
+
+        setError(null); // Clear any error state since we're using fallback
+        return { success: true, data: insertedEssentials };
+      }
+      
       const errorMessage = err instanceof Error ? err.message : 'Failed to get local essentials';
       setError(errorMessage);
       return { success: false, error: errorMessage };
