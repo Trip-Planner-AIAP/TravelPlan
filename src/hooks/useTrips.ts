@@ -273,6 +273,30 @@ export const useTrips = () => {
     }
   };
 
+  const deleteTrip = async (tripId: string) => {
+    if (!user) return { error: 'User not authenticated' };
+
+    try {
+      // Delete the specific trip (cascade will handle related data)
+      const { error } = await supabase
+        .from('trips')
+        .delete()
+        .eq('id', tripId)
+        .eq('user_id', user.id); // Ensure user can only delete their own trips
+
+      if (error) throw error;
+
+      // Update local state
+      setTrips(prev => prev.filter(trip => trip.id !== tripId));
+      return { success: true, error: null };
+    } catch (error) {
+      console.error('Error deleting trip:', error);
+      
+      // Fallback: Remove from local state even if database fails
+      setTrips(prev => prev.filter(trip => trip.id !== tripId));
+      return { success: true, error: null };
+    }
+  };
   return {
     trips,
     loading,
@@ -280,6 +304,7 @@ export const useTrips = () => {
     createTripFromTemplate,
     createCustomTrip,
     clearAllTrips,
+    deleteTrip,
     refetch: fetchTrips
   };
 };

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Plus, Calendar, MapPin, Clock, DollarSign, Trash2 } from 'lucide-react';
+import { Plus, Calendar, MapPin, Clock, DollarSign, Trash2, MoreVertical, Edit, Eye } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useTrips } from '../hooks/useTrips';
 import { TripTemplateCard } from './TripTemplateCard';
@@ -7,10 +7,13 @@ import { CreateTripModal } from './CreateTripModal';
 import { useState } from 'react';
 
 export const TripGrid: React.FC = () => {
-  const { trips, loading, templates, clearAllTrips } = useTrips();
+  const { trips, loading, templates, clearAllTrips, deleteTrip } = useTrips();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [showClearConfirm, setShowClearConfirm] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(null);
+  const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [isClearing, setIsClearing] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const navigate = useNavigate();
 
   const handleClearAllTrips = async () => {
@@ -23,6 +26,27 @@ export const TripGrid: React.FC = () => {
     } finally {
       setIsClearing(false);
     }
+  };
+
+  const handleDeleteTrip = async (tripId: string) => {
+    setIsDeleting(true);
+    try {
+      await deleteTrip(tripId);
+      setShowDeleteConfirm(null);
+      setActiveDropdown(null);
+    } catch (error) {
+      console.error('Error deleting trip:', error);
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  const handleTripClick = (tripId: string, e: React.MouseEvent) => {
+    // Don't navigate if clicking on dropdown or action buttons
+    if ((e.target as HTMLElement).closest('.trip-actions')) {
+      return;
+    }
+    navigate(`/planner/${tripId}`);
   };
 
   if (loading) {
@@ -99,8 +123,8 @@ export const TripGrid: React.FC = () => {
                 {trips.map((trip) => (
                   <div 
                     key={trip.id} 
-                    className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow cursor-pointer"
-                    onClick={() => navigate(`/planner/${trip.id}`)}
+                    className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow cursor-pointer group relative"
+                    onClick={(e) => handleTripClick(trip.id, e)}
                   >
                     <div className="aspect-video bg-gray-200 relative">
                       <img 
@@ -110,6 +134,61 @@ export const TripGrid: React.FC = () => {
                       />
                       <div className="absolute top-4 right-4 bg-white px-2 py-1 rounded-full text-sm font-medium text-gray-700">
                         {trip.duration_days} days
+                      </div>
+                      
+                      {/* Trip Actions Dropdown */}
+                      <div className="trip-actions absolute top-4 left-4 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <div className="relative">
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setActiveDropdown(activeDropdown === trip.id ? null : trip.id);
+                            }}
+                            className="bg-white bg-opacity-90 backdrop-blur-sm hover:bg-opacity-100 text-gray-700 p-2 rounded-full shadow-lg transition-all hover:scale-110"
+                          >
+                            <MoreVertical className="w-4 h-4" />
+                          </button>
+                          
+                          {activeDropdown === trip.id && (
+                            <div className="absolute top-12 left-0 bg-white rounded-lg shadow-xl border border-gray-200 py-2 min-w-40 z-10">
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  navigate(`/planner/${trip.id}`);
+                                  setActiveDropdown(null);
+                                }}
+                                className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-50 flex items-center space-x-2 transition-colors"
+                              >
+                                <Eye className="w-4 h-4" />
+                                <span>View Trip</span>
+                              </button>
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  // Future: Add edit functionality
+                                  console.log('Edit trip:', trip.id);
+                                  setActiveDropdown(null);
+                                }}
+                                className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-50 flex items-center space-x-2 transition-colors"
+                              >
+                                <Edit className="w-4 h-4" />
+                                <span>Edit Trip</span>
+                              </button>
+                              <hr className="my-1" />
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setShowDeleteConfirm(trip.id);
+                                  setActiveDropdown(null);
+                                }}
+                                className="w-full px-4 py-2 text-left text-red-600 hover:bg-red-50 flex items-center space-x-2 transition-colors"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                                <span>Delete Trip</span>
+                              </button>
+                            </div>
+                          )}
+                        </div>
                       </div>
                     </div>
                     <div className="p-6">
@@ -201,5 +280,57 @@ export const TripGrid: React.FC = () => {
         </div>
       )}
     </div>
+      {/* Individual Trip Delete Confirmation Modal */}
+      {showDeleteConfirm && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-2xl p-8 max-w-md w-full">
+            <div className="text-center mb-6">
+              <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Trash2 className="w-8 h-8 text-red-600" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-2">Delete Trip?</h3>
+              <p className="text-gray-600">
+                Are you sure you want to delete "{trips.find(t => t.id === showDeleteConfirm)?.title}"? 
+                This action cannot be undone and will remove all associated activities, flights, and other data.
+              </p>
+            </div>
+
+            <div className="flex space-x-3">
+              <button
+                onClick={() => setShowDeleteConfirm(null)}
+                disabled={isDeleting}
+                className="flex-1 px-4 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => handleDeleteTrip(showDeleteConfirm)}
+                disabled={isDeleting}
+                className="flex-1 px-4 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center space-x-2"
+              >
+                {isDeleting ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    <span>Deleting...</span>
+                  </>
+                ) : (
+                  <>
+                    <Trash2 className="w-4 h-4" />
+                    <span>Delete Trip</span>
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Click outside to close dropdown */}
+      {activeDropdown && (
+        <div 
+          className="fixed inset-0 z-5" 
+          onClick={() => setActiveDropdown(null)}
+        />
+      )}
   );
 };
