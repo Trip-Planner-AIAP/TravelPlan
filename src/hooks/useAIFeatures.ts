@@ -138,11 +138,7 @@ export const useAIFeatures = (tripId: string) => {
 
       // Track AI usage
       await supabase
-      console.error('Error generating checklist:', error);
-      
-      // Show user-friendly error message
-      const errorMessage = error.message || 'Failed to generate checklist. Please try again.';
-      alert(errorMessage);
+        .from('ai_usage')
         .insert({
           trip_id: tripId,
           function_name: 'generate_checklist',
