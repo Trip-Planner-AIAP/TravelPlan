@@ -76,46 +76,52 @@ export const LandingPage: React.FC = () => {
                 description: 'Experience the perfect blend of traditional and modern Japan',
                 days: []
               })}
-              className="relative bg-white bg-opacity-80 backdrop-blur-xl rounded-3xl p-8 hover:bg-opacity-95 hover:scale-105 hover:-translate-y-3 transition-all duration-700 cursor-pointer group border border-white border-opacity-50 shadow-2xl hover:shadow-orange-400/30"
+              className="relative overflow-hidden rounded-3xl cursor-pointer group shadow-2xl hover:shadow-orange-500/40 transition-all duration-700 hover:scale-105 hover:-translate-y-2"
             >
-              {/* Floating Gradient Orbs */}
-              <div className="absolute -top-4 -right-4 w-8 h-8 bg-gradient-to-br from-orange-400 to-red-400 rounded-full opacity-30 group-hover:opacity-60 group-hover:scale-125 transition-all duration-500"></div>
-              <div className="absolute -bottom-2 -left-2 w-6 h-6 bg-gradient-to-br from-pink-400 to-orange-400 rounded-full opacity-20 group-hover:opacity-50 group-hover:scale-110 transition-all duration-500"></div>
+              {/* Background Image */}
+              <div className="absolute inset-0">
+                <img 
+                  src="https://images.pexels.com/photos/2506923/pexels-photo-2506923.jpeg?auto=compress&cs=tinysrgb&w=800" 
+                  alt="Tokyo Adventure"
+                  className="w-full h-full object-cover"
+                />
+                {/* Gradient Overlay */}
+                <div className="absolute inset-0 bg-gradient-to-br from-purple-900/80 via-pink-800/70 to-orange-600/60 group-hover:from-purple-900/70 group-hover:via-pink-800/60 group-hover:to-orange-600/50 transition-all duration-700"></div>
+              </div>
               
-              <div className="relative z-10">
-                <div className="flex items-start space-x-5 mb-8">
-                  <div className="w-24 h-24 bg-gradient-to-br from-pink-500 via-red-500 to-orange-500 rounded-3xl flex items-center justify-center shadow-2xl group-hover:shadow-pink-500/40 group-hover:scale-110 transition-all duration-500">
-                    <span className="text-5xl">🏯</span>
-                  </div>
-                  <div>
-                    <h3 className="text-3xl font-bold text-gray-900 group-hover:text-orange-600 transition-colors mb-2 leading-tight">
-                      Tokyo Adventure
-                    </h3>
-                    <div className="flex items-center space-x-4 text-gray-600">
-                      <span className="flex items-center space-x-2 bg-orange-100 bg-opacity-80 rounded-full px-3 py-1">
-                        <span className="w-2 h-2 bg-orange-500 rounded-full"></span>
-                        <span className="text-sm font-medium text-orange-700">5 days</span>
-                      </span>
-                      <span className="flex items-center space-x-2 bg-green-100 bg-opacity-80 rounded-full px-3 py-1">
-                        <span className="w-2 h-2 bg-green-500 rounded-full"></span>
-                        <span className="text-sm font-medium text-green-700">$1,200</span>
-                      </span>
-                    </div>
-                  </div>
+              {/* Content */}
+              <div className="relative z-10 p-8 h-full flex flex-col justify-between min-h-[400px]">
+                {/* Top Content */}
+                <div>
+                  <h3 className="text-3xl font-bold text-white mb-3 leading-tight group-hover:text-orange-200 transition-colors">
+                    Tokyo Adventure
+                  </h3>
+                  <p className="text-white/90 text-lg leading-relaxed mb-6 group-hover:text-white transition-colors">
+                    Experience the perfect blend of traditional and modern Japan with ancient temples, 
+                    world-class sushi, and dazzling city lights.
+                  </p>
                 </div>
                 
-                <p className="text-gray-700 mb-8 leading-relaxed text-lg">
-                  Experience the perfect blend of traditional and modern Japan with ancient temples, 
-                  world-class sushi, and dazzling city lights.
-                </p>
-                
-                <div className="flex items-center justify-between">
-                  <div className="flex flex-wrap gap-2">
-                    <span className="bg-gradient-to-r from-pink-500 to-red-500 text-white px-4 py-2 rounded-full text-sm font-semibold shadow-md">🍣 Food Tours</span>
-                    <span className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-4 py-2 rounded-full text-sm font-semibold shadow-md">🏛️ Temples</span>
+                {/* Bottom Content */}
+                <div>
+                  <div className="flex items-center space-x-4 mb-4">
+                    <span className="bg-white/20 backdrop-blur-md border border-white/30 text-white px-4 py-2 rounded-full text-sm font-medium">
+                      5 days
+                    </span>
+                    <span className="bg-white/20 backdrop-blur-md border border-white/30 text-white px-4 py-2 rounded-full text-sm font-medium">
+                      $1,200
+                    </span>
                   </div>
-                  <div className="bg-gradient-to-r from-orange-500 to-red-500 text-white px-5 py-2 rounded-full text-sm font-bold shadow-lg group-hover:shadow-orange-500/50 transition-shadow">
-                    Most Popular
+                  
+                  <div className="flex items-center justify-between">
+                    <div className="flex flex-wrap gap-2">
+                      <span className="bg-white/25 backdrop-blur-md text-white px-3 py-1 rounded-full text-xs font-medium border border-white/20">🍣 Food Tours</span>
+                      <span className="bg-white/25 backdrop-blur-md text-white px-3 py-1 rounded-full text-xs font-medium border border-white/20">🏛️ Temples</span>
+                    </div>
+                    
+                    <div className="bg-white text-purple-900 px-4 py-2 rounded-full text-sm font-bold shadow-lg">
+                      See activities
+                    </div>
                   </div>
                 </div>
               </div>
@@ -133,46 +139,52 @@ export const LandingPage: React.FC = () => {
                 description: 'A romantic getaway through the City of Light',
                 days: []
               })}
-              className="relative bg-white bg-opacity-80 backdrop-blur-xl rounded-3xl p-8 hover:bg-opacity-95 hover:scale-105 hover:-translate-y-3 transition-all duration-700 cursor-pointer group border border-white border-opacity-50 shadow-2xl hover:shadow-blue-400/30"
+              className="relative overflow-hidden rounded-3xl cursor-pointer group shadow-2xl hover:shadow-blue-500/40 transition-all duration-700 hover:scale-105 hover:-translate-y-2"
             >
-              {/* Floating Gradient Orbs */}
-              <div className="absolute -top-4 -right-4 w-8 h-8 bg-gradient-to-br from-blue-400 to-purple-400 rounded-full opacity-30 group-hover:opacity-60 group-hover:scale-125 transition-all duration-500"></div>
-              <div className="absolute -bottom-2 -left-2 w-6 h-6 bg-gradient-to-br from-purple-400 to-pink-400 rounded-full opacity-20 group-hover:opacity-50 group-hover:scale-110 transition-all duration-500"></div>
+              {/* Background Image */}
+              <div className="absolute inset-0">
+                <img 
+                  src="https://images.pexels.com/photos/338515/pexels-photo-338515.jpeg?auto=compress&cs=tinysrgb&w=800" 
+                  alt="Paris Romance"
+                  className="w-full h-full object-cover"
+                />
+                {/* Gradient Overlay */}
+                <div className="absolute inset-0 bg-gradient-to-br from-blue-900/80 via-purple-800/70 to-pink-600/60 group-hover:from-blue-900/70 group-hover:via-purple-800/60 group-hover:to-pink-600/50 transition-all duration-700"></div>
+              </div>
               
-              <div className="relative z-10">
-                <div className="flex items-start space-x-5 mb-8">
-                  <div className="w-24 h-24 bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 rounded-3xl flex items-center justify-center shadow-2xl group-hover:shadow-blue-500/40 group-hover:scale-110 transition-all duration-500">
-                    <span className="text-5xl">🗼</span>
-                  </div>
-                  <div>
-                    <h3 className="text-3xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors mb-2 leading-tight">
-                      Paris Romance
-                    </h3>
-                    <div className="flex items-center space-x-4 text-gray-600">
-                      <span className="flex items-center space-x-2 bg-blue-100 bg-opacity-80 rounded-full px-3 py-1">
-                        <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
-                        <span className="text-sm font-medium text-blue-700">4 days</span>
-                      </span>
-                      <span className="flex items-center space-x-2 bg-green-100 bg-opacity-80 rounded-full px-3 py-1">
-                        <span className="w-2 h-2 bg-green-500 rounded-full"></span>
-                        <span className="text-sm font-medium text-green-700">$980</span>
-                      </span>
-                    </div>
-                  </div>
+              {/* Content */}
+              <div className="relative z-10 p-8 h-full flex flex-col justify-between min-h-[400px]">
+                {/* Top Content */}
+                <div>
+                  <h3 className="text-3xl font-bold text-white mb-3 leading-tight group-hover:text-pink-200 transition-colors">
+                    Paris Romance
+                  </h3>
+                  <p className="text-white/90 text-lg leading-relaxed mb-6 group-hover:text-white transition-colors">
+                    A romantic getaway through the City of Light featuring world-renowned art, 
+                    exquisite cuisine, and iconic landmarks.
+                  </p>
                 </div>
                 
-                <p className="text-gray-700 mb-8 leading-relaxed text-lg">
-                  A romantic getaway through the City of Light featuring world-renowned art, 
-                  exquisite cuisine, and iconic landmarks.
-                </p>
-                
-                <div className="flex items-center justify-between">
-                  <div className="flex flex-wrap gap-2">
-                    <span className="bg-gradient-to-r from-blue-500 to-purple-500 text-white px-4 py-2 rounded-full text-sm font-semibold shadow-md">🎨 Museums</span>
-                    <span className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-4 py-2 rounded-full text-sm font-semibold shadow-md">🥐 Cafés</span>
+                {/* Bottom Content */}
+                <div>
+                  <div className="flex items-center space-x-4 mb-4">
+                    <span className="bg-white/20 backdrop-blur-md border border-white/30 text-white px-4 py-2 rounded-full text-sm font-medium">
+                      4 days
+                    </span>
+                    <span className="bg-white/20 backdrop-blur-md border border-white/30 text-white px-4 py-2 rounded-full text-sm font-medium">
+                      $980
+                    </span>
                   </div>
-                  <div className="bg-gradient-to-r from-pink-500 to-red-500 text-white px-5 py-2 rounded-full text-sm font-bold shadow-lg group-hover:shadow-pink-500/50 transition-shadow">
-                    Romantic
+                  
+                  <div className="flex items-center justify-between">
+                    <div className="flex flex-wrap gap-2">
+                      <span className="bg-white/25 backdrop-blur-md text-white px-3 py-1 rounded-full text-xs font-medium border border-white/20">🎨 Museums</span>
+                      <span className="bg-white/25 backdrop-blur-md text-white px-3 py-1 rounded-full text-xs font-medium border border-white/20">🥐 Cafés</span>
+                    </div>
+                    
+                    <div className="bg-white text-blue-900 px-4 py-2 rounded-full text-sm font-bold shadow-lg">
+                      See activities
+                    </div>
                   </div>
                 </div>
               </div>
@@ -190,46 +202,52 @@ export const LandingPage: React.FC = () => {
                 description: 'Tropical paradise with beaches, temples, and culture',
                 days: []
               })}
-              className="relative bg-white bg-opacity-80 backdrop-blur-xl rounded-3xl p-8 hover:bg-opacity-95 hover:scale-105 hover:-translate-y-3 transition-all duration-700 cursor-pointer group border border-white border-opacity-50 shadow-2xl hover:shadow-green-400/30"
+              className="relative overflow-hidden rounded-3xl cursor-pointer group shadow-2xl hover:shadow-green-500/40 transition-all duration-700 hover:scale-105 hover:-translate-y-2"
             >
-              {/* Floating Gradient Orbs */}
-              <div className="absolute -top-4 -right-4 w-8 h-8 bg-gradient-to-br from-green-400 to-teal-400 rounded-full opacity-30 group-hover:opacity-60 group-hover:scale-125 transition-all duration-500"></div>
-              <div className="absolute -bottom-2 -left-2 w-6 h-6 bg-gradient-to-br from-teal-400 to-blue-400 rounded-full opacity-20 group-hover:opacity-50 group-hover:scale-110 transition-all duration-500"></div>
+              {/* Background Image */}
+              <div className="absolute inset-0">
+                <img 
+                  src="https://images.pexels.com/photos/2474690/pexels-photo-2474690.jpeg?auto=compress&cs=tinysrgb&w=800" 
+                  alt="Bali Escape"
+                  className="w-full h-full object-cover"
+                />
+                {/* Gradient Overlay */}
+                <div className="absolute inset-0 bg-gradient-to-br from-green-900/80 via-teal-800/70 to-blue-600/60 group-hover:from-green-900/70 group-hover:via-teal-800/60 group-hover:to-blue-600/50 transition-all duration-700"></div>
+              </div>
               
-              <div className="relative z-10">
-                <div className="flex items-start space-x-5 mb-8">
-                  <div className="w-24 h-24 bg-gradient-to-br from-green-500 via-teal-500 to-blue-500 rounded-3xl flex items-center justify-center shadow-2xl group-hover:shadow-green-500/40 group-hover:scale-110 transition-all duration-500">
-                    <span className="text-5xl">🏝️</span>
-                  </div>
-                  <div>
-                    <h3 className="text-3xl font-bold text-gray-900 group-hover:text-green-600 transition-colors mb-2 leading-tight">
-                      Bali Escape
-                    </h3>
-                    <div className="flex items-center space-x-4 text-gray-600">
-                      <span className="flex items-center space-x-2 bg-green-100 bg-opacity-80 rounded-full px-3 py-1">
-                        <span className="w-2 h-2 bg-green-500 rounded-full"></span>
-                        <span className="text-sm font-medium text-green-700">7 days</span>
-                      </span>
-                      <span className="flex items-center space-x-2 bg-green-100 bg-opacity-80 rounded-full px-3 py-1">
-                        <span className="w-2 h-2 bg-green-500 rounded-full"></span>
-                        <span className="text-sm font-medium text-green-700">$800</span>
-                      </span>
-                    </div>
-                  </div>
+              {/* Content */}
+              <div className="relative z-10 p-8 h-full flex flex-col justify-between min-h-[400px]">
+                {/* Top Content */}
+                <div>
+                  <h3 className="text-3xl font-bold text-white mb-3 leading-tight group-hover:text-teal-200 transition-colors">
+                    Bali Escape
+                  </h3>
+                  <p className="text-white/90 text-lg leading-relaxed mb-6 group-hover:text-white transition-colors">
+                    Tropical paradise featuring pristine beaches, ancient temples, 
+                    and vibrant culture in Indonesia's most beloved destination.
+                  </p>
                 </div>
                 
-                <p className="text-gray-700 mb-8 leading-relaxed text-lg">
-                  Tropical paradise featuring pristine beaches, ancient temples, 
-                  and vibrant culture in Indonesia's most beloved destination.
-                </p>
-                
-                <div className="flex items-center justify-between">
-                  <div className="flex flex-wrap gap-2">
-                    <span className="bg-gradient-to-r from-green-500 to-teal-500 text-white px-4 py-2 rounded-full text-sm font-semibold shadow-md">🏖️ Beaches</span>
-                    <span className="bg-gradient-to-r from-teal-500 to-blue-500 text-white px-4 py-2 rounded-full text-sm font-semibold shadow-md">⛩️ Temples</span>
+                {/* Bottom Content */}
+                <div>
+                  <div className="flex items-center space-x-4 mb-4">
+                    <span className="bg-white/20 backdrop-blur-md border border-white/30 text-white px-4 py-2 rounded-full text-sm font-medium">
+                      7 days
+                    </span>
+                    <span className="bg-white/20 backdrop-blur-md border border-white/30 text-white px-4 py-2 rounded-full text-sm font-medium">
+                      $800
+                    </span>
                   </div>
-                  <div className="bg-gradient-to-r from-green-500 to-teal-500 text-white px-5 py-2 rounded-full text-sm font-bold shadow-lg group-hover:shadow-green-500/50 transition-shadow">
-                    Relaxing
+                  
+                  <div className="flex items-center justify-between">
+                    <div className="flex flex-wrap gap-2">
+                      <span className="bg-white/25 backdrop-blur-md text-white px-3 py-1 rounded-full text-xs font-medium border border-white/20">🏖️ Beaches</span>
+                      <span className="bg-white/25 backdrop-blur-md text-white px-3 py-1 rounded-full text-xs font-medium border border-white/20">⛩️ Temples</span>
+                    </div>
+                    
+                    <div className="bg-white text-green-900 px-4 py-2 rounded-full text-sm font-bold shadow-lg">
+                      See activities
+                    </div>
                   </div>
                 </div>
               </div>
