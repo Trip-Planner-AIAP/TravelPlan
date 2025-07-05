@@ -1,7 +1,7 @@
 import React from 'react';
 import { HeroSection } from '../components/HeroSection';
 import { Footer } from '../components/Footer';
-import { Search } from 'lucide-react';
+import { Search, User } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useTrips } from '../hooks/useTrips';
 import type { TripTemplate } from '../types';
