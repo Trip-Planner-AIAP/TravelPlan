@@ -68,47 +68,45 @@ const SortableActivityCard: React.FC<SortableActivityCardProps> = ({ activity, o
     <div
       ref={setNodeRef}
       style={style}
-      className="bg-white rounded-xl border border-gray-200 p-4 shadow-sm hover:shadow-md transition-all duration-200 group hover:border-orange-300"
+      className="bg-white rounded-lg border border-gray-200 p-3 shadow-sm hover:shadow-md transition-all duration-200 group hover:border-orange-300"
     >
       <div className="flex items-start justify-between">
         <div className="flex-1">
-          <div className="flex items-center space-x-3 mb-3">
-            <div className={`w-10 h-10 bg-gradient-to-br ${activityIcon.bg} rounded-lg flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform duration-200`}>
-              <span className="text-lg">{activityIcon.emoji}</span>
+          <div className="flex items-center space-x-2 mb-2">
+            <div className={`w-8 h-8 bg-gradient-to-br ${activityIcon.bg} rounded-lg flex items-center justify-center shadow-sm`}>
+              <span className="text-sm">{activityIcon.emoji}</span>
             </div>
-            <h4 className="font-semibold text-gray-900 group-hover:text-orange-600 transition-colors leading-tight">{activity.title}</h4>
+            <h4 className="font-medium text-gray-900 text-sm leading-tight">{activity.title}</h4>
           </div>
           {activity.description && (
-            <p className="text-sm text-gray-600 mb-3 leading-relaxed">{activity.description}</p>
+            <p className="text-xs text-gray-600 mb-2 leading-relaxed">{activity.description}</p>
           )}
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-1 text-xs text-gray-500 bg-gray-50 px-2 py-1 rounded-full">
-              <span>⏱️</span>
+          <div className="flex items-center justify-between text-xs">
+            <div className="flex items-center space-x-1 text-gray-500">
               <span>{activity.duration_minutes}min</span>
             </div>
-            <div className="flex items-center space-x-1 text-sm font-semibold text-orange-600 bg-orange-50 px-2 py-1 rounded-full">
-              <span>💰</span>
+            <div className="font-medium text-orange-600">
               <span>${activity.estimated_cost}</span>
             </div>
           </div>
         </div>
-        <div className="flex items-center space-x-1 ml-3">
+        <div className="flex items-center space-x-1 ml-2">
           <button
             onClick={(e) => {
               e.stopPropagation();
               onDelete(activity.id);
             }}
-            className="opacity-0 group-hover:opacity-100 p-1.5 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"
+            className="opacity-0 group-hover:opacity-100 p-1 text-red-400 hover:text-red-600 hover:bg-red-50 rounded transition-all"
             title="Delete activity"
           >
-            <X className="w-4 h-4" />
+            <X className="w-3 h-3" />
           </button>
           <div
             {...attributes}
             {...listeners}
-            className="cursor-grab active:cursor-grabbing p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-all"
+            className="cursor-grab active:cursor-grabbing p-1 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded transition-all"
           >
-            <GripVertical className="w-4 h-4" />
+            <GripVertical className="w-3 h-3" />
           </div>
         </div>
       </div>
@@ -131,69 +129,51 @@ const DayColumn: React.FC<DayColumnProps> = ({ dayNumber, dayId, activities, onA
   const remainingMinutes = totalDuration % 60;
 
   return (
-    <div className="bg-white rounded-xl p-5 min-h-[400px] border border-gray-200 shadow-sm hover:shadow-md transition-all duration-200">
+    <div className="bg-white rounded-lg p-4 min-h-[350px] border border-gray-200 shadow-sm hover:shadow-md transition-all duration-200">
       {/* Day Header */}
-      <div className="flex items-center justify-between mb-5">
-        <div className="flex items-center space-x-3">
-          <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-red-500 rounded-xl flex items-center justify-center shadow-md">
-            <span className="text-white font-bold">{dayNumber}</span>
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center space-x-2">
+          <div className="w-8 h-8 bg-gradient-to-br from-orange-500 to-red-500 rounded-lg flex items-center justify-center shadow-sm">
+            <span className="text-white font-bold text-sm">{dayNumber}</span>
           </div>
           <div>
-            <h3 className="font-semibold text-gray-900 text-lg">Day {dayNumber}</h3>
-            <p className="text-xs text-gray-500">Plan your day</p>
+            <h3 className="font-semibold text-gray-900">Day {dayNumber}</h3>
+            <p className="text-xs text-gray-500">{activities.length} activities</p>
           </div>
         </div>
         <button
           onClick={() => onAddActivity(dayId)}
-          className="w-8 h-8 bg-orange-100 text-orange-600 hover:text-white hover:bg-orange-600 rounded-lg flex items-center justify-center shadow-sm hover:shadow-md transition-all duration-200 hover:scale-105"
+          className="w-7 h-7 bg-orange-100 text-orange-600 hover:text-white hover:bg-orange-600 rounded-lg flex items-center justify-center shadow-sm hover:shadow-md transition-all duration-200"
           title="Add new activity"
         >
-          <Plus className="w-4 h-4" />
+          <Plus className="w-3 h-3" />
         </button>
       </div>
       
       {/* Day Stats */}
       {activities.length > 0 && (
-        <div className="bg-gradient-to-r from-orange-50 to-red-50 rounded-lg p-3 mb-4 border border-orange-200">
-          <div className="grid grid-cols-3 gap-2 text-center">
-            <div className="flex flex-col items-center">
-              <span className="text-xs text-orange-700 mb-1">Activities</span>
-              <div className="flex items-center space-x-1">
-                <span className="text-sm">📋</span>
-                <span className="font-semibold text-orange-800">{activities.length}</span>
-              </div>
-            </div>
-            <div className="flex flex-col items-center">
-              <span className="text-xs text-orange-700 mb-1">Duration</span>
-              <div className="flex items-center space-x-1">
-                <span className="text-sm">⏰</span>
-                <span className="font-semibold text-orange-800 text-xs">
-                  {totalHours > 0 ? `${totalHours}h` : ''}{remainingMinutes > 0 ? ` ${remainingMinutes}m` : ''}
-                </span>
-              </div>
-            </div>
-            <div className="flex flex-col items-center">
-              <span className="text-xs text-orange-700 mb-1">Cost</span>
-              <div className="flex items-center space-x-1">
-                <span className="text-sm">💰</span>
-                <span className="font-semibold text-orange-800">${totalCost}</span>
-              </div>
-            </div>
+        <div className="bg-gray-50 rounded-lg p-2 mb-3 border border-gray-200">
+          <div className="flex items-center justify-between text-xs">
+            <span className="text-gray-600">{activities.length} items</span>
+            <span className="text-gray-600">
+              {totalHours > 0 ? `${totalHours}h` : ''}{remainingMinutes > 0 ? ` ${remainingMinutes}m` : ''}
+            </span>
+            <span className="font-medium text-orange-600">${totalCost}</span>
           </div>
         </div>
       )}
 
       <SortableContext items={activities.map(a => a.id)} strategy={verticalListSortingStrategy}>
-        <div className="space-y-3">
+        <div className="space-y-2">
           {activities.length === 0 ? (
-            <div className="text-center py-12 text-gray-500 border-2 border-dashed border-gray-300 rounded-xl bg-gray-50">
+            <div className="text-center py-8 text-gray-500 border-2 border-dashed border-gray-300 rounded-lg bg-gray-50">
               <div className="mb-3">
-                <div className="w-16 h-16 bg-gray-200 rounded-xl flex items-center justify-center mx-auto mb-3">
-                  <span className="text-2xl">📅</span>
+                <div className="w-12 h-12 bg-gray-200 rounded-lg flex items-center justify-center mx-auto mb-2">
+                  <span className="text-xl">📅</span>
                 </div>
               </div>
               <p className="text-sm font-medium text-gray-700 mb-1">No activities planned</p>
-              <p className="text-xs text-gray-500">Drag activities here or click + to add</p>
+              <p className="text-xs text-gray-500">Click + to add activities</p>
             </div>
           ) : (
             activities.map((activity) => (
@@ -581,11 +561,11 @@ export const PlannerBoard: React.FC = () => {
             </div>
 
             {/* Travel Progress Indicator */}
-            <div className="mb-6 bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl p-4 border border-blue-200">
+            <div className="mb-6 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg p-4 border border-blue-200">
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-3">
-                  <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-500 rounded-xl flex items-center justify-center">
-                    <span className="text-white text-lg">🗺️</span>
+                  <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-500 rounded-lg flex items-center justify-center">
+                    <span className="text-white">🗺️</span>
                   </div>
                   <div>
                     <h4 className="font-semibold text-gray-900">Trip Planning Progress</h4>
@@ -595,7 +575,7 @@ export const PlannerBoard: React.FC = () => {
                   </div>
                 </div>
                 <div className="text-right">
-                  <div className="text-xl font-bold text-blue-600">
+                  <div className="text-lg font-bold text-blue-600">
                     {Math.round((activities.length / (days.length * 3)) * 100)}%
                   </div>
                   <div className="text-xs text-gray-500">Complete</div>
@@ -614,7 +594,7 @@ export const PlannerBoard: React.FC = () => {
               onDragStart={handleDragStart}
               onDragEnd={handleDragEnd}
             >
-              <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-5 gap-3">
                 {days.slice(0, 5).map((day) => {
                   const dayActivities = activities.filter(a => a.day_id === day.id);
                   return (
@@ -645,32 +625,6 @@ export const PlannerBoard: React.FC = () => {
 
           {/* Side Panel */}
           <div className="lg:col-span-1 space-y-6">
-            {/* Quick Actions Panel */}
-            <div className="bg-gradient-to-br from-orange-50 to-red-50 rounded-xl p-5 border border-orange-200 shadow-sm">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center space-x-2">
-                <span className="text-xl">🚀</span>
-                <span>Quick Actions</span>
-              </h3>
-              <div className="grid grid-cols-2 gap-2">
-                <button className="bg-white hover:bg-orange-50 border border-orange-200 rounded-lg p-3 text-center transition-all hover:scale-105 hover:shadow-sm">
-                  <div className="text-2xl mb-1">✈️</div>
-                  <div className="text-xs font-medium text-gray-700">Flights</div>
-                </button>
-                <button className="bg-white hover:bg-orange-50 border border-orange-200 rounded-lg p-3 text-center transition-all hover:scale-105 hover:shadow-sm">
-                  <div className="text-2xl mb-1">🏨</div>
-                  <div className="text-xs font-medium text-gray-700">Hotels</div>
-                </button>
-                <button className="bg-white hover:bg-orange-50 border border-orange-200 rounded-lg p-3 text-center transition-all hover:scale-105 hover:shadow-sm">
-                  <div className="text-2xl mb-1">🎯</div>
-                  <div className="text-xs font-medium text-gray-700">Activities</div>
-                </button>
-                <button className="bg-white hover:bg-orange-50 border border-orange-200 rounded-lg p-3 text-center transition-all hover:scale-105 hover:shadow-sm">
-                  <div className="text-2xl mb-1">🍽️</div>
-                  <div className="text-xs font-medium text-gray-700">Dining</div>
-                </button>
-              </div>
-            </div>
-
             {/* Flight Search Card */}
             <FlightSearchCard
               onSearch={handleFlightSearch}
