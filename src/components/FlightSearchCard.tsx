@@ -34,7 +34,14 @@ export const FlightSearchCard: React.FC<FlightSearchCardProps> = ({
   };
 
   const handleSelectFlight = async (flight: Flight) => {
-    await onSelectFlight(flight);
+    try {
+      const result = await onSelectFlight(flight);
+      if (result && result.success) {
+        console.log('Flight selected successfully');
+      }
+    } catch (error) {
+      console.error('Error selecting flight:', error);
+    }
   };
 
   const handleDeselectFlight = async (flightId: string) => {

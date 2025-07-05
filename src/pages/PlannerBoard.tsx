@@ -393,10 +393,14 @@ export const PlannerBoard: React.FC = () => {
   };
 
   const handleSelectFlight = async (flight: Flight) => {
-    const result = await selectFlight(flight);
-    if (result.success) {
-      // Flight has been selected and activities added
-      console.log('Flight selected successfully');
+    try {
+      const result = await selectFlight(flight);
+      if (result && result.success) {
+        console.log('Flight selected successfully');
+        // Optionally show a success message to user
+      }
+    } catch (error) {
+      console.error('Error selecting flight:', error);
     }
   };
 
