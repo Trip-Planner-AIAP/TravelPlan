@@ -193,16 +193,7 @@ export const FlightSearchCard: React.FC<FlightSearchCardProps> = ({
                   </div>
                 </div>
               </div>
-              <div className="flex items-center space-x-2">
-                <p className="font-semibold text-green-600">${flight.price}</p>
-                <button
-                  onClick={() => handleDeselectFlight(flight.id)}
-                  className="text-red-400 hover:text-red-600 hover:bg-red-50 rounded-full p-1 transition-all"
-                  title="Remove flight"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              </div>
+            ))}
           </div>
         </div>
       )}
@@ -224,22 +215,31 @@ export const FlightSearchCard: React.FC<FlightSearchCardProps> = ({
                     <p className="text-xs text-gray-600">{flight.origin} → {flight.destination}</p>
                   </div>
                 </div>
-                <p className="font-semibold text-green-600">${flight.price}</p>
+                <div className="flex items-center space-x-2">
+                  <p className="font-semibold text-green-600">${flight.price}</p>
+                  <button
+                    onClick={() => handleDeselectFlight(flight.id)}
+                    className="text-red-400 hover:text-red-600 hover:bg-red-50 rounded-full p-1 transition-all"
+                    title="Remove flight"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
               </div>
             ))}
           </div>
-          <div className="mt-3 pt-3 border-t border-green-200">
-            <p className="text-sm font-medium text-green-800">
-              Total Flight Cost: ${selectedFlights.reduce((sum, f) => sum + (f.price || 0), 0)}
-            </p>
-          </div>
-        </div>
-        <div className="mt-4 pt-4 border-t border-green-200">
-          <div className="flex items-center justify-between">
-            <p className="text-sm font-medium text-green-800">
-              Total Flight Cost: ${selectedFlights.reduce((sum, f) => sum + (f.price || 0), 0)}
-            </p>
-            <div className="bg-gradient-to-r from-green-600 to-emerald-600 text-white px-4 py-2 rounded-lg text-sm font-semibold shadow-lg">
-              ✅ Flights Confirmed
+          <div className="mt-4 pt-4 border-t border-green-200">
+            <div className="flex items-center justify-between">
+              <p className="text-sm font-medium text-green-800">
+                Total Flight Cost: ${selectedFlights.reduce((sum, f) => sum + (f.price || 0), 0)}
+              </p>
+              <div className="bg-gradient-to-r from-green-600 to-emerald-600 text-white px-4 py-2 rounded-lg text-sm font-semibold shadow-lg">
+                ✅ Flights Confirmed
+              </div>
             </div>
           </div>
+        </div>
+      )}
+    </div>
+  );
+};
