@@ -104,10 +104,13 @@ export const useAIFeatures = (tripId: string) => {
       let items, tokensUsed;
       
       try {
+        console.log('Calling OpenAI API for checklist generation...');
         const result = await generateChecklistAI(destination, durationDays, season, activities);
         items = result.items;
         tokensUsed = result.tokensUsed;
+        console.log('OpenAI API response received:', { itemsCount: items.length, tokensUsed });
       } catch (apiError) {
+        console.log('OpenAI API error, falling back to mock data:', apiError);
         // If quota exceeded or other API error, fall back to mock data
         if ((apiError instanceof OpenAI.APIError && apiError.status === 429) || 
             (apiError instanceof Error && (
@@ -123,13 +126,14 @@ export const useAIFeatures = (tripId: string) => {
         }
       }
 
+      console.log('Processing checklist items for database insertion...');
       // Insert checklist items
       const { data: insertedItems, error: insertError } = await supabase
         .from('checklist')
         .insert(
           items.map((item: any) => ({
             trip_id: tripId,
-            category: item.category || item.item_name,
+            category: item.category,
             item_name: item.name || item.item_name,
             priority: item.priority
           }))
@@ -138,17 +142,22 @@ export const useAIFeatures = (tripId: string) => {
 
       if (insertError) throw insertError;
 
+      console.log('Checklist items inserted successfully:', insertedItems?.length);
+
       // Track AI usage
-      await supabase
-        .from('ai_usage')
-        .insert({
-          trip_id: tripId,
-          function_name: 'generate_checklist',
-          tokens_used: tokensUsed
-        });
+      if (tokensUsed > 0) {
+        await supabase
+          .from('ai_usage')
+          .insert({
+            trip_id: tripId,
+            function_name: 'generate_checklist',
+            tokens_used: tokensUsed
+          });
+      }
 
       return { success: true, data: insertedItems };
     } catch (err) {
+      console.error('Error in generateChecklist:', err);
       // Check if this is a quota error that should use fallback
       if (err instanceof Error && (
         err.message.toLowerCase().includes('quota') ||
@@ -172,6 +181,7 @@ export const useAIFeatures = (tripId: string) => {
           .select();
 
         if (insertError) {
+          console.error('Error inserting mock checklist items:', insertError);
           const errorMessage = 'Failed to save checklist';
           setError(errorMessage);
           return { success: false, error: errorMessage };
@@ -220,10 +230,13 @@ export const useAIFeatures = (tripId: string) => {
       let essentials, tokensUsed;
       
       try {
+        console.log('Calling OpenAI API for local essentials...');
         const result = await getLocalEssentialsAI(destination, currency, travelDates);
         essentials = result.essentials;
         tokensUsed = result.tokensUsed;
+        console.log('OpenAI API response received for essentials');
       } catch (apiError) {
+        console.log('OpenAI API error for essentials, falling back to mock data:', apiError);
         // If quota exceeded or other API error, fall back to mock data
         if ((apiError instanceof OpenAI.APIError && apiError.status === 429) || 
             (apiError instanceof Error && (
@@ -238,6 +251,7 @@ export const useAIFeatures = (tripId: string) => {
         }
       }
 
+      console.log('Processing essentials for database insertion...');
       // Insert essentials
       const { data: insertedEssentials, error: insertError } = await supabase
         .from('essentials')
@@ -252,17 +266,22 @@ export const useAIFeatures = (tripId: string) => {
 
       if (insertError) throw insertError;
 
+      console.log('Essentials inserted successfully');
+
       // Track AI usage
-      await supabase
-        .from('ai_usage')
-        .insert({
-          trip_id: tripId,
-          function_name: 'get_local_essentials',
-          tokens_used: tokensUsed
-        });
+      if (tokensUsed > 0) {
+        await supabase
+          .from('ai_usage')
+          .insert({
+            trip_id: tripId,
+            function_name: 'get_local_essentials',
+            tokens_used: tokensUsed
+          });
+      }
 
       return { success: true, data: insertedEssentials };
     } catch (err) {
+      console.error('Error in getLocalEssentials:', err);
       // Check if this is a quota error that should use fallback
       if (err instanceof Error && (
         err.message.toLowerCase().includes('quota') ||
@@ -285,6 +304,7 @@ export const useAIFeatures = (tripId: string) => {
           .single();
 
         if (insertError) {
+          console.error('Error inserting mock essentials:', insertError);
           const errorMessage = 'Failed to save local essentials';
           setError(errorMessage);
           return { success: false, error: errorMessage };

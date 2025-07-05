@@ -40,6 +40,12 @@ export const generateChecklist = async (
   activities?: string[]
 ): Promise<{ items: ChecklistItem[]; tokensUsed: number }> => {
   try {
+    // Check if OpenAI API key is available
+    if (!import.meta.env.VITE_OPENAI_API_KEY && !process.env.OPENAI_API_KEY) {
+      console.log('No OpenAI API key found, using mock data');
+      throw new Error('No API key available');
+    }
+
     const completion = await openai.chat.completions.create({
       model: "gpt-3.5-turbo",
       messages: [
@@ -87,10 +93,12 @@ Focus on destination-specific items and practical essentials.`
     try {
       parsed = JSON.parse(content);
     } catch (parseError) {
+      console.error('Failed to parse OpenAI response:', content);
       throw new Error('Failed to parse AI response as JSON');
     }
 
     if (!parsed.items || !Array.isArray(parsed.items)) {
+      console.error('Invalid response format:', parsed);
       throw new Error('Invalid response format from OpenAI');
     }
 
@@ -111,6 +119,12 @@ export const getLocalEssentials = async (
   travelDates?: string
 ): Promise<{ essentials: LocalEssentials; tokensUsed: number }> => {
   try {
+    // Check if OpenAI API key is available
+    if (!import.meta.env.VITE_OPENAI_API_KEY && !process.env.OPENAI_API_KEY) {
+      console.log('No OpenAI API key found, using mock data');
+      throw new Error('No API key available');
+    }
+
     const completion = await openai.chat.completions.create({
       model: "gpt-3.5-turbo",
       messages: [
@@ -164,6 +178,7 @@ Include current, accurate information about SIM cards, money exchange, safety, a
     try {
       parsed = JSON.parse(content);
     } catch (parseError) {
+      console.error('Failed to parse OpenAI essentials response:', content);
       throw new Error('Failed to parse AI response as JSON');
     }
     

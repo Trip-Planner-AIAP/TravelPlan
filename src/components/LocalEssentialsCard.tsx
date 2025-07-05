@@ -78,6 +78,10 @@ export const LocalEssentialsCard: React.FC<LocalEssentialsCardProps> = ({ trip }
     if (dest.includes('japan')) currency = 'JPY';
     else if (dest.includes('europe') || dest.includes('france') || dest.includes('paris')) currency = 'EUR';
     else if (dest.includes('indonesia') || dest.includes('bali')) currency = 'IDR';
+    else if (dest.includes('thailand')) currency = 'THB';
+    else if (dest.includes('india')) currency = 'INR';
+    else if (dest.includes('china')) currency = 'CNY';
+    else if (dest.includes('korea')) currency = 'KRW';
 
     const result = await getLocalEssentials(
       trip.destination,
@@ -90,6 +94,10 @@ export const LocalEssentialsCard: React.FC<LocalEssentialsCardProps> = ({ trip }
       setHasLoaded(true);
       setIsExpanded(true);
       await loadTokenInfo(); // Refresh token info
+    } else {
+      console.error('Failed to load essentials:', result.error);
+      // Show error message to user
+      alert('Failed to load local essentials. Please try again.');
     }
     
     setIsLoading(false);

@@ -304,6 +304,8 @@ export const PlannerBoard: React.FC = () => {
     else if (month >= 8 && month <= 10) season = 'fall';
     else if (month >= 11 || month <= 2) season = 'winter';
 
+    console.log('Generating checklist for:', { destination: trip.destination, duration: trip.duration_days, season });
+
     const result = await generateChecklist(
       trip.destination,
       trip.duration_days,
@@ -311,10 +313,15 @@ export const PlannerBoard: React.FC = () => {
       ['sightseeing', 'dining', 'shopping'] // Default activities
     );
 
+    console.log('Checklist generation result:', result);
+
     if (result.success && result.data) {
       setChecklist(result.data);
       setHasGeneratedChecklist(true);
       await loadTokenInfo(); // Refresh token info
+    } else {
+      console.error('Failed to generate checklist:', result.error);
+      alert(`Failed to generate checklist: ${result.error || 'Unknown error'}`);
     }
     
     setIsGeneratingChecklist(false);
