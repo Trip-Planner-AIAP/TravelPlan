@@ -47,6 +47,8 @@ export const useTrips = () => {
         end_date: '2024-03-20',
         duration_days: 5,
         estimated_budget: 1200,
+        number_of_travelers: 1,
+        budget_per_person: 1200,
         image_url: 'https://images.pexels.com/photos/2506923/pexels-photo-2506923.jpeg?auto=compress&cs=tinysrgb&w=800',
         user_id: user?.id || 'user-1',
         template_id: 'tokyo_adventure',
@@ -60,6 +62,8 @@ export const useTrips = () => {
         end_date: '2024-04-14',
         duration_days: 4,
         estimated_budget: 980,
+        number_of_travelers: 2,
+        budget_per_person: 490,
         image_url: 'https://images.pexels.com/photos/338515/pexels-photo-338515.jpeg?auto=compress&cs=tinysrgb&w=800',
         user_id: user?.id || 'user-1',
         template_id: 'paris_romance',
@@ -73,6 +77,8 @@ export const useTrips = () => {
         end_date: '2024-05-08',
         duration_days: 7,
         estimated_budget: 800,
+        number_of_travelers: 1,
+        budget_per_person: 800,
         image_url: 'https://images.pexels.com/photos/2474690/pexels-photo-2474690.jpeg?auto=compress&cs=tinysrgb&w=800',
         user_id: user?.id || 'user-1',
         template_id: 'bali_escape',
@@ -103,9 +109,9 @@ export const useTrips = () => {
           start_date: startDate.toISOString().split('T')[0],
           end_date: endDate.toISOString().split('T')[0],
           duration_days: template.duration_days,
-          estimated_budget: template.estimated_budget || template.budget_per_person * template.number_of_travelers,
-          number_of_travelers: template.number_of_travelers || 1,
-          budget_per_person: template.budget_per_person || template.estimated_budget,
+          estimated_budget: template.estimated_budget,
+          number_of_travelers: 1,
+          budget_per_person: template.estimated_budget,
           template_id: template.id,
           image_url: template.image_url
         })
@@ -160,9 +166,9 @@ export const useTrips = () => {
         start_date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
         end_date: new Date(Date.now() + (7 + template.duration_days - 1) * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
         duration_days: template.duration_days,
-        estimated_budget: template.estimated_budget || template.budget_per_person * template.number_of_travelers,
-        number_of_travelers: template.number_of_travelers || 1,
-        budget_per_person: template.budget_per_person || template.estimated_budget,
+        estimated_budget: template.estimated_budget,
+        number_of_travelers: 1,
+        budget_per_person: template.estimated_budget,
         image_url: template.image_url,
         user_id: user.id,
         template_id: template.id,
@@ -173,7 +179,6 @@ export const useTrips = () => {
     }
   };
 
-  const createCustomTrip = async (title: string, destination: string) => {
   const createCustomTrip = async (title: string, destination: string, numberOfTravelers: number = 1, budgetPerPerson: number = 500) => {
     if (!user) return { error: 'User not authenticated' };
 
@@ -265,6 +270,7 @@ export const useTrips = () => {
       return { success: true, error: null };
     }
   };
+
   return {
     trips,
     loading,

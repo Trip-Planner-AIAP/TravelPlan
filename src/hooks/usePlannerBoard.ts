@@ -384,6 +384,13 @@ export const usePlannerBoard = (tripId: string) => {
                      flights.reduce((sum, flight) => sum + (flight.price || 0), 0) +
                      insurance.reduce((sum, policy) => sum + (policy.premium_cost || 0), 0);
 
+  // Calculate total cost considering number of travelers
+  const totalCostWithTravelers = trip ? 
+    (activities.reduce((sum, activity) => sum + activity.estimated_cost, 0) * (trip.number_of_travelers || 1)) +
+    flights.reduce((sum, flight) => sum + (flight.price || 0), 0) +
+    insurance.reduce((sum, policy) => sum + (policy.premium_cost || 0), 0)
+    : 0;
+
   const addActivity = async (
     dayId: string, 
     title: string, 

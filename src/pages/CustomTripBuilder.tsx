@@ -205,7 +205,12 @@ export const CustomTripBuilder: React.FC = () => {
   const { user } = useAuth();
   
   // Get trip details from navigation state
-  const tripDetails = location.state as { title: string; destination: string } | null;
+  const tripDetails = location.state as { 
+    title: string; 
+    destination: string; 
+    numberOfTravelers?: number; 
+    budgetPerPerson?: number; 
+  } | null;
   
   const [selectedCategory, setSelectedCategory] = useState<string>('attraction');
   const [searchTerm, setSearchTerm] = useState('');
@@ -215,6 +220,8 @@ export const CustomTripBuilder: React.FC = () => {
   });
   const [isSaving, setIsSaving] = useState(false);
   const [tripDuration, setTripDuration] = useState(3);
+  const [numberOfTravelers, setNumberOfTravelers] = useState(tripDetails?.numberOfTravelers || 1);
+  const [budgetPerPerson, setBudgetPerPerson] = useState(tripDetails?.budgetPerPerson || 500);
 
   const categories = [
     { id: 'attraction', name: 'Attractions', icon: '🏛️' },
@@ -329,7 +336,9 @@ export const CustomTripBuilder: React.FC = () => {
           start_date: startDate.toISOString().split('T')[0],
           end_date: endDate.toISOString().split('T')[0],
           duration_days: tripDuration,
-          estimated_budget: calculateTotalBudget(),
+          estimated_budget: budgetPerPerson * numberOfTravelers,
+          number_of_travelers: numberOfTravelers,
+          budget_per_person: budgetPerPerson,
           image_url: 'https://images.pexels.com/photos/1285625/pexels-photo-1285625.jpeg?auto=compress&cs=tinysrgb&w=800'
         })
         .select()
@@ -418,13 +427,46 @@ export const CustomTripBuilder: React.FC = () => {
                   </div>
                   <div className="flex items-center space-x-1">
                     <DollarSign className="w-4 h-4" />
-                    <span>${calculateTotalBudget()}</span>
+                    <span>${(budgetPerPerson * numberOfTravelers).toLocaleString()}</span>
                   </div>
                 </div>
               </div>
             </div>
             
             <div className="flex items-center space-x-4">
+              {/* Travelers Control */}
+              <div className="flex items-center space-x-2">
+                <label className="text-sm font-medium text-gray-700">Travelers:</label>
+                <div className="flex items-center space-x-2">
+                  <button
+                    onClick={() => setNumberOfTravelers(Math.max(1, numberOfTravelers - 1))}
+                    className="w-6 h-6 bg-gray-200 rounded-full flex items-center justify-center hover:bg-gray-300 transition-colors text-sm"
+                  >
+                    -
+                  </button>
+                  <span className="text-sm font-semibold w-6 text-center">{numberOfTravelers}</span>
+                  <button
+                    onClick={() => setNumberOfTravelers(Math.min(10, numberOfTravelers + 1))}
+                    className="w-6 h-6 bg-gray-200 rounded-full flex items-center justify-center hover:bg-gray-300 transition-colors text-sm"
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+
+              {/* Budget Control */}
+              <div className="flex items-center space-x-2">
+                <label className="text-sm font-medium text-gray-700">Budget/person:</label>
+                <input
+                  type="number"
+                  value={budgetPerPerson}
+                  onChange={(e) => setBudgetPerPerson(parseInt(e.target.value) || 500)}
+                  className="w-20 px-2 py-1 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                  min="50"
+                  step="50"
+                />
+              </div>
+
               <div className="flex items-center space-x-2">
                 <label className="text-sm font-medium text-gray-700">Duration:</label>
                 <select
