@@ -26,6 +26,7 @@ import { AddActivityModal } from '../components/AddActivityModal';
 import { BudgetManager } from '../components/BudgetManager';
 import { LocalEssentialsCard } from '../components/LocalEssentialsCard';
 import { ItineraryAnalyzer } from '../components/ItineraryAnalyzer';
+import { TripSummaryReport } from '../components/TripSummaryReport';
 import { useAIFeatures } from '../hooks/useAIFeatures';
 import type { Activity } from '../types';
 
