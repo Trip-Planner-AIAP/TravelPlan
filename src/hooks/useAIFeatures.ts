@@ -123,10 +123,10 @@ export const useAIFeatures = (tripId: string) => {
       const { data: insertedItems, error: insertError } = await supabase
         .from('checklist')
         .insert(
-          items.map(item => ({
+          items.map((item: any) => ({
             trip_id: tripId,
-            category: item.category,
-            item_name: item.name,
+            category: item.category || item.item_name,
+            item_name: item.name || item.item_name,
             priority: item.priority
           }))
         )
