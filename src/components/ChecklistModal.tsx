@@ -248,7 +248,7 @@ export const ChecklistModal: React.FC<ChecklistModalProps> = ({ isOpen, onClose,
             </div>
           ) : (
             /* Checklist View */
-            <div>
+            <div className="flex flex-col h-full">
               {/* Progress Header */}
               <div className="bg-gradient-to-r from-orange-50 to-red-50 rounded-xl p-6 mb-6">
                 <div className="flex items-center justify-between mb-4">
@@ -275,7 +275,7 @@ export const ChecklistModal: React.FC<ChecklistModalProps> = ({ isOpen, onClose,
               </div>
 
               {/* Checklist Items */}
-              <div className="max-h-96 overflow-y-auto space-y-6">
+              <div className="flex-1 overflow-y-auto space-y-6 min-h-0">
                 {Object.entries(groupedChecklist).map(([category, items]) => (
                   <div key={category} className="border border-gray-200 rounded-xl overflow-hidden">
                     <div className="bg-gray-50 px-4 py-3 border-b border-gray-200">
@@ -337,7 +337,7 @@ export const ChecklistModal: React.FC<ChecklistModalProps> = ({ isOpen, onClose,
 
               {/* Action Buttons - only show when checklist is generated and not confirmed */}
               {!isConfirmed && (
-                <div className="mt-8 p-6 bg-gradient-to-r from-orange-50 to-red-50 rounded-xl border border-orange-200">
+                <div className="mt-6 p-6 bg-gradient-to-r from-orange-50 to-red-50 rounded-xl border border-orange-200 flex-shrink-0">
                   <div className="text-center mb-6">
                     <h4 className="text-lg font-semibold text-gray-900 mb-2">
                       Your checklist is ready! 🎉
@@ -375,7 +375,7 @@ export const ChecklistModal: React.FC<ChecklistModalProps> = ({ isOpen, onClose,
 
               {/* Confirmation Message */}
               {isConfirmed && (
-                <div className="mt-8 p-6 bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl border border-green-200 text-center">
+                <div className="mt-6 p-6 bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl border border-green-200 text-center flex-shrink-0">
                   <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-500 rounded-full flex items-center justify-center mx-auto mb-4">
                     <Check className="w-8 h-8 text-white" />
                   </div>
