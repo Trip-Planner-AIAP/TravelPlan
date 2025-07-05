@@ -39,25 +39,25 @@ export const LandingPage: React.FC = () => {
       />
       
       {/* Sample Templates Section */}
-      <section className="bg-gradient-to-br from-slate-900 via-orange-900 to-red-900 text-white py-24 relative overflow-hidden">
+      <section className="bg-white py-24 relative overflow-hidden">
         {/* Background Pattern */}
-        <div className="absolute inset-0 opacity-10">
+        <div className="absolute inset-0 opacity-5">
           <div className="absolute top-20 left-20 w-40 h-40 bg-gradient-to-br from-orange-400 to-red-400 rounded-full blur-3xl"></div>
-          <div className="absolute top-60 right-32 w-32 h-32 bg-gradient-to-br from-yellow-400 to-orange-400 rounded-full blur-2xl"></div>
-          <div className="absolute bottom-32 left-1/4 w-24 h-24 bg-gradient-to-br from-red-400 to-pink-400 rounded-full blur-xl"></div>
-          <div className="absolute bottom-60 right-1/3 w-36 h-36 bg-gradient-to-br from-orange-400 to-red-400 rounded-full blur-2xl"></div>
+          <div className="absolute top-60 right-32 w-32 h-32 bg-gradient-to-br from-blue-400 to-purple-400 rounded-full blur-2xl"></div>
+          <div className="absolute bottom-32 left-1/4 w-24 h-24 bg-gradient-to-br from-green-400 to-teal-400 rounded-full blur-xl"></div>
+          <div className="absolute bottom-60 right-1/3 w-36 h-36 bg-gradient-to-br from-pink-400 to-red-400 rounded-full blur-2xl"></div>
         </div>
         
         <div className="max-w-7xl mx-auto px-4">
           <div className="text-center mb-16">
-            <div className="inline-flex items-center space-x-2 bg-white bg-opacity-10 backdrop-blur-md border border-white border-opacity-20 rounded-full px-8 py-3 mb-8 shadow-xl">
+            <div className="inline-flex items-center space-x-2 bg-gradient-to-r from-orange-100 to-red-100 backdrop-blur-md border border-orange-200 rounded-full px-8 py-3 mb-8 shadow-lg">
               <span className="text-2xl">✨</span>
-              <span className="text-white font-semibold text-lg">Curated Experiences</span>
+              <span className="text-orange-700 font-semibold text-lg">Curated Experiences</span>
             </div>
-            <h2 className="text-5xl md:text-6xl font-bold mb-8 bg-gradient-to-r from-white via-orange-100 to-yellow-100 bg-clip-text text-transparent leading-tight">
+            <h2 className="text-5xl md:text-6xl font-bold mb-8 bg-gradient-to-r from-gray-900 via-orange-600 to-red-600 bg-clip-text text-transparent leading-tight">
               Popular Trip Templates
             </h2>
-            <p className="text-xl text-orange-100 max-w-3xl mx-auto leading-relaxed">
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
               Discover handcrafted itineraries designed by travel experts. Each template includes carefully selected activities, 
               accommodations, and experiences to create your perfect adventure.
             </p>
@@ -76,11 +76,11 @@ export const LandingPage: React.FC = () => {
                 description: 'Experience the perfect blend of traditional and modern Japan',
                 days: []
               })}
-              className="relative bg-white bg-opacity-10 backdrop-blur-xl rounded-3xl p-8 hover:bg-opacity-15 hover:scale-105 hover:-translate-y-3 transition-all duration-700 cursor-pointer group border border-white border-opacity-30 shadow-2xl hover:shadow-orange-400/30"
+              className="relative bg-white bg-opacity-80 backdrop-blur-xl rounded-3xl p-8 hover:bg-opacity-95 hover:scale-105 hover:-translate-y-3 transition-all duration-700 cursor-pointer group border border-white border-opacity-50 shadow-2xl hover:shadow-orange-400/30"
             >
               {/* Floating Gradient Orbs */}
-              <div className="absolute -top-4 -right-4 w-8 h-8 bg-gradient-to-br from-orange-400 to-red-400 rounded-full opacity-60 group-hover:opacity-100 group-hover:scale-125 transition-all duration-500"></div>
-              <div className="absolute -bottom-2 -left-2 w-6 h-6 bg-gradient-to-br from-pink-400 to-orange-400 rounded-full opacity-50 group-hover:opacity-90 group-hover:scale-110 transition-all duration-500"></div>
+              <div className="absolute -top-4 -right-4 w-8 h-8 bg-gradient-to-br from-orange-400 to-red-400 rounded-full opacity-30 group-hover:opacity-60 group-hover:scale-125 transition-all duration-500"></div>
+              <div className="absolute -bottom-2 -left-2 w-6 h-6 bg-gradient-to-br from-pink-400 to-orange-400 rounded-full opacity-20 group-hover:opacity-50 group-hover:scale-110 transition-all duration-500"></div>
               
               <div className="relative z-10">
                 <div className="flex items-start space-x-5 mb-8">
@@ -88,33 +88,33 @@ export const LandingPage: React.FC = () => {
                     <span className="text-5xl">🏯</span>
                   </div>
                   <div>
-                    <h3 className="text-3xl font-bold text-white group-hover:text-orange-200 transition-colors mb-2 leading-tight">
+                    <h3 className="text-3xl font-bold text-gray-900 group-hover:text-orange-600 transition-colors mb-2 leading-tight">
                       Tokyo Adventure
                     </h3>
-                    <div className="flex items-center space-x-4 text-orange-200">
-                      <span className="flex items-center space-x-2 bg-white bg-opacity-20 rounded-full px-3 py-1">
-                        <span className="w-2 h-2 bg-orange-300 rounded-full"></span>
-                        <span className="text-sm font-medium">5 days</span>
+                    <div className="flex items-center space-x-4 text-gray-600">
+                      <span className="flex items-center space-x-2 bg-orange-100 bg-opacity-80 rounded-full px-3 py-1">
+                        <span className="w-2 h-2 bg-orange-500 rounded-full"></span>
+                        <span className="text-sm font-medium text-orange-700">5 days</span>
                       </span>
-                      <span className="flex items-center space-x-2 bg-white bg-opacity-20 rounded-full px-3 py-1">
-                        <span className="w-2 h-2 bg-green-300 rounded-full"></span>
-                        <span className="text-sm font-medium">$1,200</span>
+                      <span className="flex items-center space-x-2 bg-green-100 bg-opacity-80 rounded-full px-3 py-1">
+                        <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                        <span className="text-sm font-medium text-green-700">$1,200</span>
                       </span>
                     </div>
                   </div>
                 </div>
                 
-                <p className="text-orange-100 mb-8 leading-relaxed text-lg">
+                <p className="text-gray-700 mb-8 leading-relaxed text-lg">
                   Experience the perfect blend of traditional and modern Japan with ancient temples, 
                   world-class sushi, and dazzling city lights.
                 </p>
                 
                 <div className="flex items-center justify-between">
                   <div className="flex flex-wrap gap-2">
-                    <span className="bg-gradient-to-r from-pink-500 to-red-500 text-white px-4 py-2 rounded-full text-sm font-semibold shadow-lg">🍣 Food Tours</span>
-                    <span className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-4 py-2 rounded-full text-sm font-semibold shadow-lg">🏛️ Temples</span>
+                    <span className="bg-gradient-to-r from-pink-500 to-red-500 text-white px-4 py-2 rounded-full text-sm font-semibold shadow-md">🍣 Food Tours</span>
+                    <span className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-4 py-2 rounded-full text-sm font-semibold shadow-md">🏛️ Temples</span>
                   </div>
-                  <div className="bg-gradient-to-r from-orange-500 to-red-500 text-white px-5 py-2 rounded-full text-sm font-bold shadow-xl group-hover:shadow-orange-500/50 transition-shadow">
+                  <div className="bg-gradient-to-r from-orange-500 to-red-500 text-white px-5 py-2 rounded-full text-sm font-bold shadow-lg group-hover:shadow-orange-500/50 transition-shadow">
                     Most Popular
                   </div>
                 </div>
@@ -133,11 +133,11 @@ export const LandingPage: React.FC = () => {
                 description: 'A romantic getaway through the City of Light',
                 days: []
               })}
-              className="relative bg-white bg-opacity-10 backdrop-blur-xl rounded-3xl p-8 hover:bg-opacity-15 hover:scale-105 hover:-translate-y-3 transition-all duration-700 cursor-pointer group border border-white border-opacity-30 shadow-2xl hover:shadow-blue-400/30"
+              className="relative bg-white bg-opacity-80 backdrop-blur-xl rounded-3xl p-8 hover:bg-opacity-95 hover:scale-105 hover:-translate-y-3 transition-all duration-700 cursor-pointer group border border-white border-opacity-50 shadow-2xl hover:shadow-blue-400/30"
             >
               {/* Floating Gradient Orbs */}
-              <div className="absolute -top-4 -right-4 w-8 h-8 bg-gradient-to-br from-blue-400 to-purple-400 rounded-full opacity-60 group-hover:opacity-100 group-hover:scale-125 transition-all duration-500"></div>
-              <div className="absolute -bottom-2 -left-2 w-6 h-6 bg-gradient-to-br from-purple-400 to-pink-400 rounded-full opacity-50 group-hover:opacity-90 group-hover:scale-110 transition-all duration-500"></div>
+              <div className="absolute -top-4 -right-4 w-8 h-8 bg-gradient-to-br from-blue-400 to-purple-400 rounded-full opacity-30 group-hover:opacity-60 group-hover:scale-125 transition-all duration-500"></div>
+              <div className="absolute -bottom-2 -left-2 w-6 h-6 bg-gradient-to-br from-purple-400 to-pink-400 rounded-full opacity-20 group-hover:opacity-50 group-hover:scale-110 transition-all duration-500"></div>
               
               <div className="relative z-10">
                 <div className="flex items-start space-x-5 mb-8">
@@ -145,33 +145,33 @@ export const LandingPage: React.FC = () => {
                     <span className="text-5xl">🗼</span>
                   </div>
                   <div>
-                    <h3 className="text-3xl font-bold text-white group-hover:text-orange-200 transition-colors mb-2 leading-tight">
+                    <h3 className="text-3xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors mb-2 leading-tight">
                       Paris Romance
                     </h3>
-                    <div className="flex items-center space-x-4 text-orange-200">
-                      <span className="flex items-center space-x-2 bg-white bg-opacity-20 rounded-full px-3 py-1">
-                        <span className="w-2 h-2 bg-orange-300 rounded-full"></span>
-                        <span className="text-sm font-medium">4 days</span>
+                    <div className="flex items-center space-x-4 text-gray-600">
+                      <span className="flex items-center space-x-2 bg-blue-100 bg-opacity-80 rounded-full px-3 py-1">
+                        <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
+                        <span className="text-sm font-medium text-blue-700">4 days</span>
                       </span>
-                      <span className="flex items-center space-x-2 bg-white bg-opacity-20 rounded-full px-3 py-1">
-                        <span className="w-2 h-2 bg-green-300 rounded-full"></span>
-                        <span className="text-sm font-medium">$980</span>
+                      <span className="flex items-center space-x-2 bg-green-100 bg-opacity-80 rounded-full px-3 py-1">
+                        <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                        <span className="text-sm font-medium text-green-700">$980</span>
                       </span>
                     </div>
                   </div>
                 </div>
                 
-                <p className="text-orange-100 mb-8 leading-relaxed text-lg">
+                <p className="text-gray-700 mb-8 leading-relaxed text-lg">
                   A romantic getaway through the City of Light featuring world-renowned art, 
                   exquisite cuisine, and iconic landmarks.
                 </p>
                 
                 <div className="flex items-center justify-between">
                   <div className="flex flex-wrap gap-2">
-                    <span className="bg-gradient-to-r from-blue-500 to-purple-500 text-white px-4 py-2 rounded-full text-sm font-semibold shadow-lg">🎨 Museums</span>
-                    <span className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-4 py-2 rounded-full text-sm font-semibold shadow-lg">🥐 Cafés</span>
+                    <span className="bg-gradient-to-r from-blue-500 to-purple-500 text-white px-4 py-2 rounded-full text-sm font-semibold shadow-md">🎨 Museums</span>
+                    <span className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-4 py-2 rounded-full text-sm font-semibold shadow-md">🥐 Cafés</span>
                   </div>
-                  <div className="bg-gradient-to-r from-pink-500 to-red-500 text-white px-5 py-2 rounded-full text-sm font-bold shadow-xl group-hover:shadow-pink-500/50 transition-shadow">
+                  <div className="bg-gradient-to-r from-pink-500 to-red-500 text-white px-5 py-2 rounded-full text-sm font-bold shadow-lg group-hover:shadow-pink-500/50 transition-shadow">
                     Romantic
                   </div>
                 </div>
@@ -190,11 +190,11 @@ export const LandingPage: React.FC = () => {
                 description: 'Tropical paradise with beaches, temples, and culture',
                 days: []
               })}
-              className="relative bg-white bg-opacity-10 backdrop-blur-xl rounded-3xl p-8 hover:bg-opacity-15 hover:scale-105 hover:-translate-y-3 transition-all duration-700 cursor-pointer group border border-white border-opacity-30 shadow-2xl hover:shadow-green-400/30"
+              className="relative bg-white bg-opacity-80 backdrop-blur-xl rounded-3xl p-8 hover:bg-opacity-95 hover:scale-105 hover:-translate-y-3 transition-all duration-700 cursor-pointer group border border-white border-opacity-50 shadow-2xl hover:shadow-green-400/30"
             >
               {/* Floating Gradient Orbs */}
-              <div className="absolute -top-4 -right-4 w-8 h-8 bg-gradient-to-br from-green-400 to-teal-400 rounded-full opacity-60 group-hover:opacity-100 group-hover:scale-125 transition-all duration-500"></div>
-              <div className="absolute -bottom-2 -left-2 w-6 h-6 bg-gradient-to-br from-teal-400 to-blue-400 rounded-full opacity-50 group-hover:opacity-90 group-hover:scale-110 transition-all duration-500"></div>
+              <div className="absolute -top-4 -right-4 w-8 h-8 bg-gradient-to-br from-green-400 to-teal-400 rounded-full opacity-30 group-hover:opacity-60 group-hover:scale-125 transition-all duration-500"></div>
+              <div className="absolute -bottom-2 -left-2 w-6 h-6 bg-gradient-to-br from-teal-400 to-blue-400 rounded-full opacity-20 group-hover:opacity-50 group-hover:scale-110 transition-all duration-500"></div>
               
               <div className="relative z-10">
                 <div className="flex items-start space-x-5 mb-8">
@@ -202,33 +202,33 @@ export const LandingPage: React.FC = () => {
                     <span className="text-5xl">🏝️</span>
                   </div>
                   <div>
-                    <h3 className="text-3xl font-bold text-white group-hover:text-orange-200 transition-colors mb-2 leading-tight">
+                    <h3 className="text-3xl font-bold text-gray-900 group-hover:text-green-600 transition-colors mb-2 leading-tight">
                       Bali Escape
                     </h3>
-                    <div className="flex items-center space-x-4 text-orange-200">
-                      <span className="flex items-center space-x-2 bg-white bg-opacity-20 rounded-full px-3 py-1">
-                        <span className="w-2 h-2 bg-orange-300 rounded-full"></span>
-                        <span className="text-sm font-medium">7 days</span>
+                    <div className="flex items-center space-x-4 text-gray-600">
+                      <span className="flex items-center space-x-2 bg-green-100 bg-opacity-80 rounded-full px-3 py-1">
+                        <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                        <span className="text-sm font-medium text-green-700">7 days</span>
                       </span>
-                      <span className="flex items-center space-x-2 bg-white bg-opacity-20 rounded-full px-3 py-1">
-                        <span className="w-2 h-2 bg-green-300 rounded-full"></span>
-                        <span className="text-sm font-medium">$800</span>
+                      <span className="flex items-center space-x-2 bg-green-100 bg-opacity-80 rounded-full px-3 py-1">
+                        <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                        <span className="text-sm font-medium text-green-700">$800</span>
                       </span>
                     </div>
                   </div>
                 </div>
                 
-                <p className="text-orange-100 mb-8 leading-relaxed text-lg">
+                <p className="text-gray-700 mb-8 leading-relaxed text-lg">
                   Tropical paradise featuring pristine beaches, ancient temples, 
                   and vibrant culture in Indonesia's most beloved destination.
                 </p>
                 
                 <div className="flex items-center justify-between">
                   <div className="flex flex-wrap gap-2">
-                    <span className="bg-gradient-to-r from-green-500 to-teal-500 text-white px-4 py-2 rounded-full text-sm font-semibold shadow-lg">🏖️ Beaches</span>
-                    <span className="bg-gradient-to-r from-teal-500 to-blue-500 text-white px-4 py-2 rounded-full text-sm font-semibold shadow-lg">⛩️ Temples</span>
+                    <span className="bg-gradient-to-r from-green-500 to-teal-500 text-white px-4 py-2 rounded-full text-sm font-semibold shadow-md">🏖️ Beaches</span>
+                    <span className="bg-gradient-to-r from-teal-500 to-blue-500 text-white px-4 py-2 rounded-full text-sm font-semibold shadow-md">⛩️ Temples</span>
                   </div>
-                  <div className="bg-gradient-to-r from-green-500 to-teal-500 text-white px-5 py-2 rounded-full text-sm font-bold shadow-xl group-hover:shadow-green-500/50 transition-shadow">
+                  <div className="bg-gradient-to-r from-green-500 to-teal-500 text-white px-5 py-2 rounded-full text-sm font-bold shadow-lg group-hover:shadow-green-500/50 transition-shadow">
                     Relaxing
                   </div>
                 </div>
@@ -238,10 +238,10 @@ export const LandingPage: React.FC = () => {
           
           {/* Call to Action */}
           <div className="text-center">
-            <div className="inline-block bg-gradient-to-r from-orange-500 via-red-500 to-pink-500 p-1 rounded-3xl shadow-2xl">
-              <div className="bg-slate-900 bg-opacity-90 backdrop-blur-xl rounded-2xl px-12 py-10">
-                <h3 className="text-3xl font-bold text-white mb-4">Ready to Start Your Adventure?</h3>
-                <p className="text-orange-100 mb-8 max-w-lg mx-auto text-lg">
+            <div className="inline-block bg-gradient-to-r from-orange-500 via-red-500 to-pink-500 p-1 rounded-3xl shadow-2xl backdrop-blur-xl">
+              <div className="bg-white bg-opacity-95 backdrop-blur-xl rounded-2xl px-12 py-10">
+                <h3 className="text-3xl font-bold text-gray-900 mb-4">Ready to Start Your Adventure?</h3>
+                <p className="text-gray-700 mb-8 max-w-lg mx-auto text-lg">
                   Choose from our curated templates or create your own custom itinerary
                 </p>
                 <div className="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-6">
@@ -254,7 +254,7 @@ export const LandingPage: React.FC = () => {
                   </button>
                   <button
                     onClick={handleStartPlanning}
-                    className="bg-white bg-opacity-15 backdrop-blur-md border border-white border-opacity-40 hover:bg-opacity-25 text-white px-10 py-4 rounded-2xl font-semibold transition-all duration-300 hover:scale-105 flex items-center space-x-3 shadow-lg"
+                    className="bg-gray-100 bg-opacity-80 backdrop-blur-md border border-gray-300 hover:bg-gray-200 text-gray-700 px-10 py-4 rounded-2xl font-semibold transition-all duration-300 hover:scale-105 flex items-center space-x-3 shadow-lg"
                   >
                     <span>Browse All Templates</span>
                     <Search className="w-5 h-5" />
@@ -266,7 +266,7 @@ export const LandingPage: React.FC = () => {
         </div>
         
         {/* Bottom Gradient */}
-        <div className="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-slate-900 to-transparent"></div>
+        <div className="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-white to-transparent"></div>
       </section>
       
       {/* Features Section */}
